@@ -7,17 +7,17 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { username, email, password, nickname } = body
 
-    console.log("注册请求:", { username, email, nickname })
+    console.log("Register request:", { username, email })
 
-    // 验证必填字段
+    // Validate required fields
     if (!username || !email || !password) {
       return NextResponse.json(
-        { error: "请填写所有必填字段" },
+        { error: "Please fill in all required fields" },
         { status: 400 }
       )
     }
 
-    // 检查用户名是否已存在
+    // Check if user exists
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -29,15 +29,15 @@ export async function POST(request: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "用户名或邮箱已存在" },
+        { error: "Username or email already exists" },
         { status: 400 }
       )
     }
 
-    // 加密密码
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // 创建用户
+    // Create user
     const user = await prisma.user.create({
       data: {
         username,
@@ -56,16 +56,16 @@ export async function POST(request: Request) {
       }
     })
 
-    console.log("用户创建成功:", user.id)
+    console.log("User created:", user.id)
 
     return NextResponse.json(
-      { message: "注册成功", user },
+      { message: "Registration successful", user },
       { status: 201 }
     )
-  } catch (error) {
-    console.error("注册错误:", error)
+  } catch (error: any) {
+    console.error("Register error:", error)
     return NextResponse.json(
-      { error: "注册失败，请稍后重试" },
+      { error: error.message || "Registration failed, please try again" },
       { status: 500 }
     )
   }
