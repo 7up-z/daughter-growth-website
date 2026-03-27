@@ -1,0 +1,23 @@
+node_modules/
+.next/
+.env
+.env.local
+.env.*.local
+*.log
+dev.log
+.DS_Store
+Thumbs.db
+
+# 上传的文件（生产环境会重新上传）
+public/uploads/images/*
+!public/uploads/images/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统
+.DS_Store
+Thumbs.db
