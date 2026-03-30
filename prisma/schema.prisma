@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./prisma/dev.db"
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
 model User {
@@ -18,7 +18,6 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
-  // Relations
   comments      Comment[]
   travelEntries TravelEntry[]
   photoEntries  PhotoEntry[]
@@ -28,7 +27,7 @@ model BirthdayVideo {
   id          String   @id @default(cuid())
   year        Int      @unique
   title       String
-  bvid        String   // B站视频BV号
+  bvid        String
   description String?
   thumbnail   String?
   createdAt   DateTime @default(now())
@@ -38,16 +37,15 @@ model BirthdayVideo {
 model TravelEntry {
   id          String   @id @default(cuid())
   title       String
-  content     String   // 富文本内容
+  content     String
   location    String?
   travelDate  DateTime
   coverImage  String?
-  images      String   // 图片数组，JSON存储
+  images      String   @default("[]")
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Relations
   authorId    String
   author      User     @relation(fields: [authorId], references: [id])
   comments    Comment[]
@@ -59,14 +57,13 @@ model PhotoEntry {
   description String?
   imageUrl    String
   photoDate   DateTime?
-  category    String   // 分类：风景、人物、生活等
-  tags        String   // 标签数组，JSON存储
-  thoughts    String?  // 摄影心得
+  category    String
+  tags        String   @default("[]")
+  thoughts    String?
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Relations
   authorId    String
   author      User     @relation(fields: [authorId], references: [id])
   comments    Comment[]
@@ -78,11 +75,9 @@ model Comment {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Relations
   authorId    String
   author      User     @relation(fields: [authorId], references: [id])
   
-  // Polymorphic relations
   travelEntryId String?
   travelEntry   TravelEntry? @relation(fields: [travelEntryId], references: [id], onDelete: Cascade)
   
