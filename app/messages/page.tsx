@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Heart, MessageCircle, Send, ChevronLeft, User } from "lucide-react"
+import { Heart, MessageCircle, Send, ChevronLeft, User, Trash2 } from "lucide-react"
 
 interface Message {
   id: string
@@ -25,6 +25,7 @@ export default function MessagesPage() {
   const [newMessage, setNewMessage] = useState("")
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
+  const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -33,73 +34,71 @@ export default function MessagesPage() {
   }, [status, router])
 
   useEffect(() => {
-    // 模拟加载数据
-    const mockMessages: Message[] = [
-      {
-        id: "1",
-        content: "宝贝真的太可爱了！看着这些照片和视频，感觉时间过得好快。",
-        createdAt: "2024-03-20T10:30:00Z",
-        author: {
-          id: "user1",
-          nickname: "外婆",
-          username: "grandma",
-          avatar: null,
-        },
-      },
-      {
-        id: "2",
-        content: "每次看这些记录都觉得特别温馨，希望宝贝健康快乐地成长！",
-        createdAt: "2024-03-19T15:20:00Z",
-        author: {
-          id: "user2",
-          nickname: "舅舅",
-          username: "uncle",
-          avatar: null,
-        },
-      },
-      {
-        id: "3",
-        content: "照片拍得真好！下次回来一定要多拍一些。",
-        createdAt: "2024-03-18T09:00:00Z",
-        author: {
-          id: "user3",
-          nickname: "姑姑",
-          username: "aunt",
-          avatar: null,
-        },
-      },
-    ]
-    
-    setTimeout(() => {
-      setMessages(mockMessages)
-      setLoading(false)
-    }, 500)
+    fetchMessages()
   }, [])
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch("/api/messages")
+      if (response.ok) {
+        const data = await response.json()
+        setMessages(data)
+      }
+    } catch (error) {
+      console.error("获取留言失败:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newMessage.trim() || !session?.user) return
+    if (!newMessage.trim() || !session) return
 
     setSending(true)
-    
-    // 模拟发送消息
-    const message: Message = {
-      id: Date.now().toString(),
-      content: newMessage,
-      createdAt: new Date().toISOString(),
-      author: {
-        id: session.user.id,
-        nickname: session.user.nickname,
-        username: session.user.username,
-        avatar: session.user.avatar,
-      },
-    }
+    try {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newMessage }),
+      })
 
-    setTimeout(() => {
-      setMessages([message, ...messages])
-      setNewMessage("")
+      if (response.ok) {
+        setNewMessage("")
+        fetchMessages()
+      } else {
+        const error = await response.json()
+        alert(error.error || "发送失败")
+      }
+    } catch (error) {
+      console.error("发送留言失败:", error)
+      alert("发送失败，请重试")
+    } finally {
       setSending(false)
-    }, 500)
+    }
+  }
+
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm("确定要删除这条留言吗？")) return
+
+    setDeleting(id)
+    try {
+      const response = await fetch(`/api/messages?id=${id}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        setMessages(messages.filter(m => m.id !== id))
+      } else {
+        const error = await response.json()
+        alert(error.error || "删除失败")
+      }
+    } catch (error) {
+      console.error("删除留言失败:", error)
+      alert("删除失败，请重试")
+    } finally {
+      setDeleting(null)
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -110,6 +109,14 @@ export default function MessagesPage() {
       hour: "2-digit",
       minute: "2-digit",
     })
+  }
+
+  // 检查是否可以删除留言（管理员或作者本人）
+  const canDelete = (message: Message) => {
+    if (!session) return false
+    const isAdmin = (session.user as any).role === "admin"
+    const isAuthor = message.author.id === session.user.id
+    return isAdmin || isAuthor
   }
 
   if (status === "loading" || loading) {
@@ -210,12 +217,23 @@ export default function MessagesPage() {
 
         {/* 留言列表 */}
         <div className="space-y-4">
-          {messages.map((message, index) => (
+          {messages.map((message) => (
             <div
               key={message.id}
-              className="bg-[var(--theme-surface)] rounded-2xl p-6 shadow-lg border border-[var(--theme-border)] animate-fade-in"
-              style={{ animationDelay: `${index * 0.05}s` }}
+              className="bg-[var(--theme-surface)] rounded-2xl p-6 shadow-lg border border-[var(--theme-border)] animate-fade-in group relative"
             >
+              {/* 删除按钮 */}
+              {canDelete(message) && (
+                <button
+                  onClick={() => handleDeleteMessage(message.id)}
+                  disabled={deleting === message.id}
+                  className="absolute top-4 right-4 p-2 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50"
+                  title="删除留言"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+
               <div className="flex items-start space-x-4">
                 {message.author.avatar ? (
                   <img
@@ -239,6 +257,11 @@ export default function MessagesPage() {
                       {message.author.id === session.user.id && (
                         <span className="px-2 py-0.5 rounded-full bg-[var(--theme-primary)] text-white text-xs">
                           我
+                        </span>
+                      )}
+                      {(session.user as any).role === "admin" && message.author.id !== session.user.id && (
+                        <span className="px-2 py-0.5 rounded-full bg-blue-500 text-white text-xs">
+                          管理员可删
                         </span>
                       )}
                     </div>
