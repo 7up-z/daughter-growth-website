@@ -62,16 +62,26 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少评论ID" }, { status: 400 })
     }
 
-    // 检查是否是评论作者
-    const comment = await prisma.comment.findUnique({
-      where: { id },
-    })
+    // 获取当前用户信息和评论信息
+    const [user, comment] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true }
+      }),
+      prisma.comment.findUnique({
+        where: { id },
+      })
+    ])
 
     if (!comment) {
       return NextResponse.json({ error: "评论不存在" }, { status: 404 })
     }
 
-    if (comment.authorId !== session.user.id) {
+    // 管理员可以删除任何评论，普通用户只能删除自己的评论
+    const isAdmin = user?.role === "admin"
+    const isAuthor = comment.authorId === session.user.id
+
+    if (!isAdmin && !isAuthor) {
       return NextResponse.json({ error: "无权删除" }, { status: 403 })
     }
 

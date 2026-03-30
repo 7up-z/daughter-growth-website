@@ -93,16 +93,26 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少照片ID" }, { status: 400 })
     }
 
-    // 检查是否是作者
-    const photo = await prisma.photoEntry.findUnique({
-      where: { id },
-    })
+    // 获取用户角色和照片信息
+    const [user, photo] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true }
+      }),
+      prisma.photoEntry.findUnique({
+        where: { id },
+      })
+    ])
 
     if (!photo) {
       return NextResponse.json({ error: "照片不存在" }, { status: 404 })
     }
 
-    if (photo.authorId !== session.user.id) {
+    // 管理员可以删除任何照片，普通用户只能删除自己的照片
+    const isAdmin = user?.role === "admin"
+    const isAuthor = photo.authorId === session.user.id
+
+    if (!isAdmin && !isAuthor) {
       return NextResponse.json({ error: "无权删除" }, { status: 403 })
     }
 

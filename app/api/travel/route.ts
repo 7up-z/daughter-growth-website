@@ -127,16 +127,26 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少日记ID" }, { status: 400 })
     }
 
-    // 检查是否是作者
-    const entry = await prisma.travelEntry.findUnique({
-      where: { id },
-    })
+    // 获取用户角色和日记信息
+    const [user, entry] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true }
+      }),
+      prisma.travelEntry.findUnique({
+        where: { id },
+      })
+    ])
 
     if (!entry) {
       return NextResponse.json({ error: "日记不存在" }, { status: 404 })
     }
 
-    if (entry.authorId !== session.user.id) {
+    // 管理员可以删除任何日记，普通用户只能删除自己的日记
+    const isAdmin = user?.role === "admin"
+    const isAuthor = entry.authorId === session.user.id
+
+    if (!isAdmin && !isAuthor) {
       return NextResponse.json({ error: "无权删除" }, { status: 403 })
     }
 

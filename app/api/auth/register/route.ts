@@ -37,6 +37,10 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
+    // 检查是否是第一个用户，如果是则设为管理员
+    const userCount = await prisma.user.count()
+    const role = userCount === 0 ? "admin" : "user"
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -44,6 +48,7 @@ export async function POST(request: Request) {
         email,
         password: hashedPassword,
         nickname: nickname || username,
+        role,
       },
       select: {
         id: true,

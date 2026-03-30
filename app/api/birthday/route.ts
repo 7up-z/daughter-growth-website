@@ -12,7 +12,10 @@ export async function GET() {
     }
 
     const videos = await prisma.birthdayVideo.findMany({
-      orderBy: { year: "desc" },
+      orderBy: [
+        { year: "desc" },
+        { createdAt: "desc" }
+      ],
     })
 
     return NextResponse.json(videos)
@@ -65,6 +68,16 @@ export async function DELETE(request: Request) {
 
     if (!id) {
       return NextResponse.json({ error: "缺少视频ID" }, { status: 400 })
+    }
+
+    // 检查是否是管理员
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true }
+    })
+
+    if (user?.role !== "admin") {
+      return NextResponse.json({ error: "无权删除" }, { status: 403 })
     }
 
     await prisma.birthdayVideo.delete({

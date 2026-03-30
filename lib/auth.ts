@@ -42,6 +42,7 @@ export const authOptions: NextAuthOptions = {
           nickname: user.nickname,
           avatar: user.avatar,
           theme: user.theme,
+          role: user.role,
         }
       }
     })
@@ -57,6 +58,7 @@ export const authOptions: NextAuthOptions = {
         token.nickname = user.nickname
         token.avatar = user.avatar
         token.theme = user.theme
+        token.role = user.role
       }
       return token
     },
@@ -67,6 +69,7 @@ export const authOptions: NextAuthOptions = {
         session.user.nickname = token.nickname as string | null
         session.user.avatar = token.avatar as string | null
         session.user.theme = token.theme as string
+        session.user.role = token.role as string
       }
       return session
     }
@@ -87,6 +90,7 @@ declare module "next-auth" {
       nickname: string | null
       avatar: string | null
       theme: string
+      role: string
     }
   }
 
@@ -97,6 +101,7 @@ declare module "next-auth" {
     nickname: string | null
     avatar: string | null
     theme: string
+    role: string
   }
 }
 
@@ -107,5 +112,6 @@ declare module "next-auth/jwt" {
     nickname: string | null
     avatar: string | null
     theme: string
+    role: string
   }
 }
