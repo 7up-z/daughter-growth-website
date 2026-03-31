@@ -12,6 +12,11 @@ Thumbs.db
 public/uploads/images/*
 !public/uploads/images/.gitkeep
 
+# 敏感文件
+set-admin.mjs
+*.local
+.env*.local
+
 # IDE
 .vscode/
 .idea/
