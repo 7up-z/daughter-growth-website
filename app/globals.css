@@ -4,15 +4,18 @@
   --background: #ffffff;
   --foreground: #171717;
   
-  /* 主题变量 - 默认温馨暖色 */
-  --theme-primary: #E8B4A2;
-  --theme-secondary: #F5E6D3;
-  --theme-background: #FFF8F0;
+  /* 现代杂志风配色 */
+  --theme-primary: #FF6B6B;
+  --theme-secondary: #FFE0E0;
+  --theme-background: #FAFAFA;
   --theme-surface: #FFFFFF;
-  --theme-text: #5C4A3D;
-  --theme-text-muted: #8B7355;
-  --theme-accent: #D4A574;
-  --theme-border: #E8D5C4;
+  --theme-text: #2C3E50;
+  --theme-text-muted: #7F8C8D;
+  --theme-accent: #4ECDC4;
+  --theme-border: #E8E8E8;
+  --theme-dark: #1A1A1A;
+  --theme-gradient-start: #FF6B6B;
+  --theme-gradient-end: #4ECDC4;
 }
 
 @theme inline {
@@ -25,34 +28,35 @@
 body {
   background: var(--theme-background);
   color: var(--theme-text);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.6;
 }
 
-/* 自定义滚动条 */
+/* 自定义滚动条 - 杂志风细滚动条 */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--theme-secondary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--theme-accent);
-  border-radius: 4px;
+  background: var(--theme-text-muted);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--theme-primary);
 }
 
-/* 动画 */
+/* 杂志风动画 */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -63,7 +67,7 @@ body {
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-30px);
   }
   to {
     opacity: 1;
@@ -74,7 +78,7 @@ body {
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
   to {
     opacity: 1;
@@ -82,85 +86,205 @@ body {
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slide-in {
-  animation: slideIn 0.5s ease-out forwards;
+  animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.3s ease-out forwards;
+  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* 卡片悬停效果 */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 杂志风卡片效果 */
 .card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* 图片悬停效果 */
+/* 杂志风图片效果 */
 .image-hover {
-  transition: transform 0.5s ease;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
-.image-hover:hover {
+.image-hover img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.image-hover:hover img {
   transform: scale(1.05);
 }
 
-/* 按钮样式 */
+/* 杂志风按钮 */
 .btn-primary {
-  background: var(--theme-primary);
-  color: var(--theme-surface);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
+  background: linear-gradient(135deg, var(--theme-gradient-start) 0%, var(--theme-gradient-end) 100%);
+  color: white;
+  padding: 0.875rem 2rem;
+  border-radius: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-primary:hover {
-  background: var(--theme-accent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
 }
 
-/* 输入框样式 */
+/* 杂志风输入框 */
 .input-field {
   background: var(--theme-surface);
   border: 2px solid var(--theme-border);
   color: var(--theme-text);
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 1rem 1.25rem;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
 .input-field:focus {
   outline: none;
   border-color: var(--theme-primary);
-  box-shadow: 0 0 0 3px rgba(232, 180, 162, 0.2);
+  box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
 }
 
-/* 玻璃拟态效果 */
+/* 杂志风玻璃效果 */
 .glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* 渐变背景 */
+/* 杂志风渐变背景 */
 .gradient-bg {
-  background: linear-gradient(135deg, var(--theme-secondary) 0%, var(--theme-background) 100%);
+  background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
 }
 
-/* 文字渐变 */
+/* 杂志风文字渐变 */
 .gradient-text {
-  background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-accent) 100%);
+  background: linear-gradient(135deg, var(--theme-gradient-start) 0%, var(--theme-gradient-end) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* 杂志风标题 */
+.magazine-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* 杂志风副标题 */
+.magazine-subtitle {
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--theme-text-muted);
+}
+
+/* 杂志风分割线 */
+.magazine-divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--theme-primary) 0%, var(--theme-accent) 100%);
+  margin: 1.5rem 0;
+}
+
+/* 杂志风标签 */
+.magazine-tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--theme-dark);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* 杂志风引用块 */
+.magazine-quote {
+  border-left: 4px solid var(--theme-primary);
+  padding-left: 1.5rem;
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--theme-text-muted);
+}
+
+/* 杂志风网格布局 */
+.magazine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+/* 杂志风大图展示 */
+.magazine-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.magazine-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* 杂志风悬停覆盖层 */
+.magazine-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: all 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.magazine-overlay:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .magazine-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .magazine-title {
+    font-size: 2rem;
+  }
 }
