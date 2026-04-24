@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日历时钟 - Kindle 墨水屏版</title>
+  <style>
+    /* Kindle Paperwhite 6 分辨率: 1024x758 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #ffffff;
+      color: #000000;
+      width: 1024px;
+      height: 758px;
+      overflow: hidden;
+      padding: 20px;
+      /* 墨水屏优化 */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border: 3px solid #000;
+    }
+
+    /* 顶部时间区域 */
+    .time-section {
+      flex: 0 0 200px;
+      border-bottom: 3px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .time-display {
+      font-size: 80px;
+      font-weight: bold;
+      letter-spacing: 5px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .date-display {
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+
+    /* 中间内容区域 */
+    .content-section {
+      flex: 1;
+      display: flex;
+      border-bottom: 3px solid #000;
+    }
+
+    /* 左侧月历 */
+    .calendar-section {
+      flex: 1;
+      border-right: 3px solid #000;
+      padding: 20px;
+    }
+
+    .calendar-header {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #000;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 8px 0;
+      border-bottom: 1px solid #000;
+    }
+
+    .calendar-day {
+      text-align: center;
+      font-size: 18px;
+      padding: 10px 0;
+      border: 1px solid #ccc;
+      min-height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-day.other-month {
+      color: #999;
+    }
+
+    .calendar-day.today {
+      background: #000;
+      color: #fff;
+      font-weight: bold;
+      border: 2px solid #000;
+    }
+
+    /* 右侧天气区域 */
+    .weather-section {
+      flex: 0 0 300px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .location-selector {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #000;
+    }
+
+    .location-selector label {
+      display: block;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .location-selector select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #000;
+      background: #fff;
+      font-family: inherit;
+    }
+
+    .weather-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+
+    .weather-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .weather-item:last-child {
+      border-bottom: none;
+    }
+
+    .weather-label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .weather-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .temperature {
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    /* 底部更新时间 */
+    .footer-section {
+      flex: 0 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .refresh-btn {
+      padding: 5px 15px;
+      border: 2px solid #000;
+      background: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .refresh-btn:active {
+      background: #000;
+      color: #fff;
+    }
+
+    /* 加载状态 */
+    .loading {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 顶部时间 -->
+    <div class="time-section">
+      <div class="time-display" id="timeDisplay">00:00:00</div>
+      <div class="date-display" id="dateDisplay">2024年1月1日 星期一</div>
+    </div>
+
+    <!-- 中间内容 -->
+    <div class="content-section">
+      <!-- 左侧月历 -->
+      <div class="calendar-section">
+        <div class="calendar-header" id="calendarHeader">2024年1月</div>
+        <div class="calendar-grid" id="calendarGrid">
+          <!-- 日历将通过 JS 生成 -->
+        </div>
+      </div>
+
+      <!-- 右侧天气 -->
+      <div class="weather-section">
+        <div class="location-selector">
+          <label for="citySelect">选择城市：</label>
+          <select id="citySelect">
+            <option value="beijing">北京</option>
+            <option value="shanghai">上海</option>
+            <option value="guangzhou">广州</option>
+            <option value="shenzhen">深圳</option>
+            <option value="hangzhou">杭州</option>
+            <option value="chengdu">成都</option>
+            <option value="wuhan">武汉</option>
+            <option value="xian">西安</option>
+            <option value="nanjing">南京</option>
+            <option value="tianjin">天津</option>
+          </select>
+        </div>
+
+        <div class="weather-info">
+          <div class="weather-item">
+            <div class="weather-label">温度</div>
+            <div class="temperature" id="temperature">--°C</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">天气</div>
+            <div class="weather-value" id="weather">加载中...</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">湿度</div>
+            <div class="weather-value" id="humidity">--%</div>
+          </div>
+          <div class="weather-item">
+            <div class="weather-label">风力</div>
+            <div class="weather-value" id="wind">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部更新时间 -->
+    <div class="footer-section">
+      <div id="updateTime">最后更新: --</div>
+      <button class="refresh-btn" onclick="refreshWeather()">刷新天气</button>
+    </div>
+  </div>
+
+  <script>
+    // 城市坐标映射
+    const cityCoords = {
+      'beijing': { name: '北京', lat: 39.9042, lon: 116.4074 },
+      'shanghai': { name: '上海', lat: 31.2304, lon: 121.4737 },
+      'guangzhou': { name: '广州', lat: 23.1291, lon: 113.2644 },
+      'shenzhen': { name: '深圳', lat: 22.5431, lon: 114.0579 },
+      'hangzhou': { name: '杭州', lat: 30.2741, lon: 120.1551 },
+      'chengdu': { name: '成都', lat: 30.5728, lon: 104.0668 },
+      'wuhan': { name: '武汉', lat: 30.5928, lon: 114.3055 },
+      'xian': { name: '西安', lat: 34.2658, lon: 108.9541 },
+      'nanjing': { name: '南京', lat: 32.0603, lon: 118.7969 },
+      'tianjin': { name: '天津', lat: 39.3434, lon: 117.3616 }
+    };
+
+    // 更新时间
+    function updateTime() {
+      const now = new Date();
+      
+      // 时间显示
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('timeDisplay').textContent = `${hours}:${minutes}:${seconds}`;
+      
+      // 日期显示
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weekday = weekdays[now.getDay()];
+      document.getElementById('dateDisplay').textContent = `${year}年${month}月${date}日 ${weekday}`;
+    }
+
+    // 生成月历
+    function generateCalendar() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const today = now.getDate();
+      
+      // 更新月历标题
+      document.getElementById('calendarHeader').textContent = `${year}年${month + 1}月`;
+      
+      // 获取本月第一天和最后一天
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startWeekday = firstDay.getDay();
+      
+      // 获取上个月的天数
+      const prevMonthLastDay = new Date(year, month, 0).getDate();
+      
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+      
+      // 添加星期标题
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+      weekdays.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+      });
+      
+      // 添加上个月的日期（填充）
+      for (let i = startWeekday - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = prevMonthLastDay - i;
+        grid.appendChild(day);
+      }
+      
+      // 添加本月的日期
+      for (let i = 1; i <= daysInMonth; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day';
+        if (i === today) {
+          day.classList.add('today');
+        }
+        day.textContent = i;
+        grid.appendChild(day);
+      }
+      
+      // 添加下个月的日期（填充）
+      const totalCells = grid.children.length - 7; // 减去星期标题
+      const remainingCells = 42 - totalCells; // 6行7列
+      for (let i = 1; i <= remainingCells; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = i;
+        grid.appendChild(day);
+      }
+    }
+
+    // 获取天气（模拟数据）
+    async function fetchWeather() {
+      const citySelect = document.getElementById('citySelect');
+      const cityKey = citySelect.value;
+      const city = cityCoords[cityKey];
+      
+      // 显示加载状态
+      document.querySelector('.weather-section').classList.add('loading');
+      
+      try {
+        // 这里使用模拟数据，实际部署时需要调用真实天气API
+        // 推荐使用：和风天气 API (qweather.com) 或 OpenWeatherMap
+        
+        // 模拟数据
+        const weatherData = {
+          temperature: Math.floor(Math.random() * 20) + 10,
+          weather: ['晴', '多云', '阴', '小雨'][Math.floor(Math.random() * 4)],
+          humidity: Math.floor(Math.random() * 40) + 40,
+          wind: ['微风', '2级', '3级'][Math.floor(Math.random() * 3)]
+        };
+        
+        // 更新显示
+        document.getElementById('temperature').textContent = `${weatherData.temperature}°C`;
+        document.getElementById('weather').textContent = weatherData.weather;
+        document.getElementById('humidity').textContent = `${weatherData.humidity}%`;
+        document.getElementById('wind').textContent = weatherData.wind;
+        
+        // 更新时间
+        const now = new Date();
+        document.getElementById('updateTime').textContent = 
+          `最后更新: ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+      } catch (error) {
+        console.error('获取天气失败:', error);
+        document.getElementById('weather').textContent = '获取失败';
+      } finally {
+        document.querySelector('.weather-section').classList.remove('loading');
+      }
+    }
+
+    // 刷新天气
+    function refreshWeather() {
+      fetchWeather();
+    }
+
+    // 城市切换
+    document.getElementById('citySelect').addEventListener('change', fetchWeather);
+
+    // 初始化
+    function init() {
+      updateTime();
+      generateCalendar();
+      fetchWeather();
+      
+      // 每秒更新时间
+      setInterval(updateTime, 1000);
+      
+      // 每小时更新天气
+      setInterval(fetchWeather, 3600000);
+      
+      // 每天0点更新月历
+      setInterval(() => {
+        const now = new Date();
+        if (now.getHours() === 0 && now.getMinutes() === 0) {
+          generateCalendar();
+        }
+      }, 60000);
+    }
+
+    // 页面加载完成后初始化
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
