@@ -8,11 +8,19 @@
 |------|------|
 | 框架 | Next.js 16.2.1 (App Router) |
 | 语言 | TypeScript 5 |
-| UI | React 19, Radix UI, Tailwind CSS 4 |
+| UI | React 19, Tailwind CSS 4, 极简黑白灰设计风格 |
 | 认证 | NextAuth.js 4 |
 | 数据库 | Prisma ORM + SQLite |
 | 存储 | Vercel Blob |
 | 包管理器 | pnpm |
+
+## 设计风格
+
+**极简博客风格**，参考 blatr.cn 和 cworld0.com：
+- 黑白灰主色调，大量留白
+- 清晰的排版层次和信息结构
+- 卡片式和列表式内容展示
+- 简洁的导航和交互
 
 ## 目录结构
 
@@ -80,6 +88,7 @@
 1. **pnpm exec 问题**: 在脚本中执行 `pnpm exec` 时，确保已正确 cd 到项目根目录
 2. **Next.js 参数**: 使用 `-H` 和 `-p` 短参数而非 `--hostname`/`--port`
 3. **Prisma**: 开发依赖 postinstall 钩子自动生成客户端，勿删除
+4. **设计风格**: 采用极简黑白灰风格，CSS 变量定义在 `app/globals.css`
 
 ---
 

@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Heart, Camera, Calendar, Tag, ChevronLeft, Plus, Grid, List, MessageCircle, Trash2, X, Sparkles } from "lucide-react"
+import { Camera, Calendar, ChevronLeft, Plus, Grid, List, Trash2, X, User } from "lucide-react"
 
 interface PhotoEntry {
   id: string
@@ -27,11 +27,11 @@ interface PhotoEntry {
 }
 
 const categories = [
-  { id: "all", name: "全部", icon: Grid },
-  { id: "landscape", name: "风景", icon: Camera },
-  { id: "portrait", name: "人物", icon: Heart },
-  { id: "life", name: "生活", icon: Calendar },
-  { id: "travel", name: "旅行", icon: Tag },
+  { id: "all", name: "全部" },
+  { id: "landscape", name: "风景" },
+  { id: "portrait", name: "人物" },
+  { id: "life", name: "生活" },
+  { id: "travel", name: "旅行" },
 ]
 
 export default function PhotosPage() {
@@ -56,8 +56,8 @@ export default function PhotosPage() {
 
   const fetchPhotos = async () => {
     try {
-      const url = selectedCategory === "all" 
-        ? "/api/photos" 
+      const url = selectedCategory === "all"
+        ? "/api/photos"
         : `/api/photos?category=${selectedCategory}`
       const response = await fetch(url)
       if (response.ok) {
@@ -109,7 +109,7 @@ export default function PhotosPage() {
     const date = new Date(dateString)
     return date.toLocaleDateString("zh-CN", {
       year: "numeric",
-      month: "short",
+      month: "long",
       day: "numeric",
     })
   }
@@ -120,13 +120,8 @@ export default function PhotosPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--theme-background)]">
-        <div className="text-center">
-          <div className="animate-pulse">
-            <div className="w-16 h-16 rounded-full bg-[var(--theme-primary)] mx-auto mb-4" />
-          </div>
-          <p className="text-[var(--theme-text-muted)]">正在加载...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-[var(--theme-text-muted)]">加载中...</p>
       </div>
     )
   }
@@ -136,252 +131,194 @@ export default function PhotosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--theme-background)]">
-      {/* 杂志风导航栏 */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-4">
+    <div className="min-h-screen">
+      {/* 顶部导航 */}
+      <header className="border-b border-[var(--theme-border)]">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
               <Link
                 href="/dashboard"
-                className="p-2 hover:bg-black/5 transition-colors"
+                className="p-2 -ml-2 hover:bg-[var(--theme-bg-tertiary)] rounded transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Link>
-              <Link href="/dashboard" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-[var(--theme-primary)] to-[var(--theme-accent)] flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold hidden sm:block">成长记录</span>
+              <Link href="/dashboard" className="text-lg font-semibold">
+                成长记录
               </Link>
             </div>
-            <h1 className="text-lg font-semibold tracking-wide">摄影记录</h1>
-            <Link
-              href="/photos/new"
-              className="flex items-center space-x-1 px-4 py-2 bg-[var(--theme-dark)] text-white hover:opacity-90 transition-opacity"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm uppercase tracking-wider">上传</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      <main className="pt-20">
-        {/* 杂志风 Hero 区域 */}
-        <section className="relative py-16 lg:py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center">
-              <span className="magazine-subtitle mb-4 block">Photography</span>
-              <h1 className="magazine-title text-5xl lg:text-6xl mb-6">
-                摄影记录
-              </h1>
-              <div className="magazine-divider mx-auto" />
-              <p className="text-lg text-[var(--theme-text-muted)] max-w-2xl mx-auto">
-                用镜头捕捉生活中的美好瞬间，每一张照片都是时光的印记。
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 分类筛选和视图切换 */}
-        <section className="py-8 border-b border-[var(--theme-border)] bg-white sticky top-20 z-40">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              {/* 分类筛选 */}
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-4 py-2 text-sm font-medium transition-all ${
-                      selectedCategory === cat.id
-                        ? "bg-[var(--theme-dark)] text-white"
-                        : "bg-[var(--theme-background)] text-[var(--theme-text)] hover:bg-[var(--theme-secondary)]"
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
-
+            <div className="flex items-center gap-3">
               {/* 视图切换 */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center border border-[var(--theme-border)] rounded">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 transition-colors ${
-                    viewMode === "grid" ? "bg-[var(--theme-dark)] text-white" : "bg-[var(--theme-background)]"
-                  }`}
+                  className={`p-2 ${viewMode === "grid" ? "bg-[var(--theme-text)] text-white" : ""}`}
                 >
                   <Grid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 transition-colors ${
-                    viewMode === "list" ? "bg-[var(--theme-dark)] text-white" : "bg-[var(--theme-background)]"
-                  }`}
+                  className={`p-2 ${viewMode === "list" ? "bg-[var(--theme-text)] text-white" : ""}`}
                 >
                   <List className="w-4 h-4" />
                 </button>
               </div>
+              <Link href="/photos/new" className="btn btn-primary">
+                <Plus className="w-4 h-4 mr-1" />
+                上传
+              </Link>
             </div>
           </div>
-        </section>
+        </div>
+      </header>
 
-        {/* 照片展示区域 */}
-        <section className="py-12">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            {photos.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-[var(--theme-secondary)] mb-6">
-                  <Camera className="w-10 h-10 text-[var(--theme-text-muted)]" />
-                </div>
-                <h3 className="text-2xl font-bold mb-2">还没有照片</h3>
-                <p className="text-[var(--theme-text-muted)] mb-6">
-                  开始记录美好瞬间吧！
-                </p>
-                <Link
-                  href="/photos/new"
-                  className="btn-primary inline-flex items-center space-x-2"
+      <main>
+        {/* 页面内容 */}
+        <div className="max-w-5xl mx-auto px-6 py-12">
+          {/* 页面标题 */}
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold mb-2">摄影记录</h1>
+            <p className="text-[var(--theme-text-secondary)]">
+              定格每一个美好瞬间
+            </p>
+          </div>
+
+          {/* 分类筛选 */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3 py-1.5 text-sm rounded ${
+                  selectedCategory === cat.id
+                    ? "bg-[var(--theme-text)] text-white"
+                    : "bg-[var(--theme-bg-tertiary)] text-[var(--theme-text-secondary)] hover:bg-[var(--theme-border)]"
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
+          {/* 空状态 */}
+          {photos.length === 0 && (
+            <div className="text-center py-16">
+              <Camera className="w-12 h-12 mx-auto text-[var(--theme-text-muted)] mb-4" />
+              <h3 className="text-lg font-medium mb-2">还没有照片</h3>
+              <p className="text-[var(--theme-text-muted)] mb-6">
+                开始记录美好瞬间吧
+              </p>
+              <Link href="/photos/new" className="btn btn-primary">
+                上传第一张照片
+              </Link>
+            </div>
+          )}
+
+          {/* 网格视图 */}
+          {photos.length > 0 && viewMode === "grid" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {photos.map((photo) => (
+                <article
+                  key={photo.id}
+                  className="group card overflow-hidden"
                 >
-                  <Plus className="w-5 h-5" />
-                  <span>上传第一张照片</span>
-                </Link>
-              </div>
-            ) : viewMode === "grid" ? (
-              /* 网格视图 - 杂志风瀑布流 */
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {photos.map((photo, index) => (
+                  {/* 图片 */}
                   <div
-                    key={photo.id}
-                    className="group relative bg-white shadow-lg card-hover overflow-hidden"
-                    style={{ animationDelay: `${index * 0.05}s` }}
+                    className="aspect-[4/3] overflow-hidden cursor-pointer"
+                    onClick={() => setSelectedPhoto(photo)}
                   >
-                    {/* 删除按钮 */}
-                    {canDelete(photo) && (
-                      <button
-                        onClick={() => handleDeletePhoto(photo.id)}
-                        disabled={deleting === photo.id}
-                        className="absolute top-4 right-4 z-20 p-2 bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-
-                    {/* 图片 */}
-                    <div 
-                      className="aspect-[4/3] overflow-hidden cursor-pointer image-hover"
+                    <img
+                      src={photo.imageUrl}
+                      alt={photo.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  </div>
+                  {/* 信息 */}
+                  <div className="p-4">
+                    <span className="tag mb-2 inline-block">
+                      {getCategoryName(photo.category)}
+                    </span>
+                    <h3
+                      className="font-medium mb-1 cursor-pointer hover:text-[var(--theme-accent)]"
                       onClick={() => setSelectedPhoto(photo)}
                     >
-                      <img
-                        src={photo.imageUrl}
-                        alt={photo.title}
-                        className="w-full h-full object-cover"
-                      />
+                      {photo.title}
+                    </h3>
+                    <div className="flex items-center justify-between text-sm text-[var(--theme-text-muted)]">
+                      <span>{formatDate(photo.photoDate)}</span>
+                      <span>{photo._count.comments} 评论</span>
                     </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
 
-                    {/* 信息 */}
-                    <div className="p-6">
-                      <span className="magazine-tag mb-3">
+          {/* 列表视图 */}
+          {photos.length > 0 && viewMode === "list" && (
+            <div className="space-y-0">
+              {photos.map((photo) => (
+                <article
+                  key={photo.id}
+                  className="article-card group flex gap-6"
+                >
+                  {/* 图片 */}
+                  <div
+                    className="w-48 h-32 flex-shrink-0 overflow-hidden rounded cursor-pointer"
+                    onClick={() => setSelectedPhoto(photo)}
+                  >
+                    <img
+                      src={photo.imageUrl}
+                      alt={photo.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  </div>
+                  {/* 信息 */}
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <span className="tag mb-2 inline-block">
                         {getCategoryName(photo.category)}
                       </span>
-                      <h3 className="text-xl font-bold mb-2 text-[var(--theme-text)]">
+                      <h3
+                        className="font-medium mb-1 cursor-pointer hover:text-[var(--theme-accent)]"
+                        onClick={() => setSelectedPhoto(photo)}
+                      >
                         {photo.title}
                       </h3>
                       {photo.description && (
-                        <p className="text-[var(--theme-text-muted)] text-sm line-clamp-2 mb-3">
+                        <p className="text-sm text-[var(--theme-text-muted)] line-clamp-2">
                           {photo.description}
                         </p>
                       )}
-                      <div className="flex items-center justify-between text-sm text-[var(--theme-text-muted)]">
-                        <span>{formatDate(photo.photoDate)}</span>
-                        <div className="flex items-center space-x-1">
-                          <MessageCircle className="w-4 h-4" />
-                          <span>{photo._count.comments}</span>
-                        </div>
-                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-[var(--theme-text-muted)]">
+                      <span>{formatDate(photo.photoDate)}</span>
+                      <span>{photo._count.comments} 评论</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              /* 列表视图 */
-              <div className="space-y-6">
-                {photos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="group flex flex-col md:flex-row bg-white shadow-lg card-hover overflow-hidden"
-                  >
-                    {/* 图片 */}
-                    <div 
-                      className="md:w-1/3 aspect-video md:aspect-auto overflow-hidden cursor-pointer image-hover"
-                      onClick={() => setSelectedPhoto(photo)}
-                    >
-                      <img
-                        src={photo.imageUrl}
-                        alt={photo.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-
-                    {/* 信息 */}
-                    <div className="flex-1 p-6 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-start justify-between mb-3">
-                          <span className="magazine-tag">
-                            {getCategoryName(photo.category)}
-                          </span>
-                          {canDelete(photo) && (
-                            <button
-                              onClick={() => handleDeletePhoto(photo.id)}
-                              disabled={deleting === photo.id}
-                              className="p-2 text-red-500 hover:bg-red-50 transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                        <h3 className="text-2xl font-bold mb-2 text-[var(--theme-text)]">
-                          {photo.title}
-                        </h3>
-                        {photo.description && (
-                          <p className="text-[var(--theme-text-muted)] line-clamp-2 mb-4">
-                            {photo.description}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-[var(--theme-text-muted)]">
-                        <span>{formatDate(photo.photoDate)}</span>
-                        <div className="flex items-center space-x-1">
-                          <MessageCircle className="w-4 h-4" />
-                          <span>{photo._count.comments} 条评论</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
       {/* 照片详情弹窗 */}
       {selectedPhoto && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90"
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
           onClick={() => setSelectedPhoto(null)}
         >
-          <div 
-            className="relative max-w-5xl w-full max-h-[90vh] overflow-auto bg-white animate-scale-in"
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] overflow-auto bg-white rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 关闭按钮 */}
             <button
               onClick={() => setSelectedPhoto(null)}
-              className="absolute top-4 right-4 z-20 p-2 bg-white/90 hover:bg-white transition-colors"
+              className="absolute top-4 right-4 z-20 p-2 bg-white/90 hover:bg-white rounded-full"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
 
             {/* 删除按钮 */}
@@ -389,7 +326,7 @@ export default function PhotosPage() {
               <button
                 onClick={() => handleDeletePhoto(selectedPhoto.id)}
                 disabled={deleting === selectedPhoto.id}
-                className="absolute top-4 left-4 z-20 p-2 bg-red-500 text-white hover:bg-red-600 transition-colors"
+                className="absolute top-4 left-4 z-20 p-2 bg-red-500 text-white hover:bg-red-600 rounded-full"
               >
                 <Trash2 className="w-5 h-5" />
               </button>
@@ -406,32 +343,31 @@ export default function PhotosPage() {
               </div>
 
               {/* 信息 */}
-              <div className="p-8">
-                <span className="magazine-tag mb-4">
+              <div className="p-6">
+                <span className="tag mb-3 inline-block">
                   {getCategoryName(selectedPhoto.category)}
                 </span>
-                <h2 className="text-3xl font-bold mb-4 text-[var(--theme-text)]">
+                <h2 className="text-xl font-bold mb-3">
                   {selectedPhoto.title}
                 </h2>
                 {selectedPhoto.description && (
-                  <p className="text-[var(--theme-text-muted)] mb-6">
+                  <p className="text-[var(--theme-text-secondary)] mb-4">
                     {selectedPhoto.description}
                   </p>
                 )}
                 {selectedPhoto.thoughts && (
-                  <div className="mb-6">
-                    <h4 className="font-semibold mb-2">摄影心得</h4>
-                    <p className="text-[var(--theme-text-muted)] italic">
+                  <div className="mb-4 p-3 bg-[var(--theme-bg-tertiary)] rounded">
+                    <p className="text-sm text-[var(--theme-text-secondary)] italic">
                       {selectedPhoto.thoughts}
                     </p>
                   </div>
                 )}
-                <div className="flex items-center justify-between text-sm text-[var(--theme-text-muted)] pt-6 border-t border-[var(--theme-border)]">
-                  <span>{formatDate(selectedPhoto.photoDate)}</span>
-                  <div className="flex items-center space-x-1">
-                    <MessageCircle className="w-4 h-4" />
-                    <span>{selectedPhoto._count.comments} 条评论</span>
-                  </div>
+                <div className="flex items-center gap-4 text-sm text-[var(--theme-text-muted)] pt-4 border-t border-[var(--theme-border)]">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    {formatDate(selectedPhoto.photoDate)}
+                  </span>
+                  <span>{selectedPhoto._count.comments} 评论</span>
                 </div>
               </div>
             </div>
