@@ -10,7 +10,7 @@
 | 语言 | TypeScript 5 |
 | UI | React 19, Tailwind CSS 4, 极简黑白灰设计风格 |
 | 认证 | NextAuth.js 4 |
-| 数据库 | Prisma ORM + SQLite |
+| 数据库 | Prisma ORM + PostgreSQL (Vercel Postgres) |
 | 存储 | Vercel Blob |
 | 包管理器 | pnpm |
 
@@ -96,8 +96,9 @@
 
 1. **pnpm exec 问题**: 在脚本中执行 `pnpm exec` 时，确保已正确 cd 到项目根目录
 2. **Next.js 参数**: 使用 `-H` 和 `-p` 短参数而非 `--hostname`/`--port`
-3. **Prisma**: 开发依赖 postinstall 钩子自动生成客户端，勿删除
+3. **Prisma**: 使用 `@prisma/adapter-pg` 适配 Vercel Postgres
 4. **设计风格**: 采用极简黑白灰风格，CSS 变量定义在 `app/globals.css`
+5. **数据库配置**: Vercel 环境需在控制台设置 `DATABASE_URL`
 
 ---
 
