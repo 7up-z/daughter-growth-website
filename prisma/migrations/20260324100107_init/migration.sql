@@ -6,7 +6,7 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "nickname" TEXT,
     "avatar" TEXT,
-    "theme" TEXT NOT NULL DEFAULT 'warm',
+    "theme" TEXT NOT NULL DEFAULT 'playful',
     "role" TEXT NOT NULL DEFAULT 'user',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

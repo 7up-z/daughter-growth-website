@@ -4,7 +4,7 @@ const MAX_SHORT_TEXT_LENGTH = 200
 export const allowedPhotoCategories = ["landscape", "portrait", "life", "travel"] as const
 export type PhotoCategory = (typeof allowedPhotoCategories)[number]
 
-export const allowedThemes = ["warm", "cool", "minimal", "vintage", "modern"] as const
+export const allowedThemes = ["paper", "cinematic", "playful", "future"] as const
 export type UserTheme = (typeof allowedThemes)[number]
 
 export function normalizeString(value: unknown, maxLength = MAX_SHORT_TEXT_LENGTH) {

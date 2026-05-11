@@ -3,17 +3,26 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react"
 import { useSession } from "next-auth/react"
 
-type Theme = "warm" | "cool" | "minimal" | "vintage" | "modern"
+type Theme = "paper" | "cinematic" | "playful" | "future"
 
 interface ThemeContextType {
   theme: Theme
   setTheme: (theme: Theme) => void
 }
 
+const legacyThemeMap: Record<string, Theme> = {
+  warm: "paper",
+  vintage: "paper",
+  minimal: "cinematic",
+  cool: "future",
+  modern: "future",
+}
+
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 const themes: Record<Theme, {
   name: string
+  description: string
   colors: {
     primary: string
     secondary: string
@@ -25,89 +34,84 @@ const themes: Record<Theme, {
     border: string
   }
 }> = {
-  warm: {
-    name: "温馨暖色",
+  paper: {
+    name: "纸质相册",
+    description: "温柔米色、手帐拼贴、像翻开一本家庭相册。",
     colors: {
-      primary: "#E8B4A2",
-      secondary: "#F5E6D3",
-      background: "#FFF8F0",
-      surface: "#FFFFFF",
-      text: "#5C4A3D",
-      textMuted: "#8B7355",
-      accent: "#D4A574",
-      border: "#E8D5C4",
+      primary: "#7B7048",
+      secondary: "#F3E8D3",
+      background: "#FBF4E8",
+      surface: "#FFFDF8",
+      text: "#3F3A22",
+      textMuted: "#8A7C60",
+      accent: "#C86D49",
+      border: "#E7D8C0",
     }
   },
-  cool: {
-    name: "清新冷色",
+  cinematic: {
+    name: "暗金胶片",
+    description: "黑金质感、电影光影、把珍贵瞬间封存成时光胶囊。",
     colors: {
-      primary: "#7BA7BC",
-      secondary: "#E8F4F8",
-      background: "#F0F7FA",
-      surface: "#FFFFFF",
-      text: "#2C3E50",
-      textMuted: "#5D6D7E",
-      accent: "#5DADE2",
-      border: "#D4E6F1",
+      primary: "#C99A55",
+      secondary: "#2A1D11",
+      background: "#080706",
+      surface: "#15110C",
+      text: "#F4E7D0",
+      textMuted: "#B99A72",
+      accent: "#E1B66E",
+      border: "#5A3C1F",
     }
   },
-  minimal: {
-    name: "极简黑白",
+  playful: {
+    name: "亲子拼贴",
+    description: "高对比、贴纸感、适合充满笑声和活力的家庭首页。",
     colors: {
-      primary: "#2C2C2C",
-      secondary: "#F5F5F5",
-      background: "#FAFAFA",
+      primary: "#FF5A4E",
+      secondary: "#FFE45C",
+      background: "#FFF8E8",
       surface: "#FFFFFF",
-      text: "#1A1A1A",
-      textMuted: "#666666",
-      accent: "#000000",
-      border: "#E0E0E0",
+      text: "#080808",
+      textMuted: "#4B463C",
+      accent: "#245BFF",
+      border: "#161616",
     }
   },
-  vintage: {
-    name: "复古胶片",
+  future: {
+    name: "未来胶囊",
+    description: "轻盈玻璃、蓝紫渐变、把成长记忆放进发光胶囊。",
     colors: {
-      primary: "#8B7355",
-      secondary: "#E8DCC4",
-      background: "#F5F0E8",
-      surface: "#FFFCF8",
-      text: "#4A4035",
-      textMuted: "#7A6B5A",
-      accent: "#C4A77D",
-      border: "#D4C4A8",
-    }
-  },
-  modern: {
-    name: "现代时尚",
-    colors: {
-      primary: "#6366F1",
-      secondary: "#E0E7FF",
-      background: "#F8FAFC",
-      surface: "#FFFFFF",
-      text: "#1E293B",
-      textMuted: "#64748B",
-      accent: "#8B5CF6",
-      border: "#E2E8F0",
+      primary: "#4D7CFE",
+      secondary: "#E9ECFF",
+      background: "#F4F7FF",
+      surface: "#FFFFFFCC",
+      text: "#151C48",
+      textMuted: "#6670A0",
+      accent: "#9B6CFF",
+      border: "#D7DEFF",
     }
   }
+}
+
+function normalizeTheme(value: unknown): Theme | null {
+  if (typeof value !== "string") return null
+  if (value in themes) return value as Theme
+  return legacyThemeMap[value] ?? null
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession()
   const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "warm"
+    if (typeof window === "undefined") return "playful"
 
-    const savedTheme = localStorage.getItem("theme") as Theme
-    if (savedTheme && themes[savedTheme]) return savedTheme
-
-    return "warm"
+    const savedTheme = normalizeTheme(localStorage.getItem("theme"))
+    return savedTheme ?? "playful"
   })
 
   useEffect(() => {
     if (!session?.user?.theme) return
 
-    const sessionTheme = session.user.theme as Theme
-    if (!localStorage.getItem("theme") && themes[sessionTheme]) {
+    const sessionTheme = normalizeTheme(session.user.theme)
+    if (!localStorage.getItem("theme") && sessionTheme) {
       const timer = window.setTimeout(() => setThemeState(sessionTheme), 0)
       return () => window.clearTimeout(timer)
     }
@@ -117,19 +121,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const themeConfig = themes[theme]
     const root = document.documentElement
 
-    // 设置CSS变量
     Object.entries(themeConfig.colors).forEach(([key, value]) => {
       root.style.setProperty(`--theme-${key}`, value)
     })
 
-    // 保存到本地存储
     localStorage.setItem("theme", theme)
   }, [theme])
 
   const setTheme = async (newTheme: Theme) => {
     setThemeState(newTheme)
-    
-    // 如果已登录，同步到服务器
+    localStorage.setItem("theme", newTheme)
+
     if (session?.user) {
       try {
         await fetch("/api/user/profile", {
