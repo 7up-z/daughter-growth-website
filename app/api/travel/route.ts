@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { optionalString, parseDate, parseImageUrl, requiredLongText, requiredString } from "@/lib/validation"
 
 // 获取所有旅行日记
 export async function GET(request: Request) {
@@ -14,7 +15,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get("id")
 
-    // 如果提供了ID，返回单个日记详情
     if (id) {
       const entry = await prisma.travelEntry.findUnique({
         where: { id },
@@ -53,7 +53,6 @@ export async function GET(request: Request) {
       return NextResponse.json(entry)
     }
 
-    // 返回所有日记列表
     const entries = await prisma.travelEntry.findMany({
       where: { published: true },
       orderBy: { travelDate: "desc" },
@@ -87,18 +86,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
 
-    const { title, content, location, travelDate, coverImage } = await request.json()
-
-    if (!title || !content || !travelDate) {
-      return NextResponse.json({ error: "请填写所有必填字段" }, { status: 400 })
-    }
+    const body = await request.json()
+    const title = requiredString(body.title, "标题", 100)
+    const content = requiredLongText(body.content, "日记内容")
+    const location = optionalString(body.location, 100)
+    const travelDate = parseDate(body.travelDate, "旅行日期")
+    const coverImage = parseImageUrl(body.coverImage, "封面图片", false)
 
     const entry = await prisma.travelEntry.create({
       data: {
         title,
         content,
         location,
-        travelDate: new Date(travelDate),
+        travelDate,
         coverImage,
         images: "[]",
         authorId: session.user.id,
@@ -108,7 +108,8 @@ export async function POST(request: Request) {
     return NextResponse.json(entry, { status: 201 })
   } catch (error) {
     console.error("添加旅行日记错误:", error)
-    return NextResponse.json({ error: "添加失败" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "添加失败"
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
 
@@ -127,7 +128,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少日记ID" }, { status: 400 })
     }
 
-    // 获取用户角色和日记信息
     const [user, entry] = await Promise.all([
       prisma.user.findUnique({
         where: { id: session.user.id },
@@ -142,7 +142,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "日记不存在" }, { status: 404 })
     }
 
-    // 管理员可以删除任何日记，普通用户只能删除自己的日记
     const isAdmin = user?.role === "admin"
     const isAuthor = entry.authorId === session.user.id
 

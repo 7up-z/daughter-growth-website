@@ -71,7 +71,7 @@ Vercel 会自动检测到代码推送并开始部署。
 
 ```powershell
 # 安装 Vercel CLI
-npm i -g vercel
+pnpm add -g vercel
 
 # 登录
 vercel login
@@ -86,7 +86,7 @@ vercel link
 vercel env pull .env.local
 
 # 运行迁移
-npx prisma migrate deploy
+pnpm prisma migrate deploy
 ```
 
 ### 方法 2：在 Vercel 控制台运行

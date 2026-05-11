@@ -8,6 +8,9 @@ cd "$PROJECT_DIR"
 echo "Installing dependencies..."
 pnpm install
 
+echo "Applying database migrations..."
+pnpm run db:migrate
+
 echo "Building the project..."
 pnpm run build
 

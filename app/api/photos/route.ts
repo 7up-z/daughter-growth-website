@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
+import type { Prisma } from "@prisma/client"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import {
+  allowedPhotoCategories,
+  optionalString,
+  parseDate,
+  parseImageUrl,
+  parsePhotoCategory,
+  parseTags,
+  requiredString,
+} from "@/lib/validation"
 
 // 获取所有照片
 export async function GET(request: Request) {
@@ -14,8 +24,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get("category")
 
-    const where: any = { published: true }
+    const where: Prisma.PhotoEntryWhereInput = { published: true }
     if (category && category !== "all") {
+      if (!allowedPhotoCategories.includes(category as (typeof allowedPhotoCategories)[number])) {
+        return NextResponse.json({ error: "照片分类不正确" }, { status: 400 })
+      }
       where.category = category
     }
 
@@ -52,20 +65,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
 
-    const { title, description, imageUrl, photoDate, category, tags, thoughts } = await request.json()
-
-    if (!title || !imageUrl) {
-      return NextResponse.json({ error: "请填写标题和图片链接" }, { status: 400 })
-    }
+    const body = await request.json()
+    const title = requiredString(body.title, "标题", 100)
+    const description = optionalString(body.description, 1_000)
+    const imageUrl = parseImageUrl(body.imageUrl)
+    const photoDate = parseDate(body.photoDate, "拍摄日期", false)
+    const category = parsePhotoCategory(body.category)
+    const tags = parseTags(body.tags)
+    const thoughts = optionalString(body.thoughts, 5_000)
 
     const photo = await prisma.photoEntry.create({
       data: {
         title,
         description,
         imageUrl,
-        photoDate: photoDate ? new Date(photoDate) : null,
-        category: category || "life",
-        tags: JSON.stringify(tags || []),
+        photoDate,
+        category,
+        tags: JSON.stringify(tags),
         thoughts,
         authorId: session.user.id,
       },
@@ -74,7 +90,8 @@ export async function POST(request: Request) {
     return NextResponse.json(photo, { status: 201 })
   } catch (error) {
     console.error("添加照片错误:", error)
-    return NextResponse.json({ error: "添加失败" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "添加失败"
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
 
@@ -93,7 +110,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少照片ID" }, { status: 400 })
     }
 
-    // 获取用户角色和照片信息
     const [user, photo] = await Promise.all([
       prisma.user.findUnique({
         where: { id: session.user.id },
@@ -108,7 +124,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "照片不存在" }, { status: 404 })
     }
 
-    // 管理员可以删除任何照片，普通用户只能删除自己的照片
     const isAdmin = user?.role === "admin"
     const isAuthor = photo.authorId === session.user.id
 

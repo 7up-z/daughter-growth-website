@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { requiredLongText } from "@/lib/validation"
 
 // 获取所有留言
 export async function GET() {
@@ -44,11 +45,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
 
-    const { content } = await request.json()
-
-    if (!content.trim()) {
-      return NextResponse.json({ error: "留言内容不能为空" }, { status: 400 })
-    }
+    const body = await request.json()
+    const content = requiredLongText(body.content, "留言内容")
 
     const message = await prisma.comment.create({
       data: {
@@ -70,7 +68,8 @@ export async function POST(request: Request) {
     return NextResponse.json(message, { status: 201 })
   } catch (error) {
     console.error("添加留言错误:", error)
-    return NextResponse.json({ error: "添加失败" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "添加失败"
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
 
@@ -89,7 +88,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少留言ID" }, { status: 400 })
     }
 
-    // 获取用户角色和留言信息
     const [user, message] = await Promise.all([
       prisma.user.findUnique({
         where: { id: session.user.id },
@@ -104,7 +102,10 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "留言不存在" }, { status: 404 })
     }
 
-    // 管理员可以删除任何留言，普通用户只能删除自己的留言
+    if (message.travelEntryId || message.photoEntryId) {
+      return NextResponse.json({ error: "该记录不是留言" }, { status: 400 })
+    }
+
     const isAdmin = user?.role === "admin"
     const isAuthor = message.authorId === session.user.id
 

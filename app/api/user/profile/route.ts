@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { optionalString, parseImageUrl, parseTheme } from "@/lib/validation"
 
 // 获取用户信息
 export async function GET() {
@@ -24,6 +25,7 @@ export async function GET() {
         nickname: true,
         avatar: true,
         theme: true,
+        role: true,
         createdAt: true,
       }
     })
@@ -57,14 +59,17 @@ export async function PUT(request: Request) {
       )
     }
 
-    const { nickname, avatar, theme } = await request.json()
+    const body = await request.json()
+    const nickname = optionalString(body.nickname, 50)
+    const avatar = parseImageUrl(body.avatar, "头像", false)
+    const theme = parseTheme(body.theme)
 
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        nickname: nickname || undefined,
-        avatar: avatar || undefined,
-        theme: theme || undefined,
+        nickname,
+        avatar,
+        theme,
       },
       select: {
         id: true,
@@ -73,15 +78,17 @@ export async function PUT(request: Request) {
         nickname: true,
         avatar: true,
         theme: true,
+        role: true,
       }
     })
 
     return NextResponse.json(user)
   } catch (error) {
     console.error("更新用户信息错误:", error)
+    const message = error instanceof Error ? error.message : "更新用户信息失败"
     return NextResponse.json(
-      { error: "更新用户信息失败" },
-      { status: 500 }
+      { error: message },
+      { status: 400 }
     )
   }
 }

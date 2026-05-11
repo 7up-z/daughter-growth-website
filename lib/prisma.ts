@@ -10,10 +10,7 @@ function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL;
 
   if (!connectionString) {
-    console.warn("DATABASE_URL not set, using default SQLite connection");
-    return new PrismaClient({
-      log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-    });
+    throw new Error("DATABASE_URL is required. This project uses PostgreSQL only.");
   }
 
   const pool = new Pool({ connectionString });

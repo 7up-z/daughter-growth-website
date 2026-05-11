@@ -57,7 +57,7 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
     fetchEntry()
   }, [params.id])
 
-  const fetchEntry = async () => {
+  async function fetchEntry() {
     try {
       const response = await fetch(`/api/travel?id=${params.id}`)
       if (response.ok) {

@@ -40,7 +40,7 @@ export default function BirthdayPage() {
     fetchVideos()
   }, [])
 
-  const fetchVideos = async () => {
+  async function fetchVideos() {
     try {
       const response = await fetch("/api/birthday")
       if (response.ok) {

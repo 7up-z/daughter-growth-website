@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { optionalString, parseInteger, requiredString } from "@/lib/validation"
 
 // 获取所有生日视频
 export async function GET() {
@@ -33,15 +34,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
 
-    const { year, title, bvid, description } = await request.json()
+    const body = await request.json()
+    const year = parseInteger(body.year, "年份")
+    const title = requiredString(body.title, "标题", 100)
+    const bvid = requiredString(body.bvid, "Bilibili BVID", 50)
+    const description = optionalString(body.description, 1_000)
 
-    if (!year || !title || !bvid) {
-      return NextResponse.json({ error: "请填写所有必填字段" }, { status: 400 })
+    if (year < 1900 || year > 2200) {
+      return NextResponse.json({ error: "年份不正确" }, { status: 400 })
     }
 
     const video = await prisma.birthdayVideo.create({
       data: {
-        year: parseInt(year),
+        year,
         title,
         bvid,
         description,
@@ -51,7 +56,8 @@ export async function POST(request: Request) {
     return NextResponse.json(video, { status: 201 })
   } catch (error) {
     console.error("添加生日视频错误:", error)
-    return NextResponse.json({ error: "添加失败" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "添加失败"
+    return NextResponse.json({ error: message }, { status: 400 })
   }
 }
 
@@ -70,7 +76,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "缺少视频ID" }, { status: 400 })
     }
 
-    // 检查是否是管理员
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { role: true }

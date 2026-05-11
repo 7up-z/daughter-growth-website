@@ -44,14 +44,14 @@ openssl rand -base64 32
 ### 6. 数据库迁移
 首次部署后，在 Vercel 控制台运行：
 ```bash
-npx prisma migrate deploy
+pnpm prisma migrate deploy
 ```
 
 ## 本地开发
 ```bash
-npm install
-npx prisma generate
-npm run dev
+pnpm install
+pnpm prisma generate
+pnpm run dev
 ```
 
 ## 文件结构

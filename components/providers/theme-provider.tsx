@@ -94,23 +94,26 @@ const themes: Record<Theme, {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession()
-  const [theme, setThemeState] = useState<Theme>("warm")
-  const [mounted, setMounted] = useState(false)
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "warm"
+
+    const savedTheme = localStorage.getItem("theme") as Theme
+    if (savedTheme && themes[savedTheme]) return savedTheme
+
+    return "warm"
+  })
 
   useEffect(() => {
-    setMounted(true)
-    // 从本地存储或session中获取主题
-    const savedTheme = localStorage.getItem("theme") as Theme
-    if (savedTheme && themes[savedTheme]) {
-      setThemeState(savedTheme)
-    } else if (session?.user?.theme) {
-      setThemeState(session.user.theme as Theme)
+    if (!session?.user?.theme) return
+
+    const sessionTheme = session.user.theme as Theme
+    if (!localStorage.getItem("theme") && themes[sessionTheme]) {
+      const timer = window.setTimeout(() => setThemeState(sessionTheme), 0)
+      return () => window.clearTimeout(timer)
     }
   }, [session])
 
   useEffect(() => {
-    if (!mounted) return
-
     const themeConfig = themes[theme]
     const root = document.documentElement
 
@@ -121,7 +124,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     // 保存到本地存储
     localStorage.setItem("theme", theme)
-  }, [theme, mounted])
+  }, [theme])
 
   const setTheme = async (newTheme: Theme) => {
     setThemeState(newTheme)
@@ -138,10 +141,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         console.error("同步主题失败:", error)
       }
     }
-  }
-
-  if (!mounted) {
-    return <>{children}</>
   }
 
   return (

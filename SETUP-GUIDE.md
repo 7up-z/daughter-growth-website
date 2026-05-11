@@ -135,7 +135,7 @@ git push -u origin main
 
 ```powershell
 # 安装 Vercel CLI
-npm i -g vercel
+pnpm add -g vercel
 
 # 登录
 vercel login
@@ -148,7 +148,7 @@ vercel link
 
 # 设置环境变量并运行迁移
 $env:DATABASE_URL="你的数据库连接字符串"
-npx prisma migrate deploy
+pnpm prisma migrate deploy
 ```
 
 ### 方法 2：本地运行迁移
@@ -156,16 +156,16 @@ npx prisma migrate deploy
 cd C:\Users\cntd2\Documents\daughter-growth-website
 
 # 安装依赖
-npm install
+pnpm install
 
 # 设置数据库连接
 $env:DATABASE_URL="你的数据库连接字符串"
 
 # 运行迁移
-npx prisma migrate deploy
+pnpm prisma migrate deploy
 
 # 生成 Prisma Client
-npx prisma generate
+pnpm prisma generate
 ```
 
 ---

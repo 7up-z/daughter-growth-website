@@ -5,7 +5,7 @@
 ### 1. 安装必要工具
 - **Node.js**: https://nodejs.org (建议 v18+)
 - **Git**: https://git-scm.com/downloads
-- **Vercel CLI**: `npm i -g vercel`
+- **Vercel CLI**: `pnpm add -g vercel`
 
 ### 2. 账号准备
 - GitHub 账号: 849000@qq.com
@@ -105,7 +105,7 @@ git push -u origin main
 部署成功后，在 Vercel Console 中运行：
 
 ```bash
-npx prisma migrate deploy
+pnpm prisma migrate deploy
 ```
 
 或在本地运行：
@@ -113,7 +113,7 @@ npx prisma migrate deploy
 ```powershell
 # 设置环境变量后
 $env:DATABASE_URL="你的PostgreSQL连接字符串"
-npx prisma migrate deploy
+pnpm prisma migrate deploy
 ```
 
 ---

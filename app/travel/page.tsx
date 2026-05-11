@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { Plus, ChevronLeft, MapPin, Calendar, MessageCircle, Trash2, User, BookOpen } from "lucide-react"
 
@@ -37,11 +37,7 @@ export default function TravelPage() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    fetchEntries()
-  }, [])
-
-  const fetchEntries = async () => {
+  const fetchEntries = useCallback(async () => {
     try {
       const response = await fetch("/api/travel")
       if (response.ok) {
@@ -53,7 +49,14 @@ export default function TravelPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void fetchEntries()
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [fetchEntries])
 
   const handleDelete = async (id: string) => {
     if (!confirm("确定要删除这篇日记吗？")) return

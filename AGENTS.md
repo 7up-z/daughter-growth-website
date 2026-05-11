@@ -1,6 +1,6 @@
 # 项目概述
 
-**daughter-growth-website** - 基于 Next.js 16.2.1 的全栈成长记录网站，支持用户认证、照片管理、旅行记录、Kindle 桌面工具等功能。
+**daughter-growth-website** - 基于 Next.js 16.2.1 的全栈成长记录网站，支持用户认证、照片管理、旅行记录、生日视频、留言等功能。
 
 ## 技术栈
 
@@ -39,8 +39,6 @@
 │   ├── api/               # API 路由 (auth, birthday, comments, messages, photos, travel, upload, user)
 │   ├── birthday/          # 生日页面
 │   ├── dashboard/         # 仪表盘
-│   ├── kindle-calendar/   # Kindle 日历工具
-│   ├── kindle-clock/      # Kindle 时钟工具
 │   ├── login/             # 登录页
 │   ├── messages/          # 消息页面
 │   ├── photos/            # 照片管理

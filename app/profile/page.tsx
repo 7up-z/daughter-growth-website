@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState, useRef } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { Heart, User, Camera, ChevronLeft, Upload, Save, Palette } from "lucide-react"
 import { useTheme, themes, Theme } from "@/components/providers/theme-provider"
@@ -25,25 +25,18 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
+  const [avatarUploading, setAvatarUploading] = useState(false)
   const [formData, setFormData] = useState({
     nickname: "",
     avatar: "",
   })
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login")
     }
   }, [status, router])
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchProfile()
-    }
-  }, [session])
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const response = await fetch("/api/user/profile")
       if (response.ok) {
@@ -59,22 +52,57 @@ export default function ProfilePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click()
-  }
+  useEffect(() => {
+    if (!session?.user) return
+
+    const timer = window.setTimeout(() => {
+      void fetchProfile()
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [session, fetchProfile])
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // 模拟上传 - 实际项目中应该上传到服务器或云存储
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setFormData({ ...formData, avatar: reader.result as string })
+    if (!file.type.startsWith("image/")) {
+      setMessage("只能上传图片文件")
+      return
     }
-    reader.readAsDataURL(file)
+
+    if (file.size > 10 * 1024 * 1024) {
+      setMessage("图片大小不能超过10MB")
+      return
+    }
+
+    setAvatarUploading(true)
+    setMessage("")
+
+    try {
+      const uploadFormData = new FormData()
+      uploadFormData.append("image", file)
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      })
+      const data = await response.json()
+
+      if (response.ok) {
+        setFormData({ ...formData, avatar: data.url })
+        setMessage("头像上传成功，请保存修改")
+      } else {
+        setMessage(data.error || "头像上传失败")
+      }
+    } catch (error) {
+      console.error("头像上传失败:", error)
+      setMessage("头像上传失败，请重试")
+    } finally {
+      setAvatarUploading(false)
+      e.target.value = ""
+    }
   }
 
   const handleSave = async () => {
@@ -174,8 +202,10 @@ export default function ProfilePage() {
                 {/* 头像上传 */}
                 <div className="relative inline-block mb-4">
                   <button
-                    onClick={handleAvatarClick}
-                    className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-[var(--theme-primary)] hover:opacity-80 transition-opacity"
+                    type="button"
+                    onClick={() => document.getElementById("avatar-upload")?.click()}
+                    disabled={avatarUploading}
+                    className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-[var(--theme-primary)] hover:opacity-80 transition-opacity disabled:opacity-60"
                   >
                     {formData.avatar ? (
                       <img
@@ -193,17 +223,23 @@ export default function ProfilePage() {
                     </div>
                   </button>
                   <input
-                    ref={fileInputRef}
+                    id="avatar-upload"
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
                     className="hidden"
                   />
                   <button
-                    onClick={handleAvatarClick}
-                    className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-[var(--theme-primary)] text-white flex items-center justify-center shadow-lg hover:bg-[var(--theme-accent)] transition-colors"
+                    type="button"
+                    onClick={() => document.getElementById("avatar-upload")?.click()}
+                    disabled={avatarUploading}
+                    className="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-[var(--theme-primary)] text-white flex items-center justify-center shadow-lg hover:bg-[var(--theme-accent)] transition-colors disabled:opacity-60"
                   >
-                    <Upload className="w-5 h-5" />
+                    {avatarUploading ? (
+                      <div className="w-5 h-5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                    ) : (
+                      <Upload className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
 
@@ -313,7 +349,7 @@ export default function ProfilePage() {
               <div className="ml-auto">
                 <button
                   onClick={handleSave}
-                  disabled={saving}
+                  disabled={saving || avatarUploading}
                   className="btn-primary flex items-center space-x-2 disabled:opacity-50"
                 >
                   <Save className="w-5 h-5" />

@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { Camera, Calendar, ChevronLeft, Plus, Grid, List, Trash2, X, User } from "lucide-react"
 
@@ -50,11 +50,7 @@ export default function PhotosPage() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    fetchPhotos()
-  }, [selectedCategory])
-
-  const fetchPhotos = async () => {
+  const fetchPhotos = useCallback(async () => {
     try {
       const url = selectedCategory === "all"
         ? "/api/photos"
@@ -69,7 +65,14 @@ export default function PhotosPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedCategory])
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void fetchPhotos()
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [fetchPhotos])
 
   const handleDeletePhoto = async (id: string) => {
     if (!confirm("确定要删除这张照片吗？")) return
@@ -99,7 +102,7 @@ export default function PhotosPage() {
 
   const canDelete = (photo: PhotoEntry) => {
     if (!session) return false
-    const isAdmin = (session.user as any).role === "admin"
+    const isAdmin = session.user.role === "admin"
     const isAuthor = photo.author.id === session.user.id
     return isAdmin || isAuthor
   }

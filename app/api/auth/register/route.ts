@@ -1,23 +1,30 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
+import { optionalString, requiredString } from "@/lib/validation"
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { username, email, password, nickname } = body
+    const username = requiredString(body.username, "用户名", 50)
+    const email = requiredString(body.email, "邮箱", 254).toLowerCase()
+    const password = requiredString(body.password, "密码", 128)
+    const nickname = optionalString(body.nickname, 50) || username
 
-    console.log("Register request:", { username, email })
-
-    // Validate required fields
-    if (!username || !email || !password) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: "Please fill in all required fields" },
+        { error: "密码至少需要8位" },
         { status: 400 }
       )
     }
 
-    // Check if user exists
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      return NextResponse.json(
+        { error: "邮箱格式不正确" },
+        { status: 400 }
+      )
+    }
+
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -29,25 +36,21 @@ export async function POST(request: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "Username or email already exists" },
+        { error: "用户名或邮箱已存在" },
         { status: 400 }
       )
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
-
-    // 检查是否是第一个用户，如果是则设为管理员
     const userCount = await prisma.user.count()
     const role = userCount === 0 ? "admin" : "user"
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         username,
         email,
         password: hashedPassword,
-        nickname: nickname || username,
+        nickname,
         role,
       },
       select: {
@@ -57,21 +60,21 @@ export async function POST(request: Request) {
         nickname: true,
         avatar: true,
         theme: true,
+        role: true,
         createdAt: true,
       }
     })
 
-    console.log("User created:", user.id)
-
     return NextResponse.json(
-      { message: "Registration successful", user },
+      { message: "注册成功", user },
       { status: 201 }
     )
-  } catch (error: any) {
+  } catch (error) {
     console.error("Register error:", error)
+    const message = error instanceof Error ? error.message : "注册失败，请重试"
     return NextResponse.json(
-      { error: error.message || "Registration failed, please try again" },
-      { status: 500 }
+      { error: message },
+      { status: 400 }
     )
   }
 }

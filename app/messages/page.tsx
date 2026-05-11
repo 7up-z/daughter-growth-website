@@ -37,7 +37,7 @@ export default function MessagesPage() {
     fetchMessages()
   }, [])
 
-  const fetchMessages = async () => {
+  async function fetchMessages() {
     try {
       const response = await fetch("/api/messages")
       if (response.ok) {
@@ -113,7 +113,7 @@ export default function MessagesPage() {
 
   const canDelete = (message: Message) => {
     if (!session) return false
-    const isAdmin = (session.user as any).role === "admin"
+    const isAdmin = session.user.role === "admin"
     const isAuthor = message.author.id === session.user.id
     return isAdmin || isAuthor
   }
