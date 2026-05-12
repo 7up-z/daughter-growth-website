@@ -165,7 +165,6 @@ export default function PhotosPage() {
           <ThemedPageHero
             eyebrow="Photo Gallery"
             title="摄影记录"
-            description="按分类浏览照片，把生活、旅行和人物瞬间收藏成家里的视觉相册。"
             icon={<Camera className="h-4 w-4" />}
           />
 

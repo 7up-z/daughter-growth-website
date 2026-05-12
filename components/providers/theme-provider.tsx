@@ -36,7 +36,7 @@ const themes: Record<Theme, {
 }> = {
   paper: {
     name: "纸质相册",
-    description: "温柔米色、手帐拼贴、像翻开一本家庭相册。",
+    description: "",
     colors: {
       primary: "#7B7048",
       secondary: "#F3E8D3",
@@ -50,7 +50,7 @@ const themes: Record<Theme, {
   },
   cinematic: {
     name: "暗金胶片",
-    description: "黑金质感、电影光影、把珍贵瞬间封存成时光胶囊。",
+    description: "",
     colors: {
       primary: "#C99A55",
       secondary: "#2A1D11",
@@ -64,7 +64,7 @@ const themes: Record<Theme, {
   },
   playful: {
     name: "亲子拼贴",
-    description: "高对比、贴纸感、适合充满笑声和活力的家庭首页。",
+    description: "",
     colors: {
       primary: "#FF5A4E",
       secondary: "#FFE45C",
@@ -78,7 +78,7 @@ const themes: Record<Theme, {
   },
   future: {
     name: "未来胶囊",
-    description: "轻盈玻璃、蓝紫渐变、把成长记忆放进发光胶囊。",
+    description: "",
     colors: {
       primary: "#4D7CFE",
       secondary: "#E9ECFF",

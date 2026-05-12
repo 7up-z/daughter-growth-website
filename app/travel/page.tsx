@@ -116,7 +116,6 @@ export default function TravelPage() {
         <ThemedPageHero
           eyebrow="Travel Journal"
           title="旅行日记"
-          description="按时间记录一家人的足迹，把地点、照片和路上的小故事放在一起。"
           icon={<BookOpen className="h-4 w-4" />}
         />
 

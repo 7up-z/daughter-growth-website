@@ -128,7 +128,6 @@ export default function BirthdayPage() {
         <ThemedPageHero
           eyebrow="Birthday Films"
           title="生日视频"
-          description="把每一年的生日影像按时间收藏，回看成长里最有仪式感的时刻。"
           icon={<Video className="h-4 w-4" />}
         />
 

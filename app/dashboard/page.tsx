@@ -124,11 +124,8 @@ export default function DashboardPage() {
                   Welcome back · {displayName}
                 </p>
                 <h1 className="text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-                  把今天的日子，继续放进家的记忆胶囊。
+                  Family Memories
                 </h1>
-                <p className={`mt-6 max-w-2xl text-lg leading-8 sm:text-xl ${current.secondaryText}`}>
-                  这里就是登录后的首页。旅行、照片、生日影像和留言只保留一组清晰入口，减少重复跳转。
-                </p>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                   <Link href="/travel/new" className={`inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-bold transition ${current.primaryButton}`}>
                     写一篇日记
@@ -144,7 +141,7 @@ export default function DashboardPage() {
               <div className="relative min-h-[360px]">
                 <div className={`absolute right-8 top-4 h-64 w-72 rotate-6 rounded-[2rem] border p-4 ${current.preview}`}>
                   <div className="h-40 rounded-2xl bg-gradient-to-br from-white/80 to-black/10" />
-                  <p className="mt-4 text-center text-sm font-semibold opacity-75">记录日常，留住家的温度</p>
+                  <p className="mt-4 text-center text-sm font-semibold opacity-75">Family</p>
                 </div>
                 <div className={`absolute left-0 top-20 h-52 w-64 -rotate-6 rounded-[2rem] border p-4 ${current.card}`}>
                   <div className="flex h-full items-end rounded-2xl bg-gradient-to-br from-current/10 to-current/25 p-4">
@@ -170,7 +167,7 @@ export default function DashboardPage() {
                   <Palette className="h-4 w-4" />
                   Theme
                 </p>
-                <h2 className="mt-2 text-2xl font-black tracking-tight">沿用首页的四种视觉风格</h2>
+                <h2 className="mt-2 text-2xl font-black tracking-tight">主题</h2>
               </div>
               <Link href="/profile" className={`text-sm font-bold ${current.secondaryText}`}>
                 个人资料与头像设置
@@ -194,7 +191,7 @@ export default function DashboardPage() {
                     <div className="mt-4 flex items-start justify-between gap-3">
                       <div>
                         <h3 className="text-lg font-black">{item.name}</h3>
-                        <p className="mt-1 text-sm leading-6 opacity-70">{item.description}</p>
+                        {item.description && <p className="mt-1 text-sm leading-6 opacity-70">{item.description}</p>}
                       </div>
                       <span className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isActive ? appThemeStyles[themeKey].cardIcon : "bg-current/10"}`}>
                         {isActive && <Check className="h-4 w-4" />}
@@ -219,7 +216,6 @@ export default function DashboardPage() {
                       </span>
                     </div>
                     <h3 className="mt-8 text-2xl font-black">{item.title}</h3>
-                    <p className={`mt-2 text-sm leading-6 ${current.secondaryText}`}>{item.subtitle}</p>
                     <span className="mt-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-current/10 transition group-hover:translate-x-1">
                       <ArrowRight className="h-5 w-5" />
                     </span>
@@ -233,7 +229,7 @@ export default function DashboardPage() {
         <footer className={`my-8 rounded-[1.5rem] border px-6 py-5 text-sm ${current.pickerCard}`}>
           <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
             <span className="font-bold">Family Memories · 成长记录</span>
-            <span className="opacity-60">Since 2014 · 每一个平凡的日子，都值得被记录</span>
+            <span className="opacity-60">Since 2014</span>
           </div>
         </footer>
       </div>

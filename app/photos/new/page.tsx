@@ -90,7 +90,6 @@ export default function NewPhotoPage() {
         <ThemedPageHero
           eyebrow="New Photo"
           title="上传照片"
-          description="补充标题、日期、分类和拍摄心得，让每张照片都带着当时的故事。"
           icon={<Camera className="h-4 w-4" />}
         />
         <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>

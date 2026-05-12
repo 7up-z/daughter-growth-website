@@ -24,8 +24,8 @@ export const themeOrder: Theme[] = ["paper", "cinematic", "playful", "future"]
 export const appThemeStyles: Record<Theme, AppThemeStyle> = {
   paper: {
     eyebrow: "Family Album · 手帐纸感",
-    title: "把每一个平凡的日子，封存为家的记忆胶囊。",
-    subtitle: "米色纸张、植物拓印与照片拼贴，让首页像一本温柔展开的家庭相册。",
+    title: "Family Memories · 成长记录",
+    subtitle: "",
     shell: "bg-[#f6eddf] text-[#3f3a22]",
     header: "border-[#e2d2b7]/80 bg-[#fffaf0]/85 shadow-[0_18px_60px_rgba(104,80,48,0.12)] backdrop-blur-xl",
     hero: "border-[#e7d8c0] bg-[radial-gradient(circle_at_18%_20%,rgba(255,255,255,0.95),transparent_34%),linear-gradient(135deg,#fffaf0_0%,#f0dfc5_100%)] shadow-[0_24px_70px_rgba(100,74,44,0.16)]",
@@ -42,8 +42,8 @@ export const appThemeStyles: Record<Theme, AppThemeStyle> = {
   },
   cinematic: {
     eyebrow: "Time Capsule · 暗金胶片",
-    title: "把珍贵的瞬间，封存在时光胶囊里。",
-    subtitle: "黑金电影感、金属胶囊和暖色高光，适合更具仪式感的家庭记忆入口。",
+    title: "Family Memories · 成长记录",
+    subtitle: "",
     shell: "bg-[#080706] text-[#f4e7d0]",
     header: "border-[#5a3c1f]/80 bg-black/70 shadow-[0_18px_70px_rgba(0,0,0,0.45)] backdrop-blur-xl",
     hero: "border-[#704820] bg-[radial-gradient(circle_at_76%_24%,rgba(225,182,110,0.28),transparent_30%),linear-gradient(135deg,#17110c_0%,#050505_70%)] shadow-[0_30px_90px_rgba(0,0,0,0.55)]",
@@ -60,8 +60,8 @@ export const appThemeStyles: Record<Theme, AppThemeStyle> = {
   },
   playful: {
     eyebrow: "Our Story Every Day · 亲子拼贴",
-    title: "把平凡的日子，装进家族时光胶囊。",
-    subtitle: "粗体标题、贴纸箭头和明快色块，让记录这件事变得像亲子游戏一样有趣。",
+    title: "Family Memories · 成长记录",
+    subtitle: "",
     shell: "bg-[#fff8e8] text-[#080808]",
     header: "border-black/10 bg-[#fffaf0]/92 shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur-xl",
     hero: "border-black bg-[radial-gradient(circle_at_84%_24%,rgba(36,91,255,0.16),transparent_26%),linear-gradient(135deg,#fff9ea_0%,#ffe7cf_100%)] shadow-[10px_10px_0_#111]",
@@ -78,8 +78,8 @@ export const appThemeStyles: Record<Theme, AppThemeStyle> = {
   },
   future: {
     eyebrow: "Memory Capsule · 未来胶囊",
-    title: "把平凡的日子，封存在家族的时光胶囊里。",
-    subtitle: "玻璃拟态、蓝紫渐变与漂浮照片，营造轻盈、梦幻、科技感的成长空间。",
+    title: "Family Memories · 成长记录",
+    subtitle: "",
     shell: "bg-[#f4f7ff] text-[#151c48]",
     header: "border-white/70 bg-white/55 shadow-[0_18px_70px_rgba(92,112,255,0.18)] backdrop-blur-2xl",
     hero: "border-white/80 bg-[radial-gradient(circle_at_76%_20%,rgba(155,108,255,0.24),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.86)_0%,rgba(219,229,255,0.72)_100%)] shadow-[0_30px_90px_rgba(77,124,254,0.20)] backdrop-blur-2xl",

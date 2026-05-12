@@ -104,11 +104,8 @@ export default function LoginPage() {
                 家人专属入口
               </p>
               <h1 className="mt-5 max-w-2xl text-4xl font-black leading-tight tracking-tight sm:text-5xl">
-                登录后继续收藏每一个值得纪念的日子。
+                登录
               </h1>
-              <p className={`mt-5 max-w-xl text-base leading-8 ${current.secondaryText}`}>
-                旅行、照片、生日影像和留言都会保存在同一个家庭记忆空间里。
-              </p>
             </div>
             <div className={`grid gap-3 rounded-[1.5rem] border p-4 ${current.pickerCard}`}>
               {["邀请制访问", "相册权限", "主题随个人资料同步"].map((item) => (

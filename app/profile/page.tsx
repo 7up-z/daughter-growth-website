@@ -157,7 +157,6 @@ export default function ProfilePage() {
         <ThemedPageHero
           eyebrow="Profile"
           title="个人中心"
-          description="管理昵称、头像和主题风格，让每个页面都保持同一套家庭相册氛围。"
           icon={<User className="h-4 w-4" />}
         />
 

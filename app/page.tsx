@@ -87,9 +87,11 @@ export default function HomePage() {
                 <h1 className="text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
                   {current.title}
                 </h1>
-                <p className={`mt-6 max-w-2xl text-lg leading-8 sm:text-xl ${current.secondaryText}`}>
-                  {current.subtitle}
-                </p>
+                {current.subtitle && (
+                  <p className={`mt-6 max-w-2xl text-lg leading-8 sm:text-xl ${current.secondaryText}`}>
+                    {current.subtitle}
+                  </p>
+                )}
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                   <Link href="/login" className={`inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-bold transition ${current.primaryButton}`}>
                     开始记录
@@ -105,7 +107,7 @@ export default function HomePage() {
               <div className="relative min-h-[360px]">
                 <div className={`absolute right-8 top-4 h-64 w-72 rotate-6 rounded-[2rem] border p-4 ${current.preview}`}>
                   <div className="h-40 rounded-2xl bg-gradient-to-br from-white/80 to-black/10" />
-                  <p className="mt-4 text-center text-sm font-semibold opacity-75">记录平凡日常，留住家的温度</p>
+                  <p className="mt-4 text-center text-sm font-semibold opacity-75">Family</p>
                 </div>
                 <div className={`absolute left-0 top-20 h-52 w-64 -rotate-6 rounded-[2rem] border p-4 ${current.card}`}>
                   <div className="flex h-full items-end rounded-2xl bg-gradient-to-br from-current/10 to-current/25 p-4">
@@ -131,11 +133,8 @@ export default function HomePage() {
                   <Palette className="h-4 w-4" />
                   Choose your home theme
                 </p>
-                <h2 className="mt-2 text-2xl font-black tracking-tight">四种首页设计方案，可随时切换</h2>
+                <h2 className="mt-2 text-2xl font-black tracking-tight">主题</h2>
               </div>
-              <p className={`max-w-xl text-sm leading-6 ${current.secondaryText}`}>
-                主题会保存在本机；登录后会同步到个人资料。首页保留一个明确入口，不打断“开始记录”的主流程。
-              </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -155,7 +154,7 @@ export default function HomePage() {
                     <div className="mt-4 flex items-start justify-between gap-3">
                       <div>
                         <h3 className="text-lg font-black">{item.name}</h3>
-                        <p className="mt-1 text-sm leading-6 opacity-70">{item.description}</p>
+                        {item.description && <p className="mt-1 text-sm leading-6 opacity-70">{item.description}</p>}
                       </div>
                       <span className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isActive ? appThemeStyles[themeKey].cardIcon : "bg-current/10"}`}>
                         {isActive && <Check className="h-4 w-4" />}
@@ -180,7 +179,6 @@ export default function HomePage() {
                       </span>
                     </div>
                     <h3 className="mt-8 text-2xl font-black">{item.title}</h3>
-                    <p className={`mt-2 text-sm leading-6 ${current.secondaryText}`}>{item.subtitle}</p>
                     <span className="mt-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-current/10 transition group-hover:translate-x-1">
                       <ArrowRight className="h-5 w-5" />
                     </span>
@@ -193,7 +191,7 @@ export default function HomePage() {
           <section className={`my-8 overflow-hidden rounded-[2rem] border p-8 sm:p-10 ${current.quote}`}>
             <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
               <div>
-                <p className="text-3xl font-black leading-relaxed sm:text-4xl">记忆会褪色，爱与陪伴永不褪色。</p>
+                <p className="text-3xl font-black leading-relaxed sm:text-4xl">Family Memories</p>
                 <p className="mt-4 text-sm font-semibold opacity-70">Family Memories · 成长记录</p>
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">
@@ -220,7 +218,7 @@ export default function HomePage() {
         <footer className={`mb-4 rounded-[1.5rem] border px-6 py-5 text-sm ${current.pickerCard}`}>
           <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
             <span className="font-bold">Family Memories · 成长记录</span>
-            <span className="opacity-60">Since 2014 · 每一个平凡的日子，都值得被记录</span>
+            <span className="opacity-60">Since 2014</span>
           </div>
         </footer>
       </div>

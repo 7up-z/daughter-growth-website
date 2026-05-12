@@ -79,7 +79,6 @@ export default function NewTravelPage() {
         <ThemedPageHero
           eyebrow="New Journal"
           title="写旅行日记"
-          description="记录地点、日期、封面和当天的细节，把一次出发变成可以反复翻看的故事。"
           icon={<BookOpen className="h-4 w-4" />}
         />
         <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>

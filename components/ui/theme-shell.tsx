@@ -88,7 +88,7 @@ export function ThemedPageHero({
 }: {
   eyebrow: string
   title: string
-  description: string
+  description?: string
   icon?: React.ReactNode
 }) {
   const current = useCurrentThemeStyle()
@@ -104,7 +104,9 @@ export function ThemedPageHero({
             {eyebrow}
           </p>
           <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
-          <p className={`mt-3 max-w-2xl text-sm leading-7 sm:text-base ${current.secondaryText}`}>{description}</p>
+          {description && (
+            <p className={`mt-3 max-w-2xl text-sm leading-7 sm:text-base ${current.secondaryText}`}>{description}</p>
+          )}
         </div>
       </div>
     </section>
