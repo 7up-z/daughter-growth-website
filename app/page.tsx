@@ -18,102 +18,7 @@ import {
   UserRound,
 } from "lucide-react"
 import { Theme, themes, useTheme } from "@/components/providers/theme-provider"
-
-type HomeThemeStyle = {
-  eyebrow: string
-  title: string
-  subtitle: string
-  shell: string
-  header: string
-  hero: string
-  heroGlow: string
-  primaryButton: string
-  secondaryText: string
-  card: string
-  cardIcon: string
-  cardNumber: string
-  featureGrid: string
-  quote: string
-  preview: string
-  pickerCard: string
-}
-
-const themeOrder: Theme[] = ["paper", "cinematic", "playful", "future"]
-
-const homeThemeStyles: Record<Theme, HomeThemeStyle> = {
-  paper: {
-    eyebrow: "Family Album · 手帐纸感",
-    title: "把每一个平凡的日子，封存为家的记忆胶囊。",
-    subtitle: "米色纸张、植物拓印与照片拼贴，让首页像一本温柔展开的家庭相册。",
-    shell: "bg-[#f6eddf] text-[#3f3a22]",
-    header: "border-[#e2d2b7]/80 bg-[#fffaf0]/85 shadow-[0_18px_60px_rgba(104,80,48,0.12)] backdrop-blur-xl",
-    hero: "border-[#e7d8c0] bg-[radial-gradient(circle_at_18%_20%,rgba(255,255,255,0.95),transparent_34%),linear-gradient(135deg,#fffaf0_0%,#f0dfc5_100%)] shadow-[0_24px_70px_rgba(100,74,44,0.16)]",
-    heroGlow: "from-[#d6b98d]/40 via-[#fff7e8]/60 to-[#8ea36a]/20",
-    primaryButton: "bg-[#c86d49] text-white shadow-[0_14px_28px_rgba(200,109,73,0.28)] hover:bg-[#b95e3e]",
-    secondaryText: "text-[#766b52]",
-    card: "border-[#e5d6bf] bg-[#fffdf8] shadow-[0_14px_40px_rgba(97,73,45,0.10)] hover:-translate-y-1 hover:shadow-[0_18px_48px_rgba(97,73,45,0.16)]",
-    cardIcon: "bg-[#746b3f] text-[#fff9eb]",
-    cardNumber: "text-[#b58b58]",
-    featureGrid: "bg-[#fff8ed]/80 border-[#eadcc6]",
-    quote: "bg-[#fff7e9] border-[#ead8be] text-[#5b523b]",
-    preview: "bg-[#f8ead6] border-[#dfc9a8]",
-    pickerCard: "bg-[#fffdf8] border-[#dfc9a8]",
-  },
-  cinematic: {
-    eyebrow: "Time Capsule · 暗金胶片",
-    title: "把珍贵的瞬间，封存在时光胶囊里。",
-    subtitle: "黑金电影感、金属胶囊和暖色高光，适合更具仪式感的家庭记忆入口。",
-    shell: "bg-[#080706] text-[#f4e7d0]",
-    header: "border-[#5a3c1f]/80 bg-black/70 shadow-[0_18px_70px_rgba(0,0,0,0.45)] backdrop-blur-xl",
-    hero: "border-[#704820] bg-[radial-gradient(circle_at_76%_24%,rgba(225,182,110,0.28),transparent_30%),linear-gradient(135deg,#17110c_0%,#050505_70%)] shadow-[0_30px_90px_rgba(0,0,0,0.55)]",
-    heroGlow: "from-[#e1b66e]/35 via-transparent to-[#7d4b20]/25",
-    primaryButton: "bg-gradient-to-r from-[#ffe0a3] to-[#b77a33] text-[#120c07] shadow-[0_16px_36px_rgba(201,154,85,0.32)] hover:brightness-110",
-    secondaryText: "text-[#b99a72]",
-    card: "border-[#6b4725] bg-[#14100c] shadow-[0_18px_50px_rgba(0,0,0,0.45)] hover:-translate-y-1 hover:border-[#d29b50]",
-    cardIcon: "bg-[#c99a55] text-[#120c07]",
-    cardNumber: "text-[#d9ab67]",
-    featureGrid: "bg-[#0d0a08]/90 border-[#5a3c1f]",
-    quote: "bg-[#120e0a] border-[#5a3c1f] text-[#e6c896]",
-    preview: "bg-[#1b130b] border-[#704820]",
-    pickerCard: "bg-[#15110c] border-[#5a3c1f]",
-  },
-  playful: {
-    eyebrow: "Our Story Every Day · 亲子拼贴",
-    title: "把平凡的日子，装进家族时光胶囊。",
-    subtitle: "粗体标题、贴纸箭头和明快色块，让记录这件事变得像亲子游戏一样有趣。",
-    shell: "bg-[#fff8e8] text-[#080808]",
-    header: "border-black/10 bg-[#fffaf0]/92 shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur-xl",
-    hero: "border-black bg-[radial-gradient(circle_at_84%_24%,rgba(36,91,255,0.16),transparent_26%),linear-gradient(135deg,#fff9ea_0%,#ffe7cf_100%)] shadow-[10px_10px_0_#111]",
-    heroGlow: "from-[#ff5a4e]/35 via-[#ffe45c]/45 to-[#245bff]/25",
-    primaryButton: "bg-[#ff5a4e] text-black border-2 border-black shadow-[7px_7px_0_#111] hover:-translate-y-0.5 hover:shadow-[9px_9px_0_#111]",
-    secondaryText: "text-[#403b32]",
-    card: "border-2 border-black bg-white shadow-[6px_6px_0_#111] hover:-translate-y-1 hover:shadow-[8px_8px_0_#111]",
-    cardIcon: "bg-black text-white",
-    cardNumber: "text-[#ff5a4e]",
-    featureGrid: "bg-[#fff4d6] border-2 border-black",
-    quote: "bg-[#ffcfda] border-2 border-black text-black",
-    preview: "bg-[#ffe45c] border-2 border-black",
-    pickerCard: "bg-white border-2 border-black",
-  },
-  future: {
-    eyebrow: "Memory Capsule · 未来胶囊",
-    title: "把平凡的日子，封存在家族的时光胶囊里。",
-    subtitle: "玻璃拟态、蓝紫渐变与漂浮照片，营造轻盈、梦幻、科技感的成长空间。",
-    shell: "bg-[#f4f7ff] text-[#151c48]",
-    header: "border-white/70 bg-white/55 shadow-[0_18px_70px_rgba(92,112,255,0.18)] backdrop-blur-2xl",
-    hero: "border-white/80 bg-[radial-gradient(circle_at_76%_20%,rgba(155,108,255,0.24),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.86)_0%,rgba(219,229,255,0.72)_100%)] shadow-[0_30px_90px_rgba(77,124,254,0.20)] backdrop-blur-2xl",
-    heroGlow: "from-[#4d7cfe]/25 via-[#ffffff]/60 to-[#9b6cff]/25",
-    primaryButton: "bg-gradient-to-r from-[#4d7cfe] to-[#9b6cff] text-white shadow-[0_16px_38px_rgba(77,124,254,0.32)] hover:brightness-110",
-    secondaryText: "text-[#6670a0]",
-    card: "border-white/80 bg-white/62 shadow-[0_18px_52px_rgba(77,124,254,0.16)] backdrop-blur-xl hover:-translate-y-1 hover:bg-white/78",
-    cardIcon: "bg-gradient-to-br from-[#4d7cfe] to-[#9b6cff] text-white",
-    cardNumber: "text-[#5877ff]",
-    featureGrid: "bg-white/45 border-white/75 backdrop-blur-xl",
-    quote: "bg-white/58 border-white/80 text-[#48517f] backdrop-blur-xl",
-    preview: "bg-white/45 border-white/75 backdrop-blur-xl",
-    pickerCard: "bg-white/60 border-white/80 backdrop-blur-xl",
-  },
-}
+import { appThemeStyles, themeOrder } from "@/lib/app-theme"
 
 const features = [
   { title: "成长时间线", subtitle: "记录每一步成长", icon: Clock3, href: "/login" },
@@ -125,7 +30,7 @@ const features = [
 ]
 
 function ThemePreview({ themeKey }: { themeKey: Theme }) {
-  const preview = homeThemeStyles[themeKey]
+  const preview = appThemeStyles[themeKey]
 
   return (
     <div className={`relative h-24 overflow-hidden rounded-2xl border ${preview.preview}`}>
@@ -140,7 +45,7 @@ function ThemePreview({ themeKey }: { themeKey: Theme }) {
 
 export default function HomePage() {
   const { theme, setTheme } = useTheme()
-  const current = homeThemeStyles[theme]
+  const current = appThemeStyles[theme]
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${current.shell}`}>
@@ -243,7 +148,7 @@ export default function HomePage() {
                     key={themeKey}
                     type="button"
                     onClick={() => setTheme(themeKey)}
-                    className={`group rounded-[1.5rem] border p-4 text-left transition hover:-translate-y-1 ${homeThemeStyles[themeKey].pickerCard} ${isActive ? "ring-4 ring-current/15" : "opacity-86 hover:opacity-100"}`}
+                    className={`group rounded-[1.5rem] border p-4 text-left transition hover:-translate-y-1 ${appThemeStyles[themeKey].pickerCard} ${isActive ? "ring-4 ring-current/15" : "opacity-86 hover:opacity-100"}`}
                     aria-pressed={isActive}
                   >
                     <ThemePreview themeKey={themeKey} />
@@ -252,7 +157,7 @@ export default function HomePage() {
                         <h3 className="text-lg font-black">{item.name}</h3>
                         <p className="mt-1 text-sm leading-6 opacity-70">{item.description}</p>
                       </div>
-                      <span className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isActive ? homeThemeStyles[themeKey].cardIcon : "bg-current/10"}`}>
+                      <span className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isActive ? appThemeStyles[themeKey].cardIcon : "bg-current/10"}`}>
                         {isActive && <Check className="h-4 w-4" />}
                       </span>
                     </div>

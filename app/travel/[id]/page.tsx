@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import Link from "next/link"
-import { Heart, BookOpen, MapPin, Calendar, ChevronLeft, User, MessageCircle, Send, Trash2, X } from "lucide-react"
+import { BookOpen, MapPin, Calendar, User, MessageCircle, Send, Trash2 } from "lucide-react"
+import { ThemedHeader, ThemedLoading, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 interface TravelEntry {
   id: string
@@ -41,6 +41,7 @@ interface Comment {
 export default function TravelDetailPage({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const current = useCurrentThemeStyle()
   const [entry, setEntry] = useState<TravelEntry | null>(null)
   const [loading, setLoading] = useState(true)
   const [newComment, setNewComment] = useState("")
@@ -136,16 +137,7 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
   }
 
   if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-pulse">
-            <div className="w-16 h-16 rounded-full bg-[var(--theme-primary)] mx-auto mb-4" />
-          </div>
-          <p className="text-[var(--theme-text-muted)]">正在加载...</p>
-        </div>
-      </div>
-    )
+    return <ThemedLoading label="正在加载..." />
   }
 
   if (!session || !entry) {
@@ -155,42 +147,24 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
   const isAuthor = session.user.id === entry.author.id
 
   return (
-    <div className="min-h-screen">
-      {/* 顶部导航 */}
-      <header className="sticky top-0 z-50 glass border-b border-[var(--theme-border)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/travel"
-                className="p-2 rounded-lg hover:bg-[var(--theme-secondary)] transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <Link href="/dashboard" className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full bg-[var(--theme-primary)] flex items-center justify-center">
-                  <Heart className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold hidden sm:block">成长记录</span>
-              </Link>
-            </div>
-            <h1 className="text-lg font-semibold">旅行日记</h1>
-            {isAuthor && (
-              <button
+    <ThemedShell maxWidth="max-w-4xl">
+      <ThemedHeader
+        backHref="/travel"
+        title="旅行日记"
+        action={isAuthor && (
+          <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                className="rounded-full bg-red-500 p-2 text-white transition hover:bg-red-600 disabled:opacity-50"
                 title="删除日记"
               >
                 <Trash2 className="w-5 h-5" />
               </button>
-            )}
-          </div>
-        </div>
-      </header>
+        )}
+      />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <article className="bg-[var(--theme-surface)] rounded-2xl overflow-hidden shadow-lg border border-[var(--theme-border)]">
+      <main className="mt-5">
+        <article className={`overflow-hidden rounded-[2rem] border ${current.card}`}>
           {/* 封面图 */}
           {entry.coverImage ? (
             <div className="aspect-video">
@@ -201,15 +175,15 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
               />
             </div>
           ) : (
-            <div className="aspect-video bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
-              <BookOpen className="w-24 h-24 text-blue-300" />
+            <div className={`flex aspect-video items-center justify-center ${current.preview}`}>
+              <BookOpen className="w-24 h-24 opacity-45" />
             </div>
           )}
 
           {/* 内容 */}
           <div className="p-8">
             {/* 元信息 */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--theme-text-muted)] mb-6">
+            <div className={`mb-6 flex flex-wrap items-center gap-4 text-sm font-bold ${current.secondaryText}`}>
               <div className="flex items-center space-x-1">
                 <Calendar className="w-4 h-4" />
                 <span>{formatDate(entry.travelDate)}</span>
@@ -227,7 +201,7 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
             </div>
 
             {/* 标题 */}
-            <h1 className="text-3xl font-bold mb-6">{entry.title}</h1>
+            <h1 className="mb-6 text-3xl font-black">{entry.title}</h1>
 
             {/* 作者信息 */}
             <div className="flex items-center space-x-3 mb-8 pb-8 border-b border-[var(--theme-border)]">
@@ -238,21 +212,21 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
                   className="w-12 h-12 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-[var(--theme-primary)] flex items-center justify-center">
-                  <span className="text-white font-medium text-lg">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-full ${current.cardIcon}`}>
+                  <span className="text-lg font-black">
                     {(entry.author.nickname || entry.author.username)[0]}
                   </span>
                 </div>
               )}
               <div>
-                <p className="font-semibold">{entry.author.nickname || entry.author.username}</p>
-                <p className="text-sm text-[var(--theme-text-muted)]">日记作者</p>
+                <p className="font-black">{entry.author.nickname || entry.author.username}</p>
+                <p className={`text-sm ${current.secondaryText}`}>日记作者</p>
               </div>
             </div>
 
             {/* 正文 */}
-            <div className="prose prose-lg max-w-none mb-8">
-              <p className="whitespace-pre-wrap text-[var(--theme-text)] leading-relaxed">
+            <div className="mb-8 max-w-none">
+              <p className="whitespace-pre-wrap text-lg leading-8">
                 {entry.content}
               </p>
             </div>
@@ -260,9 +234,9 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
         </article>
 
         {/* 评论区 */}
-        <div className="mt-8 bg-[var(--theme-surface)] rounded-2xl p-6 shadow-lg border border-[var(--theme-border)]">
-          <h2 className="text-xl font-bold mb-6 flex items-center">
-            <MessageCircle className="w-5 h-5 mr-2 text-[var(--theme-primary)]" />
+        <div className={`mt-6 rounded-[2rem] border p-6 ${current.card}`}>
+          <h2 className="mb-6 flex items-center text-xl font-black">
+            <MessageCircle className="mr-2 h-5 w-5" />
             留言 ({entry.comments.length})
           </h2>
 
@@ -276,8 +250,8 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-[var(--theme-primary)] flex items-center justify-center flex-shrink-0">
-                  <User className="w-5 h-5 text-white" />
+                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${current.cardIcon}`}>
+                  <User className="w-5 h-5" />
                 </div>
               )}
               <div className="flex-1">
@@ -285,17 +259,17 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="写下您的留言..."
-                  className="input-field w-full min-h-[80px] resize-none"
+                  className="input min-h-[80px] resize-none"
                   maxLength={500}
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-sm text-[var(--theme-text-muted)]">
+                  <span className={`text-sm font-bold ${current.secondaryText}`}>
                     {newComment.length}/500
                   </span>
                   <button
                     type="submit"
                     disabled={!newComment.trim() || sending}
-                    className="btn-primary flex items-center space-x-2 disabled:opacity-50"
+                    className={`inline-flex items-center gap-2 rounded-full px-5 py-2 font-black transition disabled:opacity-60 ${current.primaryButton}`}
                   >
                     <Send className="w-4 h-4" />
                     <span>{sending ? "发送中..." : "发送留言"}</span>
@@ -310,7 +284,7 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
             {entry.comments.map((comment) => (
               <div
                 key={comment.id}
-                className="flex space-x-4 p-4 rounded-xl bg-[var(--theme-secondary)]"
+                className={`flex space-x-4 rounded-[1.25rem] border border-current/10 p-4 ${current.pickerCard}`}
               >
                 {comment.author.avatar ? (
                   <img
@@ -319,8 +293,8 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
                     className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-[var(--theme-primary)] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-medium">
+                  <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${current.cardIcon}`}>
+                    <span className="font-black">
                       {(comment.author.nickname || comment.author.username)[0]}
                     </span>
                   </div>
@@ -328,20 +302,20 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-semibold">
+                      <span className="font-black">
                         {comment.author.nickname || comment.author.username}
                       </span>
                       {comment.author.id === session.user.id && (
-                        <span className="px-2 py-0.5 rounded-full bg-[var(--theme-primary)] text-white text-xs">
+                        <span className="rounded-full bg-current/10 px-2 py-0.5 text-xs font-black">
                           我
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-[var(--theme-text-muted)]">
+                    <span className={`text-sm ${current.secondaryText}`}>
                       {formatDate(comment.createdAt)}
                     </span>
                   </div>
-                  <p className="text-[var(--theme-text)] whitespace-pre-wrap">
+                  <p className={`whitespace-pre-wrap ${current.secondaryText}`}>
                     {comment.content}
                   </p>
                 </div>
@@ -351,11 +325,11 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
 
           {entry.comments.length === 0 && (
             <div className="text-center py-8">
-              <p className="text-[var(--theme-text-muted)]">还没有留言，来写第一条吧！</p>
+              <p className={current.secondaryText}>还没有留言，来写第一条吧！</p>
             </div>
           )}
         </div>
       </main>
-    </div>
+    </ThemedShell>
   )
 }

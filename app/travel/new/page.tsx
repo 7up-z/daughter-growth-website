@@ -4,12 +4,14 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Heart, BookOpen, ChevronLeft, Save, MapPin, Calendar } from "lucide-react"
+import { BookOpen, Save, MapPin, Calendar } from "lucide-react"
 import { ImageUploader } from "@/components/ui/image-uploader"
+import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 export default function NewTravelPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const current = useCurrentThemeStyle()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
@@ -49,16 +51,7 @@ export default function NewTravelPage() {
   }
 
   if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-pulse">
-            <div className="w-16 h-16 rounded-full bg-[var(--theme-primary)] mx-auto mb-4" />
-          </div>
-          <p className="text-[var(--theme-text-muted)]">正在加载...</p>
-        </div>
-      </div>
-    )
+    return <ThemedLoading label="正在加载..." />
   }
 
   if (!session) {
@@ -66,40 +59,30 @@ export default function NewTravelPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* 顶部导航 */}
-      <header className="sticky top-0 z-50 glass border-b border-[var(--theme-border)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/travel"
-                className="p-2 rounded-lg hover:bg-[var(--theme-secondary)] transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <Link href="/dashboard" className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full bg-[var(--theme-primary)] flex items-center justify-center">
-                  <Heart className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold hidden sm:block">成长记录</span>
-              </Link>
-            </div>
-            <h1 className="text-lg font-semibold">写旅行日记</h1>
-            <button
+    <ThemedShell maxWidth="max-w-4xl">
+      <ThemedHeader
+        backHref="/travel"
+        title="写旅行日记"
+        action={
+          <button
               onClick={handleSubmit}
               disabled={loading || !formData.title.trim() || !formData.content.trim()}
-              className="flex items-center space-x-1 px-4 py-2 rounded-lg bg-[var(--theme-primary)] text-white hover:bg-[var(--theme-accent)] transition-colors disabled:opacity-50"
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition disabled:opacity-60 ${current.primaryButton}`}
             >
               <Save className="w-4 h-4" />
               <span>{loading ? "保存中..." : "发布"}</span>
             </button>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-[var(--theme-surface)] rounded-2xl p-8 shadow-lg border border-[var(--theme-border)]">
+      <main>
+        <ThemedPageHero
+          eyebrow="New Journal"
+          title="写旅行日记"
+          description="记录地点、日期、封面和当天的细节，把一次出发变成可以反复翻看的故事。"
+          icon={<BookOpen className="h-4 w-4" />}
+        />
+        <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* 标题 */}
             <div>
@@ -108,7 +91,7 @@ export default function NewTravelPage() {
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="input-field w-full text-lg"
+                className="input text-lg"
                 placeholder="给这次旅行起个标题..."
                 required
               />
@@ -125,7 +108,7 @@ export default function NewTravelPage() {
                   type="date"
                   value={formData.travelDate}
                   onChange={(e) => setFormData({ ...formData, travelDate: e.target.value })}
-                  className="input-field w-full"
+                  className="input"
                   required
                 />
               </div>
@@ -138,7 +121,7 @@ export default function NewTravelPage() {
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="input-field w-full"
+                  className="input"
                   placeholder="例如：三亚·亚龙湾"
                 />
               </div>
@@ -158,7 +141,7 @@ export default function NewTravelPage() {
               <textarea
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                className="input-field w-full min-h-[300px] resize-none"
+                className="input min-h-[300px] resize-none"
                 placeholder="记录这次旅行的美好回忆..."
                 required
               />
@@ -166,16 +149,13 @@ export default function NewTravelPage() {
 
             {/* 提交按钮 */}
             <div className="flex justify-end space-x-4 pt-4 border-t border-[var(--theme-border)]">
-              <Link
-                href="/travel"
-                className="px-6 py-2 rounded-lg border border-[var(--theme-border)] hover:bg-[var(--theme-secondary)] transition-colors"
-              >
+              <Link href="/travel" className="rounded-full border border-current/20 px-6 py-2 font-black transition hover:bg-current/10">
                 取消
               </Link>
               <button
                 type="submit"
                 disabled={loading || !formData.title.trim() || !formData.content.trim()}
-                className="btn-primary flex items-center space-x-2 disabled:opacity-50"
+                className={`inline-flex items-center gap-2 rounded-full px-6 py-2 font-black transition disabled:opacity-60 ${current.primaryButton}`}
               >
                 <Save className="w-5 h-5" />
                 <span>{loading ? "保存中..." : "发布日记"}</span>
@@ -184,6 +164,6 @@ export default function NewTravelPage() {
           </form>
         </div>
       </main>
-    </div>
+    </ThemedShell>
   )
 }

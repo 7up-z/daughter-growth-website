@@ -4,7 +4,8 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
-import { Plus, ChevronLeft, MapPin, Calendar, MessageCircle, Trash2, User, BookOpen } from "lucide-react"
+import { Plus, MapPin, Calendar, Trash2, User, BookOpen } from "lucide-react"
+import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 interface TravelEntry {
   id: string
@@ -27,6 +28,7 @@ interface TravelEntry {
 export default function TravelPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const current = useCurrentThemeStyle()
   const [entries, setEntries] = useState<TravelEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState<string | null>(null)
@@ -82,24 +84,11 @@ export default function TravelPage() {
   }
 
   if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--theme-text-muted)]">加载中...</p>
-      </div>
-    )
+    return <ThemedLoading />
   }
 
   if (!session) {
     return null
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("zh-CN", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
   }
 
   const formatDateShort = (dateString: string) => {
@@ -112,52 +101,35 @@ export default function TravelPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* 顶部导航 */}
-      <header className="border-b border-[var(--theme-border)]">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="p-2 -ml-2 hover:bg-[var(--theme-bg-tertiary)] rounded transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <Link href="/dashboard" className="text-lg font-semibold">
-                成长记录
-              </Link>
-            </div>
-            <Link
-              href="/travel/new"
-              className="btn btn-primary"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              写日记
-            </Link>
-          </div>
-        </div>
-      </header>
+    <ThemedShell maxWidth="max-w-4xl">
+      <ThemedHeader
+        title="旅行日记"
+        action={
+          <Link href="/travel/new" className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition ${current.primaryButton}`}>
+            <Plus className="h-4 w-4" />
+            写日记
+          </Link>
+        }
+      />
 
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* 页面标题 */}
-        <div className="mb-12">
-          <h1 className="text-2xl font-bold mb-2">旅行日记</h1>
-          <p className="text-[var(--theme-text-secondary)]">
-            记录旅途中的美好时光
-          </p>
-        </div>
+      <main>
+        <ThemedPageHero
+          eyebrow="Travel Journal"
+          title="旅行日记"
+          description="按时间记录一家人的足迹，把地点、照片和路上的小故事放在一起。"
+          icon={<BookOpen className="h-4 w-4" />}
+        />
 
         {/* 日记列表 - 博客风格 */}
-        <div className="space-y-0">
+        <div className="mt-6 space-y-4">
           {entries.map((entry) => (
             <article
               key={entry.id}
-              className="article-card group"
+              className={`group rounded-[1.5rem] border p-5 transition ${current.card}`}
             >
               {/* 日期和操作 */}
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-4 text-sm text-[var(--theme-text-muted)]">
+                <div className={`flex flex-wrap items-center gap-4 text-sm font-bold ${current.secondaryText}`}>
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     {formatDateShort(entry.travelDate)}
@@ -173,7 +145,7 @@ export default function TravelPage() {
                   <button
                     onClick={() => handleDelete(entry.id)}
                     disabled={deleting === entry.id}
-                    className="p-1.5 text-[var(--theme-text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                    className="rounded-full p-1.5 opacity-0 transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -182,13 +154,13 @@ export default function TravelPage() {
 
               {/* 标题 */}
               <Link href={`/travel/${entry.id}`}>
-                <h2 className="text-lg font-semibold mb-2 hover:text-[var(--theme-accent)] transition-colors">
+                <h2 className="mb-2 text-xl font-black transition">
                   {entry.title}
                 </h2>
               </Link>
 
               {/* 摘要 */}
-              <p className="text-[var(--theme-text-secondary)] text-sm mb-3 line-clamp-2">
+              <p className={`mb-4 line-clamp-2 text-sm leading-6 ${current.secondaryText}`}>
                 {entry.content}
               </p>
 
@@ -203,16 +175,16 @@ export default function TravelPage() {
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
-                      <User className="w-3 h-3 text-[var(--theme-text-muted)]" />
+                    <User className="w-3 h-3" />
                     )}
                   </div>
-                  <span className="text-[var(--theme-text-muted)]">
+                  <span className={current.secondaryText}>
                     {entry.author.nickname || entry.author.username}
                   </span>
                 </div>
                 <Link
                   href={`/travel/${entry.id}`}
-                  className="text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors flex items-center gap-1"
+                  className={`flex items-center gap-1 font-bold transition ${current.secondaryText}`}
                 >
                   {entry._count.comments} 条回复
                   <span className="ml-1">→</span>
@@ -224,21 +196,23 @@ export default function TravelPage() {
 
         {/* 空状态 */}
         {entries.length === 0 && (
-          <div className="text-center py-16">
-            <BookOpen className="w-12 h-12 mx-auto text-[var(--theme-text-muted)] mb-4" />
-            <h3 className="text-lg font-medium mb-2">还没有日记</h3>
-            <p className="text-[var(--theme-text-muted)] mb-6">
+          <div className={`mt-6 rounded-[2rem] border py-16 text-center ${current.pickerCard}`}>
+            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
+              <BookOpen className="w-8 h-8" />
+            </div>
+            <h3 className="mb-2 text-lg font-black">还没有日记</h3>
+            <p className={`mb-6 ${current.secondaryText}`}>
               开始记录你们的旅行故事吧
             </p>
             <Link
               href="/travel/new"
-              className="btn btn-primary"
+              className={`inline-flex rounded-full px-5 py-3 font-black transition ${current.primaryButton}`}
             >
               写第一篇日记
             </Link>
           </div>
         )}
       </main>
-    </div>
+    </ThemedShell>
   )
 }

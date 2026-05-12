@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import Link from "next/link"
-import { MessageCircle, Send, ChevronLeft, User, Trash2 } from "lucide-react"
+import { MessageCircle, Send, User, Trash2 } from "lucide-react"
+import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 interface Message {
   id: string
@@ -21,6 +21,7 @@ interface Message {
 export default function MessagesPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const current = useCurrentThemeStyle()
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
   const [loading, setLoading] = useState(true)
@@ -119,11 +120,7 @@ export default function MessagesPage() {
   }
 
   if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--theme-text-muted)]">加载中...</p>
-      </div>
-    )
+    return <ThemedLoading />
   }
 
   if (!session) {
@@ -131,42 +128,22 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* 顶部导航 */}
-      <header className="border-b border-[var(--theme-border)]">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="p-2 -ml-2 hover:bg-[var(--theme-bg-tertiary)] rounded transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <Link href="/dashboard" className="text-lg font-semibold">
-                成长记录
-              </Link>
-            </div>
-            <h1 className="text-lg font-semibold">留言板</h1>
-            <div className="w-16" />
-          </div>
-        </div>
-      </header>
+    <ThemedShell maxWidth="max-w-4xl">
+      <ThemedHeader title="留言板" />
 
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        {/* 页面标题 */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2">留言板</h1>
-          <p className="text-[var(--theme-text-secondary)]">
-            写下您的祝福和感想
-          </p>
-        </div>
+      <main>
+        <ThemedPageHero
+          eyebrow="Family Notes"
+          title="留言板"
+          description="写下今天的祝福、感想和想留给家人的一句话。"
+          icon={<MessageCircle className="h-4 w-4" />}
+        />
 
         {/* 留言输入框 */}
-        <div className="card p-6 mb-8">
+        <div className={`my-6 rounded-[1.5rem] border p-5 sm:p-6 ${current.card}`}>
           <form onSubmit={handleSendMessage}>
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center flex-shrink-0">
+              <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full ${current.cardIcon}`}>
                 {session.user.avatar ? (
                   <img
                     src={session.user.avatar}
@@ -174,7 +151,7 @@ export default function MessagesPage() {
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
-                  <User className="w-5 h-5 text-pink-500" />
+                  <User className="w-5 h-5" />
                 )}
               </div>
               <div className="flex-1">
@@ -186,13 +163,13 @@ export default function MessagesPage() {
                   maxLength={500}
                 />
                 <div className="flex items-center justify-between mt-3">
-                  <span className="text-sm text-[var(--theme-text-muted)]">
+                  <span className={`text-sm font-bold ${current.secondaryText}`}>
                     {newMessage.length}/500
                   </span>
                   <button
                     type="submit"
                     disabled={!newMessage.trim() || sending}
-                    className="btn btn-primary flex items-center gap-2"
+                    className={`inline-flex items-center gap-2 rounded-full px-5 py-2 font-black transition disabled:opacity-60 ${current.primaryButton}`}
                   >
                     <Send className="w-4 h-4" />
                     {sending ? "发送中..." : "发送"}
@@ -206,12 +183,9 @@ export default function MessagesPage() {
         {/* 留言列表 */}
         <div className="space-y-4">
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className="card p-5 group"
-            >
+            <div key={message.id} className={`group rounded-[1.5rem] border p-5 transition ${current.card}`}>
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
+                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full ${current.cardIcon}`}>
                   {message.author.avatar ? (
                     <img
                       src={message.author.avatar}
@@ -219,7 +193,7 @@ export default function MessagesPage() {
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
-                    <span className="text-amber-600 font-medium text-sm">
+                    <span className="text-sm font-black">
                       {(message.author.nickname || message.author.username)[0].toUpperCase()}
                     </span>
                   )}
@@ -227,17 +201,17 @@ export default function MessagesPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">
+                      <span className="font-black">
                         {message.author.nickname || message.author.username}
                       </span>
                       {message.author.id === session.user.id && (
-                        <span className="px-2 py-0.5 rounded-full bg-pink-100 text-pink-600 text-xs">
+                        <span className="rounded-full bg-current/10 px-2 py-0.5 text-xs font-black">
                           我
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-[var(--theme-text-muted)]">
+                      <span className={`text-sm ${current.secondaryText}`}>
                         {formatDate(message.createdAt)}
                       </span>
                       {canDelete(message) && (
@@ -251,7 +225,7 @@ export default function MessagesPage() {
                       )}
                     </div>
                   </div>
-                  <p className="text-[var(--theme-text-secondary)] whitespace-pre-wrap">
+                  <p className={`whitespace-pre-wrap ${current.secondaryText}`}>
                     {message.content}
                   </p>
                 </div>
@@ -262,17 +236,17 @@ export default function MessagesPage() {
 
         {/* 空状态 */}
         {messages.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="w-8 h-8 text-pink-500" />
+          <div className={`rounded-[2rem] border py-16 text-center ${current.pickerCard}`}>
+            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
+              <MessageCircle className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-medium mb-2">还没有留言</h3>
-            <p className="text-[var(--theme-text-muted)]">
+            <h3 className="mb-2 text-lg font-black">还没有留言</h3>
+            <p className={current.secondaryText}>
               成为第一个留言的人吧
             </p>
           </div>
         )}
       </main>
-    </div>
+    </ThemedShell>
   )
 }

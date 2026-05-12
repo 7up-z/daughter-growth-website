@@ -15,12 +15,16 @@ import {
   User,
   LogOut,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Heart,
+  Sparkles
 } from "lucide-react"
+import { ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const current = useCurrentThemeStyle()
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -29,11 +33,7 @@ export default function DashboardPage() {
   }, [status, router])
 
   if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--theme-text-muted)]">加载中...</p>
-      </div>
-    )
+    return <ThemedLoading />
   }
 
   if (!session) {
@@ -74,232 +74,182 @@ export default function DashboardPage() {
     }
   ]
 
-  const colorMap: Record<string, { bg: string, text: string, border: string, hover: string }> = {
-    emerald: { bg: "bg-emerald-500", text: "text-white", border: "border-emerald-200", hover: "hover:border-emerald-300 hover:text-emerald-600" },
-    blue: { bg: "bg-blue-500", text: "text-white", border: "border-blue-200", hover: "hover:border-blue-300 hover:text-blue-600" },
-    amber: { bg: "bg-amber-500", text: "text-white", border: "border-amber-200", hover: "hover:border-amber-300 hover:text-amber-600" },
-    pink: { bg: "bg-pink-500", text: "text-white", border: "border-pink-200", hover: "hover:border-pink-300 hover:text-pink-600" },
-  }
-
   return (
-    <div className="min-h-screen">
-      {/* 简洁顶部导航 */}
-      <header className="border-b border-[var(--theme-border)]">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link href="/dashboard" className="flex items-center">
-              <span className="text-lg font-semibold tracking-tight">
-                成长记录
-              </span>
-            </Link>
+    <ThemedShell>
+      <header className={`sticky top-4 z-30 rounded-[1.75rem] border ${current.header}`}>
+        <div className="flex min-h-16 items-center justify-between gap-4 px-4 py-3 sm:px-5 lg:px-6">
+          <Link href="/dashboard" className="flex items-center gap-3 text-lg font-black tracking-tight">
+            <span className={`flex h-10 w-10 items-center justify-center rounded-full ${current.cardIcon}`}>
+              <Heart className="h-5 w-5" />
+            </span>
+            <span className="hidden sm:inline">Family Memories · 成长记录</span>
+          </Link>
 
-            {/* 导航 */}
-            <nav className="flex items-center gap-6">
+          <nav className="hidden items-center gap-5 text-sm font-bold lg:flex">
               {navItems.map((item) => {
-                const colors = colorMap[item.color]
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`text-sm text-[var(--theme-text-secondary)] hover:${item.color === 'emerald' ? 'text-emerald-600' : item.color === 'blue' ? 'text-blue-600' : item.color === 'amber' ? 'text-amber-600' : 'text-pink-600'} transition-colors`}
+                    className={`transition hover:opacity-100 ${current.secondaryText}`}
                   >
                     {item.label}
                   </Link>
                 )
               })}
-            </nav>
+          </nav>
 
-            {/* 用户信息 */}
-            <div className="flex items-center gap-4">
-              <Link
-                href="/profile"
-                className="flex items-center gap-2 text-sm"
-              >
-                <span className="text-[var(--theme-text-secondary)]">
-                  {session.user.nickname || session.user.username}
-                </span>
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
-                  {session.user.avatar ? (
-                    <img
-                      src={session.user.avatar}
-                      alt=""
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-4 h-4 text-amber-600" />
-                  )}
-                </div>
-              </Link>
-              <button
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                className="p-2 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
-                title="退出登录"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="flex items-center gap-3">
+            <Link href="/profile" className={`flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-bold ${current.pickerCard}`}>
+              <span className="hidden sm:inline">{session.user.nickname || session.user.username}</span>
+              <span className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full ${current.cardIcon}`}>
+                {session.user.avatar ? (
+                  <img src={session.user.avatar} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+              </span>
+            </Link>
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-current/10 transition hover:bg-current/15"
+              title="退出登录"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </header>
 
-      {/* 主内容 */}
       <main>
-        {/* Hero 区域 */}
-        <section className="py-16 relative overflow-hidden">
-          {/* 装饰背景 */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-10 right-20 w-56 h-56 bg-gradient-to-br from-emerald-100/40 to-teal-100/30 rounded-full blur-3xl" />
-            <div className="absolute bottom-10 left-10 w-40 h-40 bg-gradient-to-tr from-amber-100/40 to-orange-100/30 rounded-full blur-3xl" />
-          </div>
-          
-          <div className="max-w-5xl mx-auto px-6 relative">
-            <div className="max-w-2xl">
-              <p className="text-sm font-medium text-amber-600 mb-3 tracking-wide">
-                Welcome
-              </p>
-              <h1 className="text-3xl lg:text-4xl font-bold mb-4">
-                {session.user.nickname || session.user.username}
-              </h1>
-              <p className="text-[var(--theme-text-secondary)] text-lg leading-relaxed">
-                记录成长的每一个瞬间，珍藏家庭最美好的回忆。
-              </p>
-            </div>
-          </div>
-        </section>
+        <ThemedPageHero
+          eyebrow="Welcome"
+          title={`${session.user.nickname || session.user.username}，今天想记录什么？`}
+          description="旅行、照片、生日影像和留言都在这里。首页的主题风格会延续到每一个记录入口。"
+          icon={<Sparkles className="h-4 w-4" />}
+        />
 
-        {/* 快捷入口 */}
-        <section className="py-10 border-t border-[var(--theme-border)] bg-gradient-to-b from-white to-gray-50/50">
-          <div className="max-w-5xl mx-auto px-6">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl font-semibold">快速入口</h2>
-              <Link href="/profile" className="text-sm text-[var(--theme-text-secondary)] hover:text-[var(--theme-text)]">
+        <section className={`mt-6 rounded-[2rem] border p-5 sm:p-6 ${current.featureGrid}`}>
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-black">快速入口</h2>
+              <Link href="/profile" className={`text-sm font-bold ${current.secondaryText}`}>
                 个人设置
               </Link>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* 写日记 */}
+            <div className="grid gap-4 md:grid-cols-3">
               <Link
                 href="/travel/new"
-                className="card p-6 hover:border-emerald-200 hover:shadow-lg transition-all group"
+                className={`group rounded-[1.5rem] border p-6 transition ${current.card}`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-medium mb-1 group-hover:text-emerald-600 transition-colors">写日记</h3>
-                    <p className="text-sm text-[var(--theme-text-muted)]">
+                    <h3 className="mb-1 text-lg font-black">写日记</h3>
+                    <p className={`text-sm ${current.secondaryText}`}>
                       记录今天的美好
                     </p>
                   </div>
-                  <Plus className="w-5 h-5 text-[var(--theme-text-muted)] group-hover:text-emerald-500 transition-colors" />
+                  <span className={`flex h-10 w-10 items-center justify-center rounded-full ${current.cardIcon}`}>
+                    <Plus className="h-5 w-5" />
+                  </span>
                 </div>
               </Link>
 
-              {/* 上传照片 */}
               <Link
                 href="/photos/new"
-                className="card p-6 hover:border-blue-200 hover:shadow-lg transition-all group"
+                className={`group rounded-[1.5rem] border p-6 transition ${current.card}`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-medium mb-1 group-hover:text-blue-600 transition-colors">上传照片</h3>
-                    <p className="text-sm text-[var(--theme-text-muted)]">
+                    <h3 className="mb-1 text-lg font-black">上传照片</h3>
+                    <p className={`text-sm ${current.secondaryText}`}>
                       珍藏美好瞬间
                     </p>
                   </div>
-                  <Plus className="w-5 h-5 text-[var(--theme-text-muted)] group-hover:text-blue-500 transition-colors" />
+                  <span className={`flex h-10 w-10 items-center justify-center rounded-full ${current.cardIcon}`}>
+                    <Plus className="h-5 w-5" />
+                  </span>
                 </div>
               </Link>
 
-              {/* 查看留言 */}
               <Link
                 href="/messages"
-                className="card p-6 hover:border-pink-200 hover:shadow-lg transition-all group"
+                className={`group rounded-[1.5rem] border p-6 transition ${current.card}`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-medium mb-1 group-hover:text-pink-600 transition-colors">留言板</h3>
-                    <p className="text-sm text-[var(--theme-text-muted)]">
+                    <h3 className="mb-1 text-lg font-black">留言板</h3>
+                    <p className={`text-sm ${current.secondaryText}`}>
                       写下想说的话
                     </p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-[var(--theme-text-muted)] group-hover:text-pink-500 transition-colors" />
+                  <span className={`flex h-10 w-10 items-center justify-center rounded-full ${current.cardIcon}`}>
+                    <ArrowRight className="h-5 w-5" />
+                  </span>
                 </div>
               </Link>
             </div>
-          </div>
         </section>
 
-        {/* 功能模块 */}
-        <section className="py-12 border-t border-[var(--theme-border)]">
-          <div className="max-w-5xl mx-auto px-6">
-            <h2 className="text-xl font-semibold mb-8">功能模块</h2>
+        <section className="py-8">
+            <h2 className="mb-6 text-xl font-black">功能模块</h2>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid gap-4 md:grid-cols-3">
               {features.map((feature) => {
-                const colors = colorMap[feature.color]
                 return (
                   <Link
                     key={feature.href}
                     href={feature.href}
-                    className="group"
+                    className={`group rounded-[1.5rem] border p-6 transition ${current.card}`}
                   >
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className={`w-12 h-12 rounded-xl ${colors.bg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        <feature.icon className={`w-6 h-6 ${colors.text}`} />
+                    <div className="mb-4 flex items-center gap-4">
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-2xl transition group-hover:scale-110 ${current.cardIcon}`}>
+                        <feature.icon className="h-6 w-6" />
                       </div>
-                      <h3 className={`font-medium group-hover:text-${feature.color}-600 transition-colors`}>
+                      <h3 className="font-black">
                         {feature.title}
                       </h3>
                     </div>
-                    <p className="text-sm text-[var(--theme-text-muted)] mb-2">
+                    <p className={`mb-3 text-sm ${current.secondaryText}`}>
                       {feature.subtitle}
                     </p>
-                    <span className="text-xs text-[var(--theme-text-muted)]">
+                    <span className={`text-xs font-bold ${current.secondaryText}`}>
                       {feature.count} 条记录
                     </span>
                   </Link>
                 )
               })}
             </div>
-          </div>
         </section>
 
-        {/* 导航快捷 */}
-        <section className="py-12 border-t border-[var(--theme-border)] bg-gradient-to-r from-amber-50 via-orange-50 to-rose-50">
-          <div className="max-w-5xl mx-auto px-6">
-            <div className="grid md:grid-cols-4 gap-4">
+        <section className={`rounded-[2rem] border p-5 sm:p-6 ${current.quote}`}>
+            <div className="grid gap-4 md:grid-cols-4">
               {navItems.map((item) => {
-                const colors = colorMap[item.color]
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 p-4 bg-white rounded-xl border border-[var(--theme-border)] hover:${colors.border} hover:shadow-md transition-all group`}
+                    className="group flex items-center gap-3 rounded-2xl border border-current/15 bg-current/5 p-4 transition hover:bg-current/10"
                   >
-                    <div className={`w-10 h-10 rounded-lg ${colors.bg} flex items-center justify-center`}>
-                      <item.icon className={`w-5 h-5 ${colors.text}`} />
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${current.cardIcon}`}>
+                      <item.icon className="h-5 w-5" />
                     </div>
-                    <span className="font-medium group-hover:text-[var(--theme-text)] transition-colors">
+                    <span className="font-black">
                       {item.label}
                     </span>
                   </Link>
                 )
               })}
             </div>
-          </div>
         </section>
       </main>
 
-      {/* 简洁页脚 */}
-      <footer className="border-t border-[var(--theme-border)] py-8">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex justify-between items-center text-sm text-[var(--theme-text-muted)]">
+      <footer className={`mt-8 rounded-[1.5rem] border px-6 py-5 text-sm ${current.pickerCard}`}>
+          <div className={`flex justify-between gap-2 ${current.secondaryText}`}>
             <span>成长记录</span>
             <span>Since 2014</span>
           </div>
-        </div>
       </footer>
-    </div>
+    </ThemedShell>
   )
 }

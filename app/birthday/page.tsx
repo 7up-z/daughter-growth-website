@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import Link from "next/link"
-import { Video, Calendar, ChevronLeft, Play, Plus, Trash2, X } from "lucide-react"
+import { Video, Calendar, Play, Plus, Trash2, X } from "lucide-react"
+import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 interface BirthdayVideo {
   id: string
@@ -18,6 +18,7 @@ interface BirthdayVideo {
 export default function BirthdayPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const current = useCurrentThemeStyle()
   const [videos, setVideos] = useState<BirthdayVideo[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedVideo, setSelectedVideo] = useState<BirthdayVideo | null>(null)
@@ -104,11 +105,7 @@ export default function BirthdayPage() {
   }
 
   if (status === "loading" || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--theme-text-muted)]">加载中...</p>
-      </div>
-    )
+    return <ThemedLoading />
   }
 
   if (!session) {
@@ -116,61 +113,44 @@ export default function BirthdayPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* 顶部导航 */}
-      <header className="border-b border-[var(--theme-border)]">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="p-2 -ml-2 hover:bg-[var(--theme-bg-tertiary)] rounded transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-              <Link href="/dashboard" className="text-lg font-semibold">
-                成长记录
-              </Link>
-            </div>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="btn btn-primary"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              添加
-            </button>
-          </div>
-        </div>
-      </header>
+    <ThemedShell>
+      <ThemedHeader
+        title="生日视频"
+        action={
+          <button onClick={() => setShowAddModal(true)} className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition ${current.primaryButton}`}>
+            <Plus className="h-4 w-4" />
+            添加
+          </button>
+        }
+      />
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        {/* 页面标题 */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2">生日视频</h1>
-          <p className="text-[var(--theme-text-secondary)]">
-            记录每一年的成长时刻
-          </p>
-        </div>
+      <main>
+        <ThemedPageHero
+          eyebrow="Birthday Films"
+          title="生日视频"
+          description="把每一年的生日影像按时间收藏，回看成长里最有仪式感的时刻。"
+          icon={<Video className="h-4 w-4" />}
+        />
 
         {/* 视频列表 */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {videos.map((video) => (
             <article
               key={video.id}
-              className="card overflow-hidden group"
+              className={`group overflow-hidden rounded-[1.5rem] border transition ${current.card}`}
             >
               {/* 视频缩略图 */}
               <div
-                className="aspect-video bg-gradient-to-br from-amber-100 to-orange-100 relative cursor-pointer"
+                className={`relative aspect-video cursor-pointer ${current.preview}`}
                 onClick={() => setSelectedVideo(video)}
               >
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                    <Play className="w-7 h-7 text-amber-500 ml-0.5" />
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform group-hover:scale-110 ${current.cardIcon}`}>
+                    <Play className="ml-0.5 h-7 w-7" />
                   </div>
                 </div>
                 <div className="absolute top-3 left-3">
-                  <span className="px-2 py-1 rounded bg-white/90 text-xs font-medium text-amber-600">
+                  <span className={`rounded-full border px-3 py-1 text-xs font-black ${current.pickerCard}`}>
                     {video.year}年
                   </span>
                 </div>
@@ -181,7 +161,7 @@ export default function BirthdayPage() {
                     handleDeleteVideo(video.id)
                   }}
                   disabled={deleting === video.id}
-                  className="absolute top-3 right-3 p-1.5 rounded-full bg-white/90 text-gray-500 hover:bg-red-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
+                  className="absolute right-3 top-3 rounded-full bg-white/90 p-1.5 text-gray-500 opacity-0 transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -189,13 +169,13 @@ export default function BirthdayPage() {
 
               {/* 视频信息 */}
               <div className="p-4">
-                <div className="flex items-center gap-2 text-xs text-[var(--theme-text-muted)] mb-2">
+                <div className={`mb-2 flex items-center gap-2 text-xs font-bold ${current.secondaryText}`}>
                   <Calendar className="w-3.5 h-3.5" />
                   <span>{video.year}岁生日</span>
                 </div>
-                <h3 className="font-medium mb-1">{video.title}</h3>
+                <h3 className="mb-1 font-black">{video.title}</h3>
                 {video.description && (
-                  <p className="text-sm text-[var(--theme-text-muted)] line-clamp-2">
+                  <p className={`line-clamp-2 text-sm ${current.secondaryText}`}>
                     {video.description}
                   </p>
                 )}
@@ -206,17 +186,17 @@ export default function BirthdayPage() {
 
         {/* 空状态 */}
         {videos.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center mx-auto mb-4">
-              <Video className="w-8 h-8 text-amber-500" />
+          <div className={`mt-6 rounded-[2rem] border py-16 text-center ${current.pickerCard}`}>
+            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
+              <Video className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-medium mb-2">还没有视频</h3>
-            <p className="text-[var(--theme-text-muted)] mb-6">
+            <h3 className="mb-2 text-lg font-black">还没有视频</h3>
+            <p className={`mb-6 ${current.secondaryText}`}>
               添加第一个生日视频吧
             </p>
             <button
               onClick={() => setShowAddModal(true)}
-              className="btn btn-primary"
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-3 font-black transition ${current.primaryButton}`}
             >
               <Plus className="w-4 h-4 mr-1" />
               添加视频
@@ -228,12 +208,12 @@ export default function BirthdayPage() {
       {/* 添加视频弹窗 */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md border border-[var(--theme-border)]">
+          <div className={`w-full max-w-md rounded-[1.5rem] border p-6 ${current.pickerCard}`}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">添加生日视频</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="p-2 hover:bg-[var(--theme-bg-tertiary)] rounded-lg transition-colors"
+                className="rounded-full bg-current/10 p-2 transition-colors hover:bg-current/15"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -290,13 +270,13 @@ export default function BirthdayPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="btn btn-secondary flex-1"
+                  className="flex-1 rounded-full border border-current/20 px-4 py-2 font-black transition hover:bg-current/10"
                 >
                   取消
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary flex-1"
+                  className={`flex-1 rounded-full px-4 py-2 font-black transition ${current.primaryButton}`}
                 >
                   添加
                 </button>
@@ -313,7 +293,7 @@ export default function BirthdayPage() {
           onClick={() => setSelectedVideo(null)}
         >
           <div
-            className="bg-white rounded-xl overflow-hidden max-w-3xl w-full border border-[var(--theme-border)]"
+            className={`w-full max-w-3xl overflow-hidden rounded-[1.5rem] border ${current.pickerCard}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* 关闭按钮 */}
@@ -349,6 +329,6 @@ export default function BirthdayPage() {
           </div>
         </div>
       )}
-    </div>
+    </ThemedShell>
   )
 }
