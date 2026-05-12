@@ -19,6 +19,7 @@ const legacyThemeMap: Record<string, Theme> = {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const themeStyleVersion = "family-paper-a-v1"
 
 const themes: Record<Theme, {
   name: string
@@ -101,10 +102,16 @@ function normalizeTheme(value: unknown): Theme | null {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession()
   const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "playful"
+    if (typeof window === "undefined") return "paper"
+
+    if (localStorage.getItem("theme-style-version") !== themeStyleVersion) {
+      localStorage.setItem("theme-style-version", themeStyleVersion)
+      localStorage.setItem("theme", "paper")
+      return "paper"
+    }
 
     const savedTheme = normalizeTheme(localStorage.getItem("theme"))
-    return savedTheme ?? "playful"
+    return savedTheme ?? "paper"
   })
 
   useEffect(() => {

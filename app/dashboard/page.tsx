@@ -4,23 +4,23 @@ export const dynamic = "force-dynamic"
 
 import { useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import {
   ArrowRight,
   Cake,
   Camera,
-  Check,
   Heart,
   LogOut,
   Map,
-  Palette,
   Sparkles,
   User,
 } from "lucide-react"
-import { Theme, themes, useTheme } from "@/components/providers/theme-provider"
+import { useTheme } from "@/components/providers/theme-provider"
 import { ThemedLoading } from "@/components/ui/theme-shell"
-import { appThemeStyles, themeOrder } from "@/lib/app-theme"
+import { appThemeStyles } from "@/lib/app-theme"
+import { CompactThemeSelector } from "@/components/ui/compact-theme-selector"
 
 const features = [
   { title: "旅行日记", subtitle: "记录一家人的足迹", icon: Map, href: "/travel" },
@@ -33,23 +33,10 @@ const navItems = [
   { title: "留言", href: "/messages" },
 ]
 
-function ThemePreview({ themeKey }: { themeKey: Theme }) {
-  const preview = appThemeStyles[themeKey]
-
-  return (
-    <div className={`relative h-20 overflow-hidden rounded-2xl border ${preview.preview}`}>
-      <div className={`absolute inset-0 bg-gradient-to-br ${preview.heroGlow}`} />
-      <div className="absolute left-4 top-4 h-9 w-14 rotate-[-8deg] rounded-lg bg-white/75 shadow-lg" />
-      <div className="absolute right-5 top-4 h-10 w-16 rotate-[8deg] rounded-lg bg-black/15 shadow-lg" />
-      <div className="absolute bottom-3 left-5 h-2 w-20 rounded-full bg-current/30" />
-    </div>
-  )
-}
-
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const { theme, setTheme } = useTheme()
+  const { theme } = useTheme()
   const current = appThemeStyles[theme]
   const displayName = session?.user.nickname || session?.user.username || "家人"
 
@@ -137,68 +124,35 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="relative min-h-[360px]">
-                <div className={`absolute right-8 top-4 h-64 w-72 rotate-6 rounded-[2rem] border p-4 ${current.preview}`}>
-                  <div className="h-40 rounded-2xl bg-gradient-to-br from-white/80 to-black/10" />
-                  <p className="mt-4 text-center text-sm font-semibold opacity-75">Family</p>
+              <div className="relative min-h-[390px]">
+                <div className={`absolute right-0 top-0 h-72 w-[25rem] rotate-3 overflow-hidden rounded-[2rem] border p-3 ${current.preview}`}>
+                  <Image
+                    src="/images/family-watercolor-hero.png"
+                    alt=""
+                    width={1200}
+                    height={750}
+                    className="h-full w-full rounded-[1.5rem] object-cover object-center"
+                    priority
+                  />
                 </div>
-                <div className={`absolute left-0 top-20 h-52 w-64 -rotate-6 rounded-[2rem] border p-4 ${current.card}`}>
-                  <div className="flex h-full items-end rounded-2xl bg-gradient-to-br from-current/10 to-current/25 p-4">
-                    <span className="rounded-full bg-white/70 px-3 py-1 text-xs font-bold text-black/70">Today</span>
-                  </div>
+                <div className={`absolute left-0 top-24 h-52 w-64 -rotate-6 overflow-hidden rounded-[2rem] border p-3 ${current.card}`}>
+                  <Image
+                    src="/images/family-watercolor-hero.png"
+                    alt=""
+                    width={1200}
+                    height={750}
+                    className="h-full w-full rounded-[1.5rem] object-cover object-left"
+                  />
                 </div>
                 <div className={`absolute bottom-0 right-0 h-44 w-56 rotate-3 rounded-[2rem] border p-4 ${current.card}`}>
-                  <div className="grid h-full grid-cols-2 gap-2">
-                    <div className="rounded-2xl bg-current/10" />
-                    <div className="rounded-2xl bg-current/20" />
-                    <div className="rounded-2xl bg-current/20" />
-                    <div className="rounded-2xl bg-current/10" />
+                  <div className="grid h-full grid-cols-2 gap-2 overflow-hidden rounded-2xl">
+                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[70%_45%]" />
+                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[20%_55%]" />
+                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[83%_70%]" />
+                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[45%_70%]" />
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-
-          <section className="py-10">
-            <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-              <div>
-                <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.2em] opacity-60">
-                  <Palette className="h-4 w-4" />
-                  Theme
-                </p>
-                <h2 className="mt-2 text-2xl font-black tracking-tight">主题</h2>
-              </div>
-              <Link href="/profile" className={`text-sm font-bold ${current.secondaryText}`}>
-                个人资料与头像设置
-              </Link>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {themeOrder.map((themeKey) => {
-                const item = themes[themeKey]
-                const isActive = theme === themeKey
-
-                return (
-                  <button
-                    key={themeKey}
-                    type="button"
-                    onClick={() => setTheme(themeKey)}
-                    className={`group rounded-[1.5rem] border p-4 text-left transition hover:-translate-y-1 ${appThemeStyles[themeKey].pickerCard} ${isActive ? "ring-4 ring-current/15" : "opacity-86 hover:opacity-100"}`}
-                    aria-pressed={isActive}
-                  >
-                    <ThemePreview themeKey={themeKey} />
-                    <div className="mt-4 flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-black">{item.name}</h3>
-                        {item.description && <p className="mt-1 text-sm leading-6 opacity-70">{item.description}</p>}
-                      </div>
-                      <span className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${isActive ? appThemeStyles[themeKey].cardIcon : "bg-current/10"}`}>
-                        {isActive && <Check className="h-4 w-4" />}
-                      </span>
-                    </div>
-                  </button>
-                )
-              })}
             </div>
           </section>
 
@@ -223,6 +177,8 @@ export default function DashboardPage() {
               })}
             </div>
           </section>
+
+          <CompactThemeSelector />
         </main>
 
         <footer className={`my-8 rounded-[1.5rem] border px-6 py-5 text-sm ${current.pickerCard}`}>
