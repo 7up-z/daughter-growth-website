@@ -28,6 +28,11 @@ const features = [
   { title: "生日影像", subtitle: "珍藏每一次生日", icon: Cake, href: "/birthday" },
 ]
 
+const navItems = [
+  ...features,
+  { title: "留言", href: "/messages" },
+]
+
 function ThemePreview({ themeKey }: { themeKey: Theme }) {
   const preview = appThemeStyles[themeKey]
 
@@ -75,7 +80,7 @@ export default function DashboardPage() {
             </Link>
 
             <nav className="hidden items-center gap-5 text-sm font-medium xl:flex">
-              {features.slice(0, 4).map((item) => (
+              {navItems.map((item) => (
                 <Link key={item.title} href={item.href} className="opacity-80 transition hover:opacity-100">
                   {item.title}
                 </Link>

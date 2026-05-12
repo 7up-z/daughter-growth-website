@@ -25,6 +25,11 @@ const features = [
   { title: "旅行地图", subtitle: "收藏一家人的足迹", icon: Map, href: "/login" },
 ]
 
+const navItems = [
+  ...features,
+  { title: "留言", href: "/login" },
+]
+
 function ThemePreview({ themeKey }: { themeKey: Theme }) {
   const preview = appThemeStyles[themeKey]
 
@@ -55,7 +60,7 @@ export default function HomePage() {
               <span>Family Memories · 成长记录</span>
             </Link>
             <nav className="hidden items-center gap-5 text-sm font-medium xl:flex">
-              {features.map((item) => (
+              {navItems.map((item) => (
                 <Link key={item.title} href={item.href} className="opacity-80 transition hover:opacity-100">
                   {item.title}
                 </Link>
