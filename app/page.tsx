@@ -12,7 +12,6 @@ import {
   Heart,
   LockKeyhole,
   Map,
-  MessageSquare,
   Palette,
   Sparkles,
   UserRound,
@@ -24,9 +23,6 @@ const features = [
   { title: "成长时间线", subtitle: "记录每一步成长", icon: Clock3, href: "/login" },
   { title: "生日影像", subtitle: "珍藏每一次生日", icon: Cake, href: "/login" },
   { title: "旅行地图", subtitle: "收藏一家人的足迹", icon: Map, href: "/login" },
-  { title: "摄影相册", subtitle: "定格生活的美好", icon: Camera, href: "/login" },
-  { title: "家庭留言", subtitle: "写下爱与祝福", icon: MessageSquare, href: "/login" },
-  { title: "年度回顾", subtitle: "重温一年的高光", icon: Film, href: "/login" },
 ]
 
 function ThemePreview({ themeKey }: { themeKey: Theme }) {

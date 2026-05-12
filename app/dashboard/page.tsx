@@ -8,15 +8,12 @@ import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import {
   ArrowRight,
-  BookOpen,
   Cake,
   Camera,
   Check,
-  Film,
   Heart,
   LogOut,
   Map,
-  MessageSquare,
   Palette,
   Sparkles,
   User,
@@ -29,9 +26,6 @@ const features = [
   { title: "旅行日记", subtitle: "记录一家人的足迹", icon: Map, href: "/travel" },
   { title: "摄影相册", subtitle: "定格生活的美好", icon: Camera, href: "/photos" },
   { title: "生日影像", subtitle: "珍藏每一次生日", icon: Cake, href: "/birthday" },
-  { title: "家庭留言", subtitle: "写下爱与祝福", icon: MessageSquare, href: "/messages" },
-  { title: "写新日记", subtitle: "补上今天的故事", icon: BookOpen, href: "/travel/new" },
-  { title: "上传照片", subtitle: "收藏新的瞬间", icon: Film, href: "/photos/new" },
 ]
 
 function ThemePreview({ themeKey }: { themeKey: Theme }) {
