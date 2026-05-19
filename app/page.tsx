@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import {
   ArrowRight,
   BookOpen,
@@ -18,6 +17,7 @@ import {
 import { useTheme } from "@/components/providers/theme-provider"
 import { appThemeStyles } from "@/lib/app-theme"
 import { CompactThemeSelector } from "@/components/ui/compact-theme-selector"
+import { HeroMemoryArt } from "@/components/ui/hero-memory-art"
 
 const features = [
   { title: "成长时间线", subtitle: "记录每一步成长", icon: Clock3, href: "/login" },
@@ -64,8 +64,9 @@ export default function HomePage() {
             <div className={`absolute inset-0 bg-gradient-to-br ${current.heroGlow}`} />
             <div className="absolute -left-14 top-12 h-44 w-44 rounded-full border border-current/10" />
             <div className="absolute right-10 top-12 hidden h-72 w-72 rounded-full border border-current/10 lg:block" />
+            <HeroMemoryArt />
 
-            <div className="relative grid items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
+            <div className="relative grid items-center gap-12 lg:grid-cols-[minmax(0,0.86fr)_minmax(360px,0.54fr)]">
               <div className="max-w-3xl">
                 <p className={`mb-5 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${current.pickerCard}`}>
                   <Sparkles className="h-4 w-4" />
@@ -91,35 +92,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="relative min-h-[390px]">
-                <div className={`absolute right-0 top-0 h-72 w-[25rem] rotate-3 overflow-hidden rounded-[2rem] border p-3 ${current.preview}`}>
-                  <Image
-                    src="/images/family-watercolor-hero.png"
-                    alt=""
-                    width={1200}
-                    height={750}
-                    className="h-full w-full rounded-[1.5rem] object-cover object-center"
-                    priority
-                  />
-                </div>
-                <div className={`absolute left-0 top-24 h-52 w-64 -rotate-6 overflow-hidden rounded-[2rem] border p-3 ${current.card}`}>
-                  <Image
-                    src="/images/family-watercolor-hero.png"
-                    alt=""
-                    width={1200}
-                    height={750}
-                    className="h-full w-full rounded-[1.5rem] object-cover object-left"
-                  />
-                </div>
-                <div className={`absolute bottom-0 right-0 h-44 w-56 rotate-3 rounded-[2rem] border p-4 ${current.card}`}>
-                  <div className="grid h-full grid-cols-2 gap-2 overflow-hidden rounded-2xl">
-                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[70%_45%]" />
-                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[20%_55%]" />
-                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[83%_70%]" />
-                    <Image src="/images/family-watercolor-hero.png" alt="" width={300} height={220} className="h-full w-full object-cover object-[45%_70%]" />
-                  </div>
-                </div>
-              </div>
+              <div className="hidden min-h-[390px] lg:block" />
             </div>
           </section>
 
