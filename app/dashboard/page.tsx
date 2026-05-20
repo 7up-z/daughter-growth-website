@@ -29,7 +29,7 @@ const features = [
     subtitle: "记录一家人的足迹",
     icon: Map,
     href: "/travel",
-    cover: "/images/module-travel-diary.svg",
+    cover: "/images/module-travel-diary.png",
     overlay: "bg-gradient-to-t from-[#294d2e]/34 via-transparent to-white/8",
   },
   {
@@ -37,7 +37,7 @@ const features = [
     subtitle: "定格生活的美好",
     icon: Camera,
     href: "/photos",
-    cover: "/images/module-photo-album.svg",
+    cover: "/images/module-photo-album.png",
     overlay: "bg-gradient-to-t from-[#5b3e23]/32 via-transparent to-white/8",
   },
   {
@@ -45,7 +45,7 @@ const features = [
     subtitle: "珍藏每一次生日",
     icon: Cake,
     href: "/birthday",
-    cover: "/images/module-birthday-video.svg",
+    cover: "/images/module-birthday-video.png",
     overlay: "bg-gradient-to-t from-[#7c3144]/34 via-transparent to-white/8",
   },
 ]
