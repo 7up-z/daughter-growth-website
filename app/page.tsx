@@ -25,27 +25,24 @@ const features = [
     subtitle: "记录一家人的足迹",
     icon: Map,
     href: "/login",
-    coverPosition: "20% 27%",
-    coverScale: 1.22,
-    overlay: "bg-gradient-to-t from-[#294d2e]/50 via-[#7fa66b]/8 to-[#fff5df]/10",
+    cover: "/images/module-travel-diary.svg",
+    overlay: "bg-gradient-to-t from-[#294d2e]/34 via-transparent to-white/8",
   },
   {
     title: "摄影相册",
     subtitle: "定格生活的美好",
     icon: Camera,
     href: "/login",
-    coverPosition: "42% 58%",
-    coverScale: 1.2,
-    overlay: "bg-gradient-to-t from-[#5b3e23]/48 via-[#f4b86a]/10 to-[#fff8eb]/12",
+    cover: "/images/module-photo-album.svg",
+    overlay: "bg-gradient-to-t from-[#5b3e23]/32 via-transparent to-white/8",
   },
   {
     title: "生日影像",
     subtitle: "珍藏每一次生日",
     icon: Cake,
     href: "/login",
-    coverPosition: "70% 48%",
-    coverScale: 1.18,
-    overlay: "bg-gradient-to-t from-[#7c3144]/48 via-[#f6a8b8]/12 to-[#fff3e8]/12",
+    cover: "/images/module-birthday-video.svg",
+    overlay: "bg-gradient-to-t from-[#7c3144]/34 via-transparent to-white/8",
   },
 ]
 
@@ -126,12 +123,11 @@ export default function HomePage() {
                   <Link key={item.title} href={item.href} className={`group overflow-hidden rounded-[1.5rem] border transition ${current.card}`}>
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <Image
-                        src="/images/family-watercolor-hero.png"
+                        src={item.cover}
                         alt=""
                         fill
                         sizes="(min-width: 1280px) 30vw, (min-width: 768px) 46vw, 92vw"
-                        className="object-cover transition duration-500 group-hover:brightness-105"
-                        style={{ objectPosition: item.coverPosition, transform: `scale(${item.coverScale})` }}
+                        className="object-cover transition duration-500 group-hover:scale-[1.03]"
                       />
                       <div className={`absolute inset-0 ${item.overlay}`} />
                       <span className={`absolute left-4 top-4 rounded-full border px-3 py-1 text-xs font-black ${current.pickerCard}`}>0{index + 1}</span>
