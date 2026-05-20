@@ -45,6 +45,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
 /* 简洁滚动条 */
 ::-webkit-scrollbar {
   width: 6px;

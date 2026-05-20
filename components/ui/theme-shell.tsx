@@ -71,7 +71,7 @@ export function ThemedHeader({
             <span className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-full sm:flex ${current.cardIcon}`}>
               <Heart className="h-5 w-5" />
             </span>
-            <span className="truncate text-base sm:text-lg">{title}</span>
+            <span className="truncate break-keep text-base sm:text-lg">{title}</span>
           </Link>
         </div>
         {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
@@ -103,7 +103,7 @@ export function ThemedPageHero({
             {icon}
             {eyebrow}
           </p>
-          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">{title}</h1>
+          <h1 className="max-w-3xl break-keep text-3xl font-black leading-tight tracking-tight sm:text-4xl">{title}</h1>
           {description && (
             <p className={`mt-3 max-w-2xl text-sm leading-7 sm:text-base ${current.secondaryText}`}>{description}</p>
           )}

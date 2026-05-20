@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import {
   ArrowRight,
   BookOpen,
@@ -20,9 +21,9 @@ import { CompactThemeSelector } from "@/components/ui/compact-theme-selector"
 import { HeroMemoryArt } from "@/components/ui/hero-memory-art"
 
 const features = [
-  { title: "成长时间线", subtitle: "记录每一步成长", icon: Clock3, href: "/login" },
-  { title: "生日影像", subtitle: "珍藏每一次生日", icon: Cake, href: "/login" },
-  { title: "旅行地图", subtitle: "收藏一家人的足迹", icon: Map, href: "/login" },
+  { title: "成长时间线", subtitle: "记录每一步成长", icon: Clock3, href: "/login", coverPosition: "42% 47%" },
+  { title: "生日影像", subtitle: "珍藏每一次生日", icon: Cake, href: "/login", coverPosition: "70% 45%" },
+  { title: "旅行地图", subtitle: "收藏一家人的足迹", icon: Map, href: "/login", coverPosition: "24% 30%" },
 ]
 
 const navItems = [
@@ -39,11 +40,11 @@ export default function HomePage() {
       <div className="mx-auto max-w-[1480px] px-4 py-4 sm:px-6 lg:px-8">
         <header className={`sticky top-4 z-20 rounded-[1.75rem] border ${current.header}`}>
           <div className="flex min-h-16 items-center justify-between gap-4 px-5 py-3 lg:px-8">
-            <Link href="/" className="flex items-center gap-3 text-lg font-bold tracking-tight lg:text-2xl">
+            <Link href="/" className="flex min-w-0 items-center gap-3 text-lg font-bold tracking-tight lg:text-2xl">
               <span className={`flex h-10 w-10 items-center justify-center rounded-full ${current.cardIcon}`}>
                 <Heart className="h-5 w-5" />
               </span>
-              <span>Family Memories · 成长记录</span>
+              <span className="truncate">Family Memories · 成长记录</span>
             </Link>
             <nav className="hidden items-center gap-5 text-sm font-medium xl:flex">
               {navItems.map((item) => (
@@ -61,9 +62,6 @@ export default function HomePage() {
 
         <main>
           <section className={`relative mt-5 overflow-hidden rounded-[2rem] border px-6 py-14 sm:px-10 lg:px-16 lg:py-20 ${current.hero}`}>
-            <div className={`absolute inset-0 bg-gradient-to-br ${current.heroGlow}`} />
-            <div className="absolute -left-14 top-12 h-44 w-44 rounded-full border border-current/10" />
-            <div className="absolute right-10 top-12 hidden h-72 w-72 rounded-full border border-current/10 lg:block" />
             <HeroMemoryArt />
 
             <div className="relative grid items-center gap-12 lg:grid-cols-[minmax(0,0.86fr)_minmax(360px,0.54fr)]">
@@ -72,11 +70,12 @@ export default function HomePage() {
                   <Sparkles className="h-4 w-4" />
                   {current.eyebrow}
                 </p>
-                <h1 className="text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-                  {current.title}
+                <h1 className="break-keep text-[clamp(3rem,8vw,6.75rem)] font-black leading-[0.96] tracking-tight">
+                  <span className="block whitespace-nowrap">Family Memories</span>
+                  <span className="mt-3 block text-[0.46em] leading-tight text-current/78">成长记录</span>
                 </h1>
                 {current.subtitle && (
-                  <p className={`mt-6 max-w-2xl text-lg leading-8 sm:text-xl ${current.secondaryText}`}>
+                  <p className={`mt-6 max-w-2xl text-base leading-8 sm:text-xl ${current.secondaryText}`}>
                     {current.subtitle}
                   </p>
                 )}
@@ -96,22 +95,34 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section className={`rounded-[2rem] border p-4 sm:p-6 ${current.featureGrid}`}>
+          <section className={`mt-5 rounded-[2rem] border p-4 sm:p-6 ${current.featureGrid}`}>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {features.map((item, index) => {
                 const Icon = item.icon
                 return (
-                  <Link key={item.title} href={item.href} className={`group min-h-52 rounded-[1.5rem] border p-6 transition ${current.card}`}>
-                    <div className="flex items-start justify-between">
-                      <span className={`text-2xl font-black ${current.cardNumber}`}>0{index + 1}.</span>
-                      <span className={`flex h-12 w-12 items-center justify-center rounded-2xl transition group-hover:scale-110 ${current.cardIcon}`}>
-                        <Icon className="h-6 w-6" />
+                  <Link key={item.title} href={item.href} className={`group overflow-hidden rounded-[1.5rem] border transition ${current.card}`}>
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src="/images/family-watercolor-hero.png"
+                        alt=""
+                        fill
+                        sizes="(min-width: 1280px) 30vw, (min-width: 768px) 46vw, 92vw"
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                        style={{ objectPosition: item.coverPosition }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/32 via-transparent to-white/12" />
+                      <span className={`absolute left-4 top-4 rounded-full border px-3 py-1 text-xs font-black ${current.pickerCard}`}>0{index + 1}</span>
+                      <span className={`absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full ${current.cardIcon}`}>
+                        <Icon className="h-5 w-5" />
                       </span>
                     </div>
-                    <h3 className="mt-8 text-2xl font-black">{item.title}</h3>
-                    <span className="mt-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-current/10 transition group-hover:translate-x-1">
-                      <ArrowRight className="h-5 w-5" />
-                    </span>
+                    <div className="p-6">
+                      <h3 className="break-keep text-2xl font-black">{item.title}</h3>
+                      <p className={`mt-2 text-sm font-semibold ${current.secondaryText}`}>{item.subtitle}</p>
+                      <span className="mt-6 inline-flex h-10 w-10 items-center justify-center rounded-full bg-current/10 transition group-hover:translate-x-1">
+                        <ArrowRight className="h-5 w-5" />
+                      </span>
+                    </div>
                   </Link>
                 )
               })}
@@ -123,7 +134,7 @@ export default function HomePage() {
           <section className={`my-8 overflow-hidden rounded-[2rem] border p-8 sm:p-10 ${current.quote}`}>
             <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
               <div>
-                <p className="text-3xl font-black leading-relaxed sm:text-4xl">Family Memories</p>
+                <p className="break-keep text-3xl font-black leading-relaxed sm:text-4xl">Family Memories</p>
                 <p className="mt-4 text-sm font-semibold opacity-70">Family Memories · 成长记录</p>
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">

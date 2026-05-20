@@ -19,7 +19,7 @@ const legacyThemeMap: Record<string, Theme> = {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
-const themeStyleVersion = "family-paper-a-v1"
+const themeStyleVersion = "family-storybook-a-v2"
 
 const themes: Record<Theme, {
   name: string
@@ -36,7 +36,7 @@ const themes: Record<Theme, {
   }
 }> = {
   paper: {
-    name: "纸质相册",
+    name: "温馨绘本",
     description: "",
     colors: {
       primary: "#7B7048",
@@ -50,7 +50,7 @@ const themes: Record<Theme, {
     }
   },
   cinematic: {
-    name: "暗金胶片",
+    name: "电影相册",
     description: "",
     colors: {
       primary: "#C99A55",
@@ -64,7 +64,7 @@ const themes: Record<Theme, {
     }
   },
   playful: {
-    name: "亲子拼贴",
+    name: "绘本拼贴",
     description: "",
     colors: {
       primary: "#FF5A4E",
@@ -78,7 +78,7 @@ const themes: Record<Theme, {
     }
   },
   future: {
-    name: "未来胶囊",
+    name: "清透相册",
     description: "",
     colors: {
       primary: "#4D7CFE",
