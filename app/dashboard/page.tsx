@@ -24,9 +24,33 @@ import { CompactThemeSelector } from "@/components/ui/compact-theme-selector"
 import { HeroMemoryArt } from "@/components/ui/hero-memory-art"
 
 const features = [
-  { title: "旅行日记", subtitle: "记录一家人的足迹", icon: Map, href: "/travel", coverPosition: "24% 30%" },
-  { title: "摄影相册", subtitle: "定格生活的美好", icon: Camera, href: "/photos", coverPosition: "42% 47%" },
-  { title: "生日影像", subtitle: "珍藏每一次生日", icon: Cake, href: "/birthday", coverPosition: "70% 45%" },
+  {
+    title: "旅行日记",
+    subtitle: "记录一家人的足迹",
+    icon: Map,
+    href: "/travel",
+    coverPosition: "20% 27%",
+    coverScale: 1.22,
+    overlay: "bg-gradient-to-t from-[#294d2e]/50 via-[#7fa66b]/8 to-[#fff5df]/10",
+  },
+  {
+    title: "摄影相册",
+    subtitle: "定格生活的美好",
+    icon: Camera,
+    href: "/photos",
+    coverPosition: "42% 58%",
+    coverScale: 1.2,
+    overlay: "bg-gradient-to-t from-[#5b3e23]/48 via-[#f4b86a]/10 to-[#fff8eb]/12",
+  },
+  {
+    title: "生日影像",
+    subtitle: "珍藏每一次生日",
+    icon: Cake,
+    href: "/birthday",
+    coverPosition: "70% 48%",
+    coverScale: 1.18,
+    overlay: "bg-gradient-to-t from-[#7c3144]/48 via-[#f6a8b8]/12 to-[#fff3e8]/12",
+  },
 ]
 
 const navItems = [
@@ -140,10 +164,10 @@ export default function DashboardPage() {
                         alt=""
                         fill
                         sizes="(min-width: 1280px) 30vw, (min-width: 768px) 46vw, 92vw"
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                        style={{ objectPosition: item.coverPosition }}
+                        className="object-cover transition duration-500 group-hover:brightness-105"
+                        style={{ objectPosition: item.coverPosition, transform: `scale(${item.coverScale})` }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/32 via-transparent to-white/12" />
+                      <div className={`absolute inset-0 ${item.overlay}`} />
                       <span className={`absolute left-4 top-4 rounded-full border px-3 py-1 text-xs font-black ${current.pickerCard}`}>0{index + 1}</span>
                       <span className={`absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full ${current.cardIcon}`}>
                         <Icon className="h-5 w-5" />
