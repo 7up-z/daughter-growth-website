@@ -150,7 +150,7 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
     <ThemedShell maxWidth="max-w-4xl">
       <ThemedHeader
         backHref="/travel"
-        title="旅行日记"
+        title="旅行地图"
         action={isAuthor && (
           <button
                 onClick={handleDelete}

@@ -115,7 +115,7 @@ export default function BirthdayPage() {
   return (
     <ThemedShell>
       <ThemedHeader
-        title="生日视频"
+        title="生日影像"
         action={
           <button onClick={() => setShowAddModal(true)} className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition ${current.primaryButton}`}>
             <Plus className="h-4 w-4" />
@@ -127,7 +127,8 @@ export default function BirthdayPage() {
       <main>
         <ThemedPageHero
           eyebrow="Birthday Films"
-          title="生日视频"
+          title="生日影像"
+          description="按年份归档生日视频，慢慢补齐照片和家人祝福。"
           icon={<Video className="h-4 w-4" />}
         />
 
@@ -189,9 +190,9 @@ export default function BirthdayPage() {
             <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
               <Video className="w-8 h-8" />
             </div>
-            <h3 className="mb-2 text-lg font-black">还没有视频</h3>
+            <h3 className="mb-2 text-lg font-black">还没有生日影像</h3>
             <p className={`mb-6 ${current.secondaryText}`}>
-              添加第一个生日视频吧
+              添加第一段生日影像吧
             </p>
             <button
               onClick={() => setShowAddModal(true)}
@@ -209,7 +210,7 @@ export default function BirthdayPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className={`w-full max-w-md rounded-[1.5rem] border p-6 ${current.pickerCard}`}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold">添加生日视频</h2>
+              <h2 className="text-lg font-semibold">添加生日影像</h2>
               <button
                 onClick={() => setShowAddModal(false)}
                 className="rounded-full bg-current/10 p-2 transition-colors hover:bg-current/15"

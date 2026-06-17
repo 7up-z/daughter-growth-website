@@ -1,7 +1,7 @@
 const MAX_TEXT_LENGTH = 10_000
 const MAX_SHORT_TEXT_LENGTH = 200
 
-export const allowedPhotoCategories = ["landscape", "portrait", "life", "travel"] as const
+export const allowedPhotoCategories = ["life", "travel", "birthday", "festival", "featured"] as const
 export type PhotoCategory = (typeof allowedPhotoCategories)[number]
 
 export const allowedThemes = ["paper", "cinematic", "playful", "future"] as const

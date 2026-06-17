@@ -129,12 +129,13 @@ export default function MessagesPage() {
 
   return (
     <ThemedShell maxWidth="max-w-4xl">
-      <ThemedHeader title="留言板" />
+      <ThemedHeader title="家庭留言" />
 
       <main>
         <ThemedPageHero
           eyebrow="Family Notes"
-          title="留言板"
+          title="家庭留言"
+          description="保存家人写下的祝福、心里话和重要时刻里的回应。"
           icon={<MessageCircle className="h-4 w-4" />}
         />
 

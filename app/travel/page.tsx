@@ -103,7 +103,7 @@ export default function TravelPage() {
   return (
     <ThemedShell maxWidth="max-w-4xl">
       <ThemedHeader
-        title="旅行日记"
+        title="旅行地图"
         action={
           <Link href="/travel/new" className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition ${current.primaryButton}`}>
             <Plus className="h-4 w-4" />
@@ -115,7 +115,8 @@ export default function TravelPage() {
       <main>
         <ThemedPageHero
           eyebrow="Travel Journal"
-          title="旅行日记"
+          title="旅行地图"
+          description="按地点整理家庭旅行足迹，先从每一篇路上的日记开始。"
           icon={<BookOpen className="h-4 w-4" />}
         />
 
@@ -199,7 +200,7 @@ export default function TravelPage() {
             <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
               <BookOpen className="w-8 h-8" />
             </div>
-            <h3 className="mb-2 text-lg font-black">还没有日记</h3>
+            <h3 className="mb-2 text-lg font-black">还没有旅行记录</h3>
             <p className={`mb-6 ${current.secondaryText}`}>
               开始记录你们的旅行故事吧
             </p>

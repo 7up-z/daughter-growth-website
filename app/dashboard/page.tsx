@@ -4,56 +4,17 @@ export const dynamic = "force-dynamic"
 
 import { useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import {
-  ArrowRight,
-  Cake,
-  Camera,
-  Heart,
-  LogOut,
-  Map,
-  Sparkles,
-  User,
-} from "lucide-react"
+import { ArrowRight, Camera, Heart, LogOut, Sparkles, User } from "lucide-react"
 import { useTheme } from "@/components/providers/theme-provider"
 import { ThemedLoading } from "@/components/ui/theme-shell"
 import { appThemeStyles } from "@/lib/app-theme"
 import { CompactThemeSelector } from "@/components/ui/compact-theme-selector"
 import { HeroMemoryArt } from "@/components/ui/hero-memory-art"
-
-const features = [
-  {
-    title: "旅行日记",
-    subtitle: "记录一家人的足迹",
-    icon: Map,
-    href: "/travel",
-    cover: "/images/module-travel-diary.png",
-    overlay: "bg-gradient-to-t from-[#294d2e]/34 via-transparent to-white/8",
-  },
-  {
-    title: "摄影相册",
-    subtitle: "定格生活的美好",
-    icon: Camera,
-    href: "/photos",
-    cover: "/images/module-photo-album.png",
-    overlay: "bg-gradient-to-t from-[#5b3e23]/32 via-transparent to-white/8",
-  },
-  {
-    title: "生日影像",
-    subtitle: "珍藏每一次生日",
-    icon: Cake,
-    href: "/birthday",
-    cover: "/images/module-birthday-video.png",
-    overlay: "bg-gradient-to-t from-[#7c3144]/34 via-transparent to-white/8",
-  },
-]
-
-const navItems = [
-  ...features,
-  { title: "留言", href: "/messages" },
-]
+import { MemoryModuleGrid } from "@/components/ui/memory-module-grid"
+import { RecentActivity } from "@/components/ui/recent-activity"
+import { memoryModules } from "@/lib/memory-modules"
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -89,9 +50,9 @@ export default function DashboardPage() {
             </Link>
 
             <nav className="hidden items-center gap-5 text-sm font-medium xl:flex">
-              {navItems.map((item) => (
-                <Link key={item.title} href={item.href} className="opacity-80 transition hover:opacity-100">
-                  {item.title}
+              {memoryModules.map((item) => (
+                <Link key={item.key} href={item.href} className="opacity-80 transition hover:opacity-100">
+                  {item.navTitle}
                 </Link>
               ))}
             </nav>
@@ -129,16 +90,18 @@ export default function DashboardPage() {
                   <Sparkles className="h-4 w-4" />
                   Welcome back · {displayName}
                 </p>
-                <h1 className="break-keep text-[clamp(3rem,8vw,6.75rem)] font-black leading-[0.96] tracking-tight">
-                  <span className="block whitespace-nowrap">Family Memories</span>
-                  <span className="mt-3 block text-[0.46em] leading-tight text-current/78">成长记录</span>
+                <h1 className="break-keep text-[clamp(2.8rem,7vw,6.25rem)] font-black leading-[0.98] tracking-tight">
+                  今天也给家的记忆册添上一页
                 </h1>
+                <p className={`mt-6 max-w-2xl text-base leading-8 sm:text-xl ${current.secondaryText}`}>
+                  从时间线、生日影像、旅行地图、摄影相册、留言和年度回顾继续整理新的故事。
+                </p>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
                   <Link href="/travel/new" className={`inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-bold transition ${current.primaryButton}`}>
                     写一篇日记
                     <ArrowRight className="h-5 w-5" />
                   </Link>
-                  <Link href="/photos/new" className={`inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-bold transition ${current.pickerCard}`}>
+                  <Link href="/gallery/new" className={`inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-bold transition ${current.pickerCard}`}>
                     上传照片
                     <Camera className="h-5 w-5" />
                   </Link>
@@ -149,40 +112,11 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <section className={`mt-5 rounded-[2rem] border p-4 sm:p-6 ${current.featureGrid}`}>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {features.map((item, index) => {
-                const Icon = item.icon
-                return (
-                  <Link key={item.title} href={item.href} className={`group overflow-hidden rounded-[1.5rem] border transition ${current.card}`}>
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <Image
-                        src={item.cover}
-                        alt=""
-                        fill
-                        sizes="(min-width: 1280px) 30vw, (min-width: 768px) 46vw, 92vw"
-                        className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                      />
-                      <div className={`absolute inset-0 ${item.overlay}`} />
-                      <span className={`absolute left-4 top-4 rounded-full border px-3 py-1 text-xs font-black ${current.pickerCard}`}>0{index + 1}</span>
-                      <span className={`absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full ${current.cardIcon}`}>
-                        <Icon className="h-5 w-5" />
-                      </span>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="break-keep text-2xl font-black">{item.title}</h3>
-                      <p className={`mt-2 text-sm font-semibold ${current.secondaryText}`}>{item.subtitle}</p>
-                      <span className="mt-6 inline-flex h-10 w-10 items-center justify-center rounded-full bg-current/10 transition group-hover:translate-x-1">
-                        <ArrowRight className="h-5 w-5" />
-                      </span>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
+          <MemoryModuleGrid modules={memoryModules} />
 
           <CompactThemeSelector />
+
+          <RecentActivity privateData />
         </main>
 
         <footer className={`my-8 rounded-[1.5rem] border px-6 py-5 text-sm ${current.pickerCard}`}>
@@ -195,3 +129,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+
