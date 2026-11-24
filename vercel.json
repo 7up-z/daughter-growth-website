@@ -1,5 +1,5 @@
 {
-  "buildCommand": "prisma generate && next build",
+  "buildCommand": "prisma generate && next build && node scripts/vercel-production-migrate.mjs",
   "installCommand": "corepack enable && pnpm install",
   "framework": "nextjs",
   "regions": ["hkg1"]
