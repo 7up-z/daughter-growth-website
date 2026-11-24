@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { requiredLongText } from "@/lib/validation"
 
 // 添加评论
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -26,12 +25,12 @@ export async function POST(request: Request) {
     }
 
     if (travelEntryId) {
-      const entry = await prisma.travelEntry.findUnique({ where: { id: travelEntryId }, select: { id: true } })
+      const entry = await prisma.travelEntry.findFirst({ where: { id: travelEntryId, published: true }, select: { id: true } })
       if (!entry) return NextResponse.json({ error: "日记不存在" }, { status: 404 })
     }
 
     if (photoEntryId) {
-      const photo = await prisma.photoEntry.findUnique({ where: { id: photoEntryId }, select: { id: true } })
+      const photo = await prisma.photoEntry.findFirst({ where: { id: photoEntryId, published: true }, select: { id: true } })
       if (!photo) return NextResponse.json({ error: "照片不存在" }, { status: 404 })
     }
 
@@ -65,7 +64,7 @@ export async function POST(request: Request) {
 // 删除评论
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -87,7 +86,7 @@ export async function DELETE(request: Request) {
       })
     ])
 
-    if (!comment) {
+    if (!comment || (!comment.travelEntryId && !comment.photoEntryId)) {
       return NextResponse.json({ error: "评论不存在" }, { status: 404 })
     }
 

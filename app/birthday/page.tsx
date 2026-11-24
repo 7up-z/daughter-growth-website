@@ -1,8 +1,8 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import { Video, Calendar, Play, Plus, Trash2, X } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
@@ -10,7 +10,8 @@ interface BirthdayVideo {
   id: string
   year: number
   title: string
-  bvid: string
+  bvid: string | null
+  videoUrl: string | null
   description: string | null
   thumbnail: string | null
 }
@@ -18,10 +19,18 @@ interface BirthdayVideo {
 export default function BirthdayPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const linkedVideo = useSearchParams().get("video")
   const current = useCurrentThemeStyle()
   const [videos, setVideos] = useState<BirthdayVideo[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedVideo, setSelectedVideo] = useState<BirthdayVideo | null>(null)
+  const [openVideoId, setOpenVideoId] = useState<string | null>(null)
+  const selectedVideo = videos.find((video) => video.id === (linkedVideo ?? openVideoId))
+  const isAdmin = session?.user.role === "admin"
+
+  function closeVideo() {
+    setOpenVideoId(null)
+    if (linkedVideo) router.replace("/birthday", { scroll: false })
+  }
   const [showAddModal, setShowAddModal] = useState(false)
   const [deleting, setDeleting] = useState<string | null>(null)
   const [formData, setFormData] = useState({
@@ -37,11 +46,7 @@ export default function BirthdayPage() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    fetchVideos()
-  }, [])
-
-  async function fetchVideos() {
+  const fetchVideos = useCallback(async () => {
     try {
       const response = await fetch("/api/birthday")
       if (response.ok) {
@@ -53,7 +58,13 @@ export default function BirthdayPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (status !== "authenticated") return
+    const timer = window.setTimeout(() => void fetchVideos(), 0)
+    return () => window.clearTimeout(timer)
+  }, [status, fetchVideos])
 
   const handleAddVideo = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,7 +101,7 @@ export default function BirthdayPage() {
       if (response.ok) {
         setVideos(videos.filter(v => v.id !== id))
         if (selectedVideo?.id === id) {
-          setSelectedVideo(null)
+          closeVideo()
         }
       } else {
         const error = await response.json()
@@ -132,6 +143,7 @@ export default function BirthdayPage() {
           icon={<Video className="h-4 w-4" />}
         />
 
+        {linkedVideo && !selectedVideo && <p className="mt-5 text-sm" role="status">这段影像已删除或不可查看。</p>}
         {/* 视频列表 */}
         <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {videos.map((video) => (
@@ -142,7 +154,7 @@ export default function BirthdayPage() {
               {/* 视频缩略图 */}
               <div
                 className={`relative aspect-video cursor-pointer ${current.preview}`}
-                onClick={() => setSelectedVideo(video)}
+                onClick={() => setOpenVideoId(video.id)}
               >
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className={`flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform group-hover:scale-110 ${current.cardIcon}`}>
@@ -154,8 +166,7 @@ export default function BirthdayPage() {
                     {video.year}年
                   </span>
                 </div>
-                {/* 删除按钮 */}
-                <button
+                {isAdmin && <button
                   onClick={(e) => {
                     e.stopPropagation()
                     handleDeleteVideo(video.id)
@@ -164,14 +175,14 @@ export default function BirthdayPage() {
                   className="absolute right-3 top-3 rounded-full bg-white/90 p-1.5 text-gray-500 opacity-0 transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </button>}
               </div>
 
               {/* 视频信息 */}
               <div className="p-4">
                 <div className={`mb-2 flex items-center gap-2 text-xs font-bold ${current.secondaryText}`}>
                   <Calendar className="w-3.5 h-3.5" />
-                  <span>{video.year}岁生日</span>
+                  <span>{video.year}年生日</span>
                 </div>
                 <h3 className="mb-1 font-black">{video.title}</h3>
                 {video.description && (
@@ -290,7 +301,7 @@ export default function BirthdayPage() {
       {selectedVideo && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
-          onClick={() => setSelectedVideo(null)}
+          onClick={closeVideo}
         >
           <div
             className={`w-full max-w-3xl overflow-hidden rounded-[1.5rem] border ${current.pickerCard}`}
@@ -298,28 +309,35 @@ export default function BirthdayPage() {
           >
             {/* 关闭按钮 */}
             <button
-              onClick={() => setSelectedVideo(null)}
+              onClick={closeVideo}
+              aria-label="关闭播放"
               className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/90 hover:bg-white"
             >
               <X className="w-5 h-5" />
             </button>
-            {/* 删除按钮 */}
-            <button
+            {isAdmin && <button
               onClick={() => handleDeleteVideo(selectedVideo.id)}
               disabled={deleting === selectedVideo.id}
               className="absolute top-4 left-4 z-20 p-2 rounded-full bg-red-500 text-white hover:bg-red-600 disabled:opacity-50"
             >
               <Trash2 className="w-5 h-5" />
-            </button>
+            </button>}
             <div className="aspect-video bg-black">
-              <iframe
-                src={`https://player.bilibili.com/player.html?bvid=${selectedVideo.bvid}&page=1&high_quality=1&danmaku=0`}
-                className="w-full h-full"
-                allowFullScreen
-              />
+              {selectedVideo.videoUrl ? (
+                <video src={selectedVideo.videoUrl} className="h-full w-full" controls playsInline preload="metadata" aria-label={selectedVideo.title} />
+              ) : selectedVideo.bvid && (
+                <iframe
+                  src={`https://player.bilibili.com/player.html?bvid=${encodeURIComponent(selectedVideo.bvid)}&page=1&high_quality=1&danmaku=0`}
+                  title={selectedVideo.title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              )}
             </div>
             <div className="p-4">
               <h3 className="text-lg font-semibold">{selectedVideo.title}</h3>
+              {!selectedVideo.videoUrl && <p className="mt-1 text-xs">由哔哩哔哩播放，站外可见范围由视频发布设置决定。</p>}
               {selectedVideo.description && (
                 <p className="text-sm text-[var(--theme-text-muted)] mt-1">
                   {selectedVideo.description}

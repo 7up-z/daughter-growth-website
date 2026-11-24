@@ -1,7 +1,8 @@
 "use client"
 
+import { imageAccept, imageMimeTypes, maxImageBytes } from "@/lib/private-media"
 import { useState, useRef } from "react"
-import { Upload, X, Image as ImageIcon } from "lucide-react"
+import { X, Image as ImageIcon } from "lucide-react"
 
 interface ImageUploaderProps {
   value: string
@@ -20,14 +21,14 @@ export function ImageUploader({ value, onChange, label = "上传图片", preview
     if (!file) return
 
     // 验证文件类型
-    if (!file.type.startsWith("image/")) {
-      alert("只能上传图片文件")
+    if (!imageMimeTypes.includes(file.type)) {
+      alert("请选择 JPG、PNG、WebP 或 GIF 图片")
       return
     }
 
-    // 验证文件大小 (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert("图片大小不能超过10MB")
+    // 检查上传大小
+    if (file.size > maxImageBytes) {
+      alert("图片大小不能超过 4 MB")
       return
     }
 
@@ -117,7 +118,7 @@ export function ImageUploader({ value, onChange, label = "上传图片", preview
             <>
               <ImageIcon className="w-10 h-10 text-[var(--theme-text-muted)]" />
               <span className="text-sm text-[var(--theme-text-muted)]">点击选择图片</span>
-              <span className="text-xs text-[var(--theme-text-muted)]">支持 JPG、PNG、GIF，最大 10MB</span>
+              <span className="text-xs text-[var(--theme-text-muted)]">支持 JPG、PNG、WebP、GIF，最大 4 MB</span>
             </>
           )}
         </button>
@@ -126,7 +127,7 @@ export function ImageUploader({ value, onChange, label = "上传图片", preview
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={imageAccept}
         onChange={handleFileSelect}
         className="hidden"
       />

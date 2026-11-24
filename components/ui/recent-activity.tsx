@@ -85,7 +85,9 @@ function formatDate(value: string) {
 
 export function RecentActivity({ privateData = false }: { privateData?: boolean }) {
   const current = useCurrentThemeStyle()
-  const [summary, setSummary] = useState<Summary>(demoSummary)
+  const [summary, setSummary] = useState<Summary | null>(privateData ? null : demoSummary)
+  const [failed, setFailed] = useState(false)
+  const [retry, setRetry] = useState(0)
   const [loading, setLoading] = useState(privateData)
 
   useEffect(() => {
@@ -95,10 +97,11 @@ export function RecentActivity({ privateData = false }: { privateData?: boolean 
     async function loadSummary() {
       try {
         const response = await fetch("/api/memory/summary")
-        if (!response.ok) return
+        if (!response.ok) throw new Error("获取近期记录失败")
         const data = await response.json()
         if (mounted) setSummary(data)
       } catch (error) {
+        if (mounted) setFailed(true)
         console.error("获取近期记录失败:", error)
       } finally {
         if (mounted) setLoading(false)
@@ -109,13 +112,13 @@ export function RecentActivity({ privateData = false }: { privateData?: boolean 
     return () => {
       mounted = false
     }
-  }, [privateData])
+  }, [privateData, retry])
 
   const stats = [
-    { label: "照片", value: summary.counts.photos, icon: Camera },
-    { label: "旅行", value: summary.counts.travels, icon: Map },
-    { label: "影像", value: summary.counts.birthdayVideos, icon: Cake },
-    { label: "留言", value: summary.counts.messages, icon: MessageCircle },
+    { label: "照片", value: summary?.counts.photos, icon: Camera },
+    { label: "旅行", value: summary?.counts.travels, icon: Map },
+    { label: "影像", value: summary?.counts.birthdayVideos, icon: Cake },
+    { label: "留言", value: summary?.counts.messages, icon: MessageCircle },
   ]
 
   return (
@@ -136,7 +139,7 @@ export function RecentActivity({ privateData = false }: { privateData?: boolean 
             return (
               <div key={item.label} className={`rounded-[1rem] border px-3 py-3 text-center ${current.pickerCard}`}>
                 <Icon className="mx-auto mb-1 h-4 w-4" />
-                <p className="text-xl font-black">{loading ? "-" : item.value}</p>
+                <p className="text-xl font-black">{loading ? "-" : item.value ?? "—"}</p>
                 <p className={`text-xs font-bold ${current.secondaryText}`}>{item.label}</p>
               </div>
             )
@@ -144,8 +147,18 @@ export function RecentActivity({ privateData = false }: { privateData?: boolean 
         </div>
       </div>
 
+      {failed && (
+        <p className="mt-5 text-sm" role="alert">
+          暂时无法读取近期记录。 <button type="button" className="font-bold underline" onClick={() => {
+            setLoading(true)
+            setFailed(false)
+            setRetry((value) => value + 1)
+          }}>重试</button>
+        </p>
+      )}
+      {privateData && summary?.recent.length === 0 && <p className="mt-5 text-sm">还没有家庭动态。</p>}
       <div className="mt-5 grid gap-3 md:grid-cols-3">
-        {(summary.recent.length ? summary.recent : demoSummary.recent).slice(0, 3).map((item) => {
+        {(summary?.recent ?? []).slice(0, 3).map((item) => {
           const MetaIcon = typeMeta[item.type].icon
           return (
             <Link key={item.id} href={privateData ? item.href : "/login"} className={`group overflow-hidden rounded-[1.25rem] border transition ${current.card}`}>
@@ -171,7 +184,7 @@ export function RecentActivity({ privateData = false }: { privateData?: boolean 
                     <MetaIcon className="h-3.5 w-3.5" />
                     {typeMeta[item.type].label}
                   </span>
-                  <span>{formatDate(item.date)}</span>
+                  <span>{privateData && item.type === "birthday" ? `${new Date(item.date).getUTCFullYear()}年` : formatDate(item.date)}</span>
                 </div>
                 <h3 className="line-clamp-2 min-h-12 text-base font-black leading-6">{item.title}</h3>
                 <p className={`mt-2 text-xs font-bold ${current.secondaryText}`}>{item.detail} · {item.author}</p>

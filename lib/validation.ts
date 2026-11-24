@@ -83,30 +83,3 @@ export function parseTheme(value: unknown) {
   }
   return theme as UserTheme
 }
-
-export function parseImageUrl(value: unknown, fieldName?: string, required?: true): string
-export function parseImageUrl(value: unknown, fieldName: string, required: false): string | undefined
-export function parseImageUrl(value: unknown, fieldName = "图片链接", required = true) {
-  const url = normalizeString(value, 2_000)
-  if (!url) {
-    if (required) throw new Error(`${fieldName}不能为空`)
-    return undefined
-  }
-
-  const isAllowedRelativePath = url.startsWith("/")
-  const isAllowedDataUrl = url.startsWith("data:image/")
-  const isAllowedHttpUrl = (() => {
-    try {
-      const parsed = new URL(url)
-      return parsed.protocol === "http:" || parsed.protocol === "https:"
-    } catch {
-      return false
-    }
-  })()
-
-  if (!isAllowedRelativePath && !isAllowedDataUrl && !isAllowedHttpUrl) {
-    throw new Error(`${fieldName}格式不正确`)
-  }
-
-  return url
-}

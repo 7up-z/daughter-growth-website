@@ -1,8 +1,8 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import { MessageCircle, Send, User, Trash2 } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
@@ -21,6 +21,7 @@ interface Message {
 export default function MessagesPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const linkedMessage = useSearchParams().get("message")
   const current = useCurrentThemeStyle()
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
@@ -34,11 +35,7 @@ export default function MessagesPage() {
     }
   }, [status, router])
 
-  useEffect(() => {
-    fetchMessages()
-  }, [])
-
-  async function fetchMessages() {
+  const fetchMessages = useCallback(async () => {
     try {
       const response = await fetch("/api/messages")
       if (response.ok) {
@@ -50,7 +47,18 @@ export default function MessagesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (status !== "authenticated") return
+    const timer = window.setTimeout(() => void fetchMessages(), 0)
+    return () => window.clearTimeout(timer)
+  }, [status, fetchMessages])
+
+  useEffect(() => {
+    if (!linkedMessage || loading) return
+    document.getElementById(`message-${linkedMessage}`)?.scrollIntoView({ block: "center" })
+  }, [linkedMessage, loading, messages])
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -183,7 +191,7 @@ export default function MessagesPage() {
         {/* 留言列表 */}
         <div className="space-y-4">
           {messages.map((message) => (
-            <div key={message.id} className={`group rounded-[1.5rem] border p-5 transition ${current.card}`}>
+            <div id={`message-${message.id}`} key={message.id} className={`group rounded-[1.5rem] border p-5 transition ${current.card} ${linkedMessage === message.id ? "ring-2 ring-current/35" : ""}`}>
               <div className="flex items-start gap-4">
                 <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full ${current.cardIcon}`}>
                   {message.author.avatar ? (

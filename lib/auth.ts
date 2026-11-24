@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth"
+import { getServerSession, type NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 import { prisma } from "./prisma"
@@ -35,6 +35,10 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        if (user.accessStatus !== "ACTIVE") {
+          throw new Error("FamilyAccessRequired")
+        }
+
         return {
           id: user.id,
           email: user.email,
@@ -43,6 +47,7 @@ export const authOptions: NextAuthOptions = {
           avatar: user.avatar,
           theme: user.theme,
           role: user.role,
+          sessionVersion: user.sessionVersion,
         }
       }
     })
@@ -53,23 +58,39 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
-        token.username = user.username
-        token.nickname = user.nickname
-        token.avatar = user.avatar
-        token.theme = user.theme
-        token.role = user.role
+        token.sub = user.id
+        token.sessionVersion = user.sessionVersion
       }
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
-        session.user.username = token.username as string
-        session.user.nickname = token.nickname as string | null
-        session.user.avatar = token.avatar as string | null
-        session.user.theme = token.theme as string
-        session.user.role = token.role as string
+      const member = token.sub ? await prisma.user.findUnique({
+        where: { id: token.sub },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          nickname: true,
+          avatar: true,
+          theme: true,
+          role: true,
+          accessStatus: true,
+          sessionVersion: true,
+        },
+      }) : null
+
+      if (member?.accessStatus !== "ACTIVE" || member.sessionVersion !== (token.sessionVersion ?? 0)) {
+        throw new Error("FamilySessionExpired")
+      }
+
+      session.user = {
+        id: member.id,
+        email: member.email,
+        username: member.username,
+        nickname: member.nickname,
+        avatar: member.avatar,
+        theme: member.theme,
+        role: member.role,
       }
       return session
     }
@@ -78,6 +99,10 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
     error: "/login",
   },
+}
+
+export function getFamilySession() {
+  return getServerSession(authOptions)
 }
 
 // 扩展NextAuth类型
@@ -102,16 +127,12 @@ declare module "next-auth" {
     avatar: string | null
     theme: string
     role: string
+    sessionVersion: number
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id: string
-    username: string
-    nickname: string | null
-    avatar: string | null
-    theme: string
-    role: string
+    sessionVersion?: number
   }
 }

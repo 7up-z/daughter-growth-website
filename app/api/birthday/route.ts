@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { optionalString, parseInteger, requiredString } from "@/lib/validation"
 
 // 获取所有生日视频
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -19,7 +18,11 @@ export async function GET() {
       ],
     })
 
-    return NextResponse.json(videos)
+    return NextResponse.json(videos.map(({ privateVideoKey, ...video }) => ({
+      ...video,
+      bvid: privateVideoKey ? null : video.bvid,
+      videoUrl: privateVideoKey ? `/api/birthday/${video.id}/media` : null,
+    })), { headers: { "Cache-Control": "private, no-store" } })
   } catch (error) {
     console.error("获取生日视频错误:", error)
     return NextResponse.json({ error: "获取失败" }, { status: 500 })
@@ -29,7 +32,7 @@ export async function GET() {
 // 添加生日视频
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -64,7 +67,7 @@ export async function POST(request: Request) {
 // 删除生日视频
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }

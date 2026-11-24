@@ -1,13 +1,13 @@
+import { parsePrivateImageUrl } from "@/lib/private-media"
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { optionalString, parseImageUrl, parseTheme } from "@/lib/validation"
+import { optionalString, parseTheme } from "@/lib/validation"
 
 // 获取用户信息
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
 
     if (!session) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function GET() {
 // 更新用户信息
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
 
     if (!session) {
       return NextResponse.json(
@@ -61,7 +61,11 @@ export async function PUT(request: Request) {
 
     const body = await request.json()
     const nickname = optionalString(body.nickname, 50)
-    const avatar = parseImageUrl(body.avatar, "头像", false)
+    const existingProfile = body.avatar ? await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { avatar: true },
+    }) : null
+    const avatar = body.avatar === existingProfile?.avatar ? undefined : parsePrivateImageUrl(body.avatar, "头像", false)
     const theme = parseTheme(body.theme)
 
     const user = await prisma.user.update({

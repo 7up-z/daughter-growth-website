@@ -1,80 +1,61 @@
 import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import bcrypt from "bcryptjs"
+import { hashInvitationCode, isInvitationCode, normalizeFamilyEmail } from "@/lib/family-invitation"
 import { prisma } from "@/lib/prisma"
 import { optionalString, requiredString } from "@/lib/validation"
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    const body = await request.json().catch(() => null)
+    const code = body?.invitationCode
+    if (!isInvitationCode(code)) {
+      return NextResponse.json({ error: "请填写有效的家庭邀请码" }, { status: 403 })
+    }
+
+    const email = normalizeFamilyEmail(body.email)
     const username = requiredString(body.username, "用户名", 50)
-    const email = requiredString(body.email, "邮箱", 254).toLowerCase()
-    const password = requiredString(body.password, "密码", 128)
     const nickname = optionalString(body.nickname, 50) || username
-
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "密码至少需要8位" },
-        { status: 400 }
-      )
+    const password = body.password
+    if (!email) return NextResponse.json({ error: "邮箱格式不正确" }, { status: 400 })
+    if (typeof password !== "string" || password.length < 8 || Buffer.byteLength(password) > 72) {
+      return NextResponse.json({ error: "密码须至少 8 个字符，且不超过 72 字节" }, { status: 400 })
     }
 
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      return NextResponse.json(
-        { error: "邮箱格式不正确" },
-        { status: 400 }
-      )
-    }
-
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { username },
-          { email }
-        ]
-      }
+    const codeHash = hashInvitationCode(code)
+    const invitation = await prisma.familyInvitation.findUnique({
+      where: { codeHash },
+      select: { email: true, expiresAt: true, usedAt: true, revokedAt: true },
     })
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "用户名或邮箱已存在" },
-        { status: 400 }
-      )
+    if (!invitation || invitation.email !== email || invitation.usedAt || invitation.revokedAt || invitation.expiresAt <= new Date()) {
+      return NextResponse.json({ error: "邀请码无效、已过期或与邮箱不匹配" }, { status: 403 })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    const userCount = await prisma.user.count()
-    const role = userCount === 0 ? "admin" : "user"
+    const created = await prisma.$transaction(async (tx) => {
+      const now = new Date()
+      const claimed = await tx.familyInvitation.updateMany({
+        where: { codeHash, email, usedAt: null, revokedAt: null, expiresAt: { gt: now } },
+        data: { usedAt: now },
+      })
+      if (!claimed.count) return false
 
-    const user = await prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-        nickname,
-        role,
-      },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        nickname: true,
-        avatar: true,
-        theme: true,
-        role: true,
-        createdAt: true,
-      }
+      await tx.user.create({
+        data: { username, email, password: hashedPassword, nickname, accessStatus: "ACTIVE" },
+      })
+      return true
     })
 
-    return NextResponse.json(
-      { message: "注册成功", user },
-      { status: 201 }
-    )
+    return created
+      ? NextResponse.json({ message: "注册成功" }, { status: 201 })
+      : NextResponse.json({ error: "邀请码已失效" }, { status: 403 })
   } catch (error) {
-    console.error("Register error:", error)
-    const message = error instanceof Error ? error.message : "注册失败，请重试"
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    )
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json({ error: "用户名或邮箱已存在" }, { status: 409 })
+    }
+    if (error instanceof Error && error.message === "用户名不能为空") {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+    return NextResponse.json({ error: "注册失败，请稍后重试" }, { status: 500 })
   }
 }

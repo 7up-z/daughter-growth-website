@@ -1,8 +1,8 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import { BookOpen, MapPin, Calendar, User, MessageCircle, Send, Trash2 } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
@@ -38,7 +38,8 @@ interface Comment {
   }
 }
 
-export default function TravelDetailPage({ params }: { params: { id: string } }) {
+export default function TravelDetailPage() {
+  const { id } = useParams<{ id: string }>()
   const { data: session, status } = useSession()
   const router = useRouter()
   const current = useCurrentThemeStyle()
@@ -54,13 +55,9 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
     }
   }, [status, router])
 
-  useEffect(() => {
-    fetchEntry()
-  }, [params.id])
-
-  async function fetchEntry() {
+  const fetchEntry = useCallback(async () => {
     try {
-      const response = await fetch(`/api/travel?id=${params.id}`)
+      const response = await fetch(`/api/travel?id=${id}`)
       if (response.ok) {
         const data = await response.json()
         setEntry(data)
@@ -72,7 +69,13 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
     } finally {
       setLoading(false)
     }
-  }
+  }, [id, router])
+
+  useEffect(() => {
+    if (status !== "authenticated") return
+    const timer = window.setTimeout(() => void fetchEntry(), 0)
+    return () => window.clearTimeout(timer)
+  }, [status, fetchEntry])
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -85,7 +88,7 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content: newComment,
-          travelEntryId: params.id,
+          travelEntryId: id,
         }),
       })
 
@@ -109,7 +112,7 @@ export default function TravelDetailPage({ params }: { params: { id: string } })
 
     setDeleting(true)
     try {
-      const response = await fetch(`/api/travel?id=${params.id}`, {
+      const response = await fetch(`/api/travel?id=${id}`, {
         method: "DELETE",
       })
 

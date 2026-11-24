@@ -16,6 +16,7 @@ export default function LoginPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    invitationCode: "",
     nickname: "",
   })
   const [error, setError] = useState("")
@@ -34,8 +35,8 @@ export default function LoginPage() {
           redirect: false,
         })
 
-        if (result?.error) {
-          setError("用户名或密码错误")
+        if (!result?.ok || result.error) {
+          setError(result?.error === "FamilyAccessRequired" ? "请联系管理员开通家庭访问权限" : "用户名或密码错误")
         } else {
           router.push("/dashboard")
           router.refresh()
@@ -53,6 +54,7 @@ export default function LoginPage() {
           body: JSON.stringify({
             username: formData.username,
             email: formData.email,
+            invitationCode: formData.invitationCode.trim(),
             password: formData.password,
             nickname: formData.nickname || formData.username,
           }),
@@ -69,7 +71,7 @@ export default function LoginPage() {
             redirect: false,
           })
 
-          if (result?.error) {
+          if (!result?.ok || result.error) {
             setError("注册成功但登录失败，请手动登录")
             setIsLogin(true)
           } else {
@@ -157,7 +159,19 @@ export default function LoginPage() {
             {!isLogin && (
               <>
                 <div>
-                  <label className="mb-2 block text-sm font-bold">邮箱</label>
+                  <label htmlFor="invitation" className="mb-2 block text-sm font-bold">家庭邀请码</label>
+                  <input
+                    id="invitation"
+                    value={formData.invitationCode}
+                    onChange={(e) => setFormData({ ...formData, invitationCode: e.target.value })}
+                    className="input"
+                    placeholder="请输入管理员发给你的邀请码"
+                    autoComplete="off"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-bold">受邀邮箱</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -225,7 +239,7 @@ export default function LoginPage() {
                 }}
                 className="ml-1 font-black underline underline-offset-4"
               >
-                {isLogin ? "立即注册" : "立即登录"}
+                {isLogin ? "使用家庭邀请码" : "立即登录"}
               </button>
             </p>
           </div>

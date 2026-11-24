@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { requiredLongText } from "@/lib/validation"
 
 // 获取所有留言
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -40,7 +39,7 @@ export async function GET() {
 // 添加留言
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -76,7 +75,7 @@ export async function POST(request: Request) {
 // 删除留言
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }

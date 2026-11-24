@@ -1,6 +1,8 @@
 "use client"
 
+import { imageAccept, imageMimeTypes, maxImageBytes } from "@/lib/private-media"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { User, Camera, Upload, Save, Palette } from "lucide-react"
@@ -69,13 +71,13 @@ export default function ProfilePage() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    if (!file.type.startsWith("image/")) {
-      setMessage("只能上传图片文件")
+    if (!imageMimeTypes.includes(file.type)) {
+      setMessage("请选择 JPG、PNG、WebP 或 GIF 图片")
       return
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setMessage("图片大小不能超过10MB")
+    if (file.size > maxImageBytes) {
+      setMessage("图片大小不能超过 4 MB")
       return
     }
 
@@ -151,7 +153,14 @@ export default function ProfilePage() {
 
   return (
     <ThemedShell maxWidth="max-w-4xl">
-      <ThemedHeader title="个人中心" />
+      <ThemedHeader
+        title="个人中心"
+        action={session.user.role === "admin" ? (
+          <Link href="/settings/family" className={`rounded-full border px-4 py-2 text-sm font-bold ${current.pickerCard}`}>
+            家庭成员
+          </Link>
+        ) : undefined}
+      />
 
       <main>
         <ThemedPageHero
@@ -191,7 +200,7 @@ export default function ProfilePage() {
                   <input
                     id="avatar-upload"
                     type="file"
-                    accept="image/*"
+                    accept={imageAccept}
                     onChange={handleFileChange}
                     className="hidden"
                   />

@@ -17,12 +17,33 @@ model User {
   avatar        String?
   theme         String    @default("paper")
   role          String    @default("user")
+  accessStatus  FamilyAccess @default(PENDING)
+  sessionVersion Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
   comments      Comment[]
   travelEntries TravelEntry[]
   photoEntries  PhotoEntry[]
+  invitations   FamilyInvitation[]
+}
+
+enum FamilyAccess {
+  PENDING
+  ACTIVE
+  REVOKED
+}
+
+model FamilyInvitation {
+  id          String   @id @default(cuid())
+  email       String
+  codeHash    String   @unique
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  usedAt      DateTime?
+  revokedAt   DateTime?
+  creatorId   String
+  creator     User     @relation(fields: [creatorId], references: [id])
 }
 
 model BirthdayVideo {
@@ -32,6 +53,7 @@ model BirthdayVideo {
   bvid        String
   description String?
   thumbnail   String?
+  privateVideoKey String? @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

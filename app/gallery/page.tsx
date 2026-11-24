@@ -1,7 +1,7 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { Camera, Calendar, Plus, Grid, List, Trash2, X } from "lucide-react"
@@ -39,12 +39,20 @@ const categories = [
 export default function PhotosPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const linkedPhoto = useSearchParams().get("photo")
   const current = useCurrentThemeStyle()
   const [photos, setPhotos] = useState<PhotoEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedPhoto, setSelectedPhoto] = useState<PhotoEntry | null>(null)
+  const [openPhotoId, setOpenPhotoId] = useState<string | null>(null)
+  const selectedPhoto = photos.find((photo) => photo.id === (linkedPhoto ?? openPhotoId))
+
+  function closePhoto() {
+    setOpenPhotoId(null)
+    if (linkedPhoto) router.replace("/gallery", { scroll: false })
+  }
   const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
@@ -53,29 +61,31 @@ export default function PhotosPage() {
     }
   }, [status, router])
 
-  const fetchPhotos = useCallback(async () => {
+  const fetchPhotos = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true)
+    setLoadError(false)
     try {
-      const url = selectedCategory === "all"
-        ? "/api/photos"
-        : `/api/photos?category=${selectedCategory}`
-      const response = await fetch(url)
-      if (response.ok) {
-        const data = await response.json()
-        setPhotos(data)
-      }
-    } catch (error) {
-      console.error("获取照片失败:", error)
+      const url = selectedCategory === "all" || linkedPhoto ? "/api/photos" : `/api/photos?category=${selectedCategory}`
+      const response = await fetch(url, { signal, cache: "no-store" })
+      if (!response.ok) throw new Error("获取照片失败")
+      const data: PhotoEntry[] = await response.json()
+      if (!signal?.aborted) setPhotos(data)
+    } catch {
+      if (!signal?.aborted) setLoadError(true)
     } finally {
-      setLoading(false)
+      if (!signal?.aborted) setLoading(false)
     }
-  }, [selectedCategory])
+  }, [selectedCategory, linkedPhoto])
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void fetchPhotos()
-    }, 0)
-    return () => window.clearTimeout(timer)
-  }, [fetchPhotos])
+    if (status !== "authenticated") return
+    const controller = new AbortController()
+    const timer = window.setTimeout(() => void fetchPhotos(controller.signal), 0)
+    return () => {
+      window.clearTimeout(timer)
+      controller.abort()
+    }
+  }, [status, fetchPhotos])
 
   const handleDeletePhoto = async (id: string) => {
     if (!confirm("确定要删除这张照片吗？")) return
@@ -89,7 +99,7 @@ export default function PhotosPage() {
       if (response.ok) {
         setPhotos(photos.filter(p => p.id !== id))
         if (selectedPhoto?.id === id) {
-          setSelectedPhoto(null)
+          closePhoto()
         }
       } else {
         const error = await response.json()
@@ -187,7 +197,13 @@ export default function PhotosPage() {
           </div>
 
           {/* 空状态 */}
-          {photos.length === 0 && (
+          {loadError && (
+            <p role="alert" className={`rounded-[1.5rem] border p-5 ${current.card}`}>
+              暂时无法读取照片。 <button type="button" className="font-bold underline" onClick={() => void fetchPhotos()}>重试</button>
+            </p>
+          )}
+          {!loadError && linkedPhoto && !selectedPhoto && <p role="status" className="mb-4">这张照片已删除或不可查看。</p>}
+          {!loadError && photos.length === 0 && (
             <div className={`rounded-[2rem] border py-16 text-center ${current.pickerCard}`}>
               <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
                 <Camera className="w-8 h-8" />
@@ -203,7 +219,7 @@ export default function PhotosPage() {
           )}
 
           {/* 网格视图 */}
-          {photos.length > 0 && viewMode === "grid" && (
+          {!loadError && photos.length > 0 && viewMode === "grid" && (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {photos.map((photo) => (
                 <article
@@ -213,10 +229,11 @@ export default function PhotosPage() {
                   {/* 图片 */}
                   <div
                     className="aspect-[4/3] overflow-hidden cursor-pointer"
-                    onClick={() => setSelectedPhoto(photo)}
+                    onClick={() => setOpenPhotoId(photo.id)}
                   >
                     <img
                       src={photo.imageUrl}
+                      loading="lazy"
                       alt={photo.title}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
                     />
@@ -228,7 +245,7 @@ export default function PhotosPage() {
                     </span>
                     <h3
                       className="mb-1 cursor-pointer font-black"
-                      onClick={() => setSelectedPhoto(photo)}
+                      onClick={() => setOpenPhotoId(photo.id)}
                     >
                       {photo.title}
                     </h3>
@@ -243,7 +260,7 @@ export default function PhotosPage() {
           )}
 
           {/* 列表视图 */}
-          {photos.length > 0 && viewMode === "list" && (
+          {!loadError && photos.length > 0 && viewMode === "list" && (
             <div className="space-y-4">
               {photos.map((photo) => (
                 <article
@@ -253,10 +270,11 @@ export default function PhotosPage() {
                   {/* 图片 */}
                   <div
                     className="h-32 w-48 flex-shrink-0 cursor-pointer overflow-hidden rounded-2xl"
-                    onClick={() => setSelectedPhoto(photo)}
+                    onClick={() => setOpenPhotoId(photo.id)}
                   >
                     <img
                       src={photo.imageUrl}
+                      loading="lazy"
                       alt={photo.title}
                       className="w-full h-full object-cover transition-transform group-hover:scale-105"
                     />
@@ -269,7 +287,7 @@ export default function PhotosPage() {
                       </span>
                       <h3
                         className="mb-1 cursor-pointer font-black"
-                        onClick={() => setSelectedPhoto(photo)}
+                        onClick={() => setOpenPhotoId(photo.id)}
                       >
                         {photo.title}
                       </h3>
@@ -294,7 +312,7 @@ export default function PhotosPage() {
       {selectedPhoto && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
-          onClick={() => setSelectedPhoto(null)}
+          onClick={closePhoto}
         >
           <div
             className={`relative max-h-[90vh] w-full max-w-4xl overflow-auto rounded-[1.5rem] border ${current.pickerCard}`}
@@ -302,7 +320,8 @@ export default function PhotosPage() {
           >
             {/* 关闭按钮 */}
             <button
-              onClick={() => setSelectedPhoto(null)}
+              onClick={closePhoto}
+              aria-label="关闭照片"
               className="absolute top-4 right-4 z-20 p-2 bg-white/90 hover:bg-white rounded-full"
             >
               <X className="w-5 h-5" />

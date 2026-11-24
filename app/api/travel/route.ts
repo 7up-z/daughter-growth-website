@@ -1,13 +1,13 @@
+import { parsePrivateImageUrl } from "@/lib/private-media"
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { optionalString, parseDate, parseImageUrl, requiredLongText, requiredString } from "@/lib/validation"
+import { optionalString, parseDate, requiredLongText, requiredString } from "@/lib/validation"
 
 // 获取所有旅行日记
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -16,8 +16,8 @@ export async function GET(request: Request) {
     const id = searchParams.get("id")
 
     if (id) {
-      const entry = await prisma.travelEntry.findUnique({
-        where: { id },
+      const entry = await prisma.travelEntry.findFirst({
+        where: { id, OR: [{ published: true }, { authorId: session.user.id }] },
         include: {
           author: {
             select: {
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
 // 添加旅行日记
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     const content = requiredLongText(body.content, "日记内容")
     const location = optionalString(body.location, 100)
     const travelDate = parseDate(body.travelDate, "旅行日期")
-    const coverImage = parseImageUrl(body.coverImage, "封面图片", false)
+    const coverImage = parsePrivateImageUrl(body.coverImage, "封面图片", false)
 
     const entry = await prisma.travelEntry.create({
       data: {
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
 // 删除旅行日记
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }

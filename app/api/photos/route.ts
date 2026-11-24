@@ -1,13 +1,12 @@
+import { parsePrivateImageUrl } from "@/lib/private-media"
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
 import type { Prisma } from "@prisma/client"
-import { authOptions } from "@/lib/auth"
+import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import {
   allowedPhotoCategories,
   optionalString,
   parseDate,
-  parseImageUrl,
   parsePhotoCategory,
   parseTags,
   requiredString,
@@ -16,7 +15,7 @@ import {
 // 获取所有照片
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -60,7 +59,7 @@ export async function GET(request: Request) {
 // 添加照片
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
@@ -68,7 +67,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const title = requiredString(body.title, "标题", 100)
     const description = optionalString(body.description, 1_000)
-    const imageUrl = parseImageUrl(body.imageUrl)
+    const imageUrl = parsePrivateImageUrl(body.imageUrl, "照片")
     const photoDate = parseDate(body.photoDate, "拍摄日期", false)
     const category = parsePhotoCategory(body.category)
     const tags = parseTags(body.tags)
@@ -98,7 +97,7 @@ export async function POST(request: Request) {
 // 删除照片
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getFamilySession()
     if (!session) {
       return NextResponse.json({ error: "未登录" }, { status: 401 })
     }
