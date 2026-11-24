@@ -19,7 +19,6 @@ const legacyThemeMap: Record<string, Theme> = {
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
-const themeStyleVersion = "family-storybook-a-v2"
 
 const themes: Record<Theme, {
   name: string
@@ -39,14 +38,14 @@ const themes: Record<Theme, {
     name: "温馨绘本",
     description: "",
     colors: {
-      primary: "#7B7048",
-      secondary: "#F3E8D3",
-      background: "#FBF4E8",
+      primary: "#546245",
+      secondary: "#EEE7D9",
+      background: "#F8F6EF",
       surface: "#FFFDF8",
-      text: "#3F3A22",
-      textMuted: "#8A7C60",
-      accent: "#C86D49",
-      border: "#E7D8C0",
+      text: "#3A382B",
+      textMuted: "#6C6454",
+      accent: "#A34F34",
+      border: "#DED6C7",
     }
   },
   cinematic: {
@@ -101,42 +100,30 @@ function normalizeTheme(value: unknown): Theme | null {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { data: session } = useSession()
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "paper"
-
-    if (localStorage.getItem("theme-style-version") !== themeStyleVersion) {
-      localStorage.setItem("theme-style-version", themeStyleVersion)
-      localStorage.setItem("theme", "paper")
-      return "paper"
-    }
-
-    const savedTheme = normalizeTheme(localStorage.getItem("theme"))
-    return savedTheme ?? "paper"
-  })
+  const [localTheme, setLocalTheme] = useState<Theme | null>(null)
+  const theme = localTheme ?? normalizeTheme(session?.user?.theme) ?? "paper"
 
   useEffect(() => {
-    if (!session?.user?.theme) return
-
-    const sessionTheme = normalizeTheme(session.user.theme)
-    if (!localStorage.getItem("theme") && sessionTheme) {
-      const timer = window.setTimeout(() => setThemeState(sessionTheme), 0)
-      return () => window.clearTimeout(timer)
-    }
-  }, [session])
+    const timer = window.setTimeout(() => {
+      setLocalTheme((saved) => saved ?? normalizeTheme(localStorage.getItem("theme")))
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const themeConfig = themes[theme]
     const root = document.documentElement
 
+    root.dataset.theme = theme
+
     Object.entries(themeConfig.colors).forEach(([key, value]) => {
       root.style.setProperty(`--theme-${key}`, value)
     })
 
-    localStorage.setItem("theme", theme)
   }, [theme])
 
   const setTheme = async (newTheme: Theme) => {
-    setThemeState(newTheme)
+    setLocalTheme(newTheme)
     localStorage.setItem("theme", newTheme)
 
     if (session?.user) {

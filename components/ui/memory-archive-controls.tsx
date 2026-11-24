@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import type { MemoryArchive } from "@/lib/memory-archive"
-import { useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 export function useMemoryArchive(mode: "timeline" | "year", active: boolean) {
   const params = useSearchParams()
@@ -36,8 +35,11 @@ export function useMemoryArchive(mode: "timeline" | "year", active: boolean) {
   }, [url, active, retry])
 
   const current = active && response?.url === url ? response : null
+  const previous = active ? response?.archive : null
   return {
     archive: current?.archive ?? null,
+    years: previous?.years ?? [],
+    selectedYear: current?.archive?.year ?? (year ? Number(year) : previous?.year),
     loading: !current,
     failed: current?.archive === null,
     retry: () => {
@@ -47,30 +49,33 @@ export function useMemoryArchive(mode: "timeline" | "year", active: boolean) {
   }
 }
 
-export function YearSelector({ years, selected, path }: { years: number[]; selected: number; path: string }) {
-  const current = useCurrentThemeStyle()
+export function YearSelector({ years, selected, path }: { years: number[]; selected?: number; path: string }) {
+  if (!years.length) return null
   return (
-    <nav aria-label="按年份查看" className="my-6 flex flex-wrap gap-2">
-      {years.map((year) => (
-        <Link
-          key={year}
-          href={`${path}?year=${year}`}
-          aria-current={year === selected ? "page" : undefined}
-          className={`rounded-full border px-4 py-2 text-sm font-black ${year === selected ? current.primaryButton : current.pickerCard}`}
-        >
-          {year}年
-        </Link>
-      ))}
+    <nav aria-label="按年份查看" className="archive-years">
+      <p>按年查看</p>
+      <div className="archive-year-links">
+        {years.map((year) => (
+          <Link
+            key={year}
+            href={`${path}?year=${year}`}
+            aria-current={year === selected ? "page" : undefined}
+            aria-label={`${year}年`}
+            scroll={false}
+          >
+            {year}
+          </Link>
+        ))}
+      </div>
     </nav>
   )
 }
 
 export function ArchiveError({ retry }: { retry: () => void }) {
-  const current = useCurrentThemeStyle()
   return (
-    <div className={`mt-6 rounded-[1.5rem] border p-6 ${current.card}`} role="alert">
+    <div className="archive-status" role="alert">
       <p>暂时无法读取记录。</p>
-      <button type="button" onClick={retry} className="mt-2 font-bold underline underline-offset-4">重试</button>
+      <button type="button" onClick={retry} className="family-button family-button-outline">重试</button>
     </div>
   )
 }

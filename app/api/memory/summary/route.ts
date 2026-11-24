@@ -90,7 +90,7 @@ export async function GET(request: Request) {
       const records = await tx.$queryRaw<DatabaseRecord[]>`
         ${events}
         SELECT * FROM archive ${filter}
-         ORDER BY date DESC, type, id LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}
+         ORDER BY year DESC, (type = 'birthday'), date DESC, type, id LIMIT ${pageSize} OFFSET ${(page - 1) * pageSize}
       `
       const recent = records.map((record) => ({ ...record, date: record.date.toISOString() }))
       if (!mode) return { counts, recent }

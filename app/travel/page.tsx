@@ -114,10 +114,8 @@ export default function TravelPage() {
 
       <main>
         <ThemedPageHero
-          eyebrow="Travel Journal"
           title="旅行地图"
           description="按地点整理家庭旅行足迹，先从每一篇路上的日记开始。"
-          icon={<BookOpen className="h-4 w-4" />}
         />
 
         {/* 日记列表 - 博客风格 */}

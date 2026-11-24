@@ -141,10 +141,8 @@ export default function MessagesPage() {
 
       <main>
         <ThemedPageHero
-          eyebrow="Family Notes"
           title="家庭留言"
           description="保存家人写下的祝福、心里话和重要时刻里的回应。"
-          icon={<MessageCircle className="h-4 w-4" />}
         />
 
         {/* 留言输入框 */}

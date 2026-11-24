@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { BookOpen, Save, MapPin, Calendar } from "lucide-react"
+import { Save, MapPin, Calendar } from "lucide-react"
 import { ImageUploader } from "@/components/ui/image-uploader"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
@@ -77,9 +77,7 @@ export default function NewTravelPage() {
 
       <main>
         <ThemedPageHero
-          eyebrow="New Journal"
           title="写旅行记录"
-          icon={<BookOpen className="h-4 w-4" />}
         />
         <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>
           <form onSubmit={handleSubmit} className="space-y-6">

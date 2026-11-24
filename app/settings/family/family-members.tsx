@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { UsersRound } from "lucide-react"
 import { ThemedHeader, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 type Member = {
@@ -87,10 +86,8 @@ export function FamilyMembers() {
       <ThemedHeader title="家庭成员" backHref="/profile" />
       <main>
         <ThemedPageHero
-          eyebrow="Family Access"
           title="家庭成员"
           description="审核已有账号，为新家人生成邀请码，或撤销访问。"
-          icon={<UsersRound className="h-4 w-4" />}
         />
         <section className={`mt-6 space-y-4 rounded-[1.5rem] border p-5 ${current.card}`}>
           <h2 className="text-lg font-black">邀请家人</h2>

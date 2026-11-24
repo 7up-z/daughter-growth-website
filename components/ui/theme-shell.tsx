@@ -1,28 +1,20 @@
 "use client"
 
 import Link from "next/link"
-import { ChevronLeft, Heart } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { useTheme } from "@/components/providers/theme-provider"
 import { appThemeStyles } from "@/lib/app-theme"
+import { FamilyMasthead } from "./family-masthead"
 
 export function useCurrentThemeStyle() {
   const { theme } = useTheme()
   return appThemeStyles[theme]
 }
 
-export function ThemedLoading({ label = "加载中..." }: { label?: string }) {
-  const current = useCurrentThemeStyle()
-
+export function ThemedLoading({ label = "加载中…" }: { label?: string }) {
   return (
-    <div className={`min-h-screen ${current.shell}`}>
-      <div className="flex min-h-screen items-center justify-center px-6">
-        <div className={`rounded-[1.5rem] border px-8 py-7 text-center ${current.pickerCard}`}>
-          <div className={`mx-auto mb-4 flex h-14 w-14 animate-pulse items-center justify-center rounded-full ${current.cardIcon}`}>
-            <Heart className="h-7 w-7" />
-          </div>
-          <p className={`text-sm font-semibold ${current.secondaryText}`}>{label}</p>
-        </div>
-      </div>
+    <div className="yearbook-shell grid place-items-center px-6">
+      <p className="archive-status" role="status">{label}</p>
     </div>
   )
 }
@@ -34,11 +26,9 @@ export function ThemedShell({
   children: React.ReactNode
   maxWidth?: string
 }) {
-  const current = useCurrentThemeStyle()
-
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${current.shell}`}>
-      <div className={`mx-auto ${maxWidth} px-4 py-4 sm:px-6 lg:px-8`}>
+    <div className="yearbook-shell">
+      <div className={`yearbook-container ${maxWidth}`}>
         {children}
       </div>
     </div>
@@ -46,7 +36,7 @@ export function ThemedShell({
 }
 
 export function ThemedHeader({
-  backHref = "/dashboard",
+  backHref,
   title = "成长记录",
   action,
 }: {
@@ -54,61 +44,28 @@ export function ThemedHeader({
   title?: string
   action?: React.ReactNode
 }) {
-  const current = useCurrentThemeStyle()
-
   return (
-    <header className={`sticky top-4 z-30 rounded-[1.75rem] border ${current.header}`}>
-      <div className="flex min-h-16 items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link
-            href={backHref}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-current/10 transition hover:bg-current/15"
-            aria-label="返回"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Link>
-          <Link href="/dashboard" className="flex min-w-0 items-center gap-3 font-black tracking-tight">
-            <span className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-full sm:flex ${current.cardIcon}`}>
-              <Heart className="h-5 w-5" />
-            </span>
-            <span className="truncate break-keep text-base sm:text-lg">{title}</span>
-          </Link>
+    <>
+      <FamilyMasthead />
+      {(backHref || action) && (
+        <div className="family-section-actions" role="group" aria-label={`${title}操作`}>
+          {backHref && (
+            <Link href={backHref} className="family-text-link">
+              <ChevronLeft size={17} aria-hidden="true" /> 返回
+            </Link>
+          )}
+          {action && <div>{action}</div>}
         </div>
-        {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
-      </div>
-    </header>
+      )}
+    </>
   )
 }
 
-export function ThemedPageHero({
-  eyebrow,
-  title,
-  description,
-  icon,
-}: {
-  eyebrow: string
-  title: string
-  description?: string
-  icon?: React.ReactNode
-}) {
-  const current = useCurrentThemeStyle()
-
+export function ThemedPageHero({ title, description }: { title: string; description?: string }) {
   return (
-    <section className={`relative mt-5 overflow-hidden rounded-[2rem] border px-6 py-10 sm:px-8 ${current.hero}`}>
-      <div className={`absolute inset-0 bg-gradient-to-br ${current.heroGlow}`} />
-      <div className="absolute -right-12 top-8 h-36 w-36 rounded-full border border-current/10" />
-      <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className={`mb-3 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold ${current.pickerCard}`}>
-            {icon}
-            {eyebrow}
-          </p>
-          <h1 className="max-w-3xl break-keep text-3xl font-black leading-tight tracking-tight sm:text-4xl">{title}</h1>
-          {description && (
-            <p className={`mt-3 max-w-2xl text-sm leading-7 sm:text-base ${current.secondaryText}`}>{description}</p>
-          )}
-        </div>
-      </div>
+    <section className="family-subpage-title">
+      <h1 className="yearbook-display">{title}</h1>
+      {description && <p>{description}</p>}
     </section>
   )
 }

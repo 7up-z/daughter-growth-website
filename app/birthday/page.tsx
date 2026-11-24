@@ -137,10 +137,8 @@ export default function BirthdayPage() {
 
       <main>
         <ThemedPageHero
-          eyebrow="Birthday Films"
           title="生日影像"
           description="按年份归档生日视频，慢慢补齐照片和家人祝福。"
-          icon={<Video className="h-4 w-4" />}
         />
 
         {linkedVideo && !selectedVideo && <p className="mt-5 text-sm" role="status">这段影像已删除或不可查看。</p>}

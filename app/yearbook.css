@@ -1,0 +1,565 @@
+:root {
+  --yearbook-bg: #f8f6ef;
+  --yearbook-paper: #fdfaf3;
+  --yearbook-ink: #332f25;
+  --yearbook-muted: #685d4c;
+  --yearbook-rule: #ded5c5;
+  --yearbook-accent: #546245;
+  --yearbook-on-accent: #ffffff;
+  --yearbook-warm: #a34f34;
+  --yearbook-on-warm: #ffffff;
+  --yearbook-soft: #eeeadc;
+  --yearbook-serif: "Noto Serif CJK SC", "Songti SC", STSong, SimSun, Georgia, serif;
+  --yearbook-numerals: Georgia, "Times New Roman", serif;
+}
+
+:root[data-theme="cinematic"] {
+  --yearbook-bg: #14110e;
+  --yearbook-paper: #1e1813;
+  --yearbook-ink: #f4e7d0;
+  --yearbook-muted: #c6aa8b;
+  --yearbook-rule: #514237;
+  --yearbook-accent: #e0be87;
+  --yearbook-on-accent: #18120d;
+  --yearbook-warm: #e7c58e;
+  --yearbook-on-warm: #18120d;
+  --yearbook-soft: #35271b;
+}
+
+:root[data-theme="playful"] {
+  --yearbook-bg: #fff8e8;
+  --yearbook-paper: #fffdf6;
+  --yearbook-ink: #292013;
+  --yearbook-muted: #584c3d;
+  --yearbook-rule: #d8c8ac;
+  --yearbook-accent: #344eb0;
+  --yearbook-on-accent: #ffffff;
+  --yearbook-warm: #b43d33;
+  --yearbook-on-warm: #ffffff;
+  --yearbook-soft: #fff0bd;
+}
+
+:root[data-theme="future"] {
+  --yearbook-bg: #f2f5ff;
+  --yearbook-paper: #fafbff;
+  --yearbook-ink: #222746;
+  --yearbook-muted: #535e8f;
+  --yearbook-rule: #d5dcf1;
+  --yearbook-accent: #4756a6;
+  --yearbook-on-accent: #ffffff;
+  --yearbook-warm: #65489b;
+  --yearbook-on-warm: #ffffff;
+  --yearbook-soft: #e8edfb;
+}
+
+.yearbook-shell {
+  min-height: 100vh;
+  color: var(--yearbook-ink);
+  background: var(--yearbook-bg);
+}
+
+.yearbook-container {
+  width: min(100% - 3rem, 1220px);
+  margin-inline: auto;
+  padding: 1.75rem 0 3rem;
+}
+
+.yearbook-display {
+  font-family: var(--yearbook-serif);
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: 1.22;
+}
+
+.family-masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(.6rem, 2vw, 1.5rem);
+  min-height: 4rem;
+  padding: .45rem clamp(.8rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--yearbook-rule);
+  border-radius: 1rem;
+  background: var(--yearbook-paper);
+}
+
+.family-wordmark {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex: none;
+  font-family: var(--yearbook-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.family-wordmark svg { color: var(--yearbook-accent); }
+
+.family-main-nav {
+  display: none;
+  align-self: stretch;
+  align-items: stretch;
+  gap: clamp(.7rem, 1.65vw, 1.35rem);
+  white-space: nowrap;
+}
+
+.family-main-nav a {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-inline: .15rem;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.family-main-nav a:hover,
+.family-main-nav a[aria-current="page"] {
+  color: var(--yearbook-accent);
+}
+
+.family-main-nav a[aria-current="page"]::after {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  left: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--yearbook-accent);
+  content: "";
+}
+
+.family-masthead-actions {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  flex: none;
+  margin-inline-start: auto;
+}
+
+.family-icon-button {
+  display: inline-grid;
+  min-width: 2.65rem;
+  min-height: 2.65rem;
+  place-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.family-icon-button:hover,
+.family-icon-button[data-state="open"] {
+  background: var(--yearbook-soft);
+}
+
+.family-menu {
+  z-index: 60;
+  min-width: 10.25rem;
+  max-width: min(18rem, 90vw);
+  max-height: var(--radix-dropdown-menu-content-available-height);
+  overflow-y: auto;
+  padding: .35rem;
+  border: 1px solid var(--yearbook-rule);
+  border-radius: .75rem;
+  color: var(--yearbook-ink);
+  background: var(--yearbook-paper);
+  box-shadow: 0 10px 28px #22201319;
+}
+
+.family-menu-label { padding: .4rem .55rem; color: var(--yearbook-muted); font-size: .82rem; }
+
+.family-menu-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.55rem;
+  padding: .35rem .55rem;
+  border-radius: .4rem;
+  font-size: .9rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.family-menu-item[data-highlighted],
+.family-menu-item[aria-current="page"] {
+  color: var(--yearbook-accent);
+  background: var(--yearbook-soft);
+}
+
+.family-menu-separator { height: 1px; margin: .3rem .4rem; background: var(--yearbook-rule); }
+.family-theme-swatch { width: .7rem; height: .7rem; flex: none; border-radius: 50%; }
+
+.family-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .42rem;
+  width: fit-content;
+  min-height: 2.65rem;
+  padding: .45rem .95rem;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  font-size: .88rem;
+  font-weight: 650;
+  line-height: 1.25;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s;
+}
+
+.family-button-primary { background: var(--yearbook-accent); color: var(--yearbook-on-accent); }
+.family-button-warm { background: var(--yearbook-warm); color: var(--yearbook-on-warm); }
+.family-button-outline { border-color: var(--yearbook-rule); }
+.family-button-primary:hover { background: color-mix(in srgb, var(--yearbook-accent) 89%, var(--yearbook-ink)); }
+.family-button-warm:hover { background: color-mix(in srgb, var(--yearbook-warm) 87%, var(--yearbook-ink)); }
+.family-button-outline:hover { background: var(--yearbook-soft); border-color: var(--yearbook-accent); }
+.family-button:disabled { opacity: .65; cursor: wait; }
+
+.family-text-link {
+  display: inline-flex;
+  min-height: 2.4rem;
+  align-items: center;
+  gap: .3rem;
+  color: var(--yearbook-accent);
+  font-weight: 650;
+  font-size: .9rem;
+  text-underline-offset: .25rem;
+}
+
+.family-text-link:hover { text-decoration: underline; }
+
+.yearbook-shell :is(a, button):focus-visible {
+  outline: 2px solid var(--yearbook-accent);
+  outline-offset: 3px;
+}
+
+.yearbook-cover,
+.archive-main {
+  margin-top: .9rem;
+  border: 1px solid var(--yearbook-rule);
+  border-radius: 1rem;
+  background: var(--yearbook-paper);
+}
+
+.yearbook-cover { overflow: hidden; }
+
+.yearbook-cover-main {
+  display: grid;
+  min-height: 26rem;
+  grid-template-columns: minmax(0, .80fr) minmax(0, 1.20fr);
+}
+
+.yearbook-cover-copy {
+  align-self: center;
+  position: relative;
+  z-index: 1;
+  padding: 2.5rem 0 2.5rem clamp(1.5rem, 7vw, 5rem);
+}
+
+.yearbook-cover-title {
+  font-size: clamp(2.7rem, 5.45vw, 4.7rem);
+}
+
+.yearbook-cover-title span { display: block; }
+.yearbook-cover-caption { margin-top: 1.1rem; color: var(--yearbook-muted); font-size: clamp(.9rem, 1.45vw, 1.1rem); }
+
+.yearbook-cover-login {
+  margin-top: 1.4rem;
+  min-height: 2.95rem;
+  padding-inline: 1.15rem;
+  gap: .65rem;
+  font-size: 1rem;
+}
+
+.yearbook-cover-privacy {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: .65rem;
+  color: var(--yearbook-muted);
+  font-size: .85rem;
+}
+
+.yearbook-cover-art { position: relative; min-width: 0; margin-inline-start: -10%; }
+.yearbook-cover-art img {
+  object-fit: cover;
+  object-position: 65% 56%;
+  mask-image: linear-gradient(90deg, transparent 1%, #000 23%);
+}
+
+:root[data-theme="cinematic"] .yearbook-cover-art img { filter: brightness(.78) saturate(.9); }
+
+.yearbook-sample {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: clamp(1.1rem, 4vw, 3rem);
+  min-height: 6.4rem;
+  padding: .6rem clamp(1.5rem, 6vw, 4.6rem) 1.35rem;
+}
+
+.yearbook-sample > p { font-size: .88rem; color: var(--yearbook-muted); white-space: nowrap; }
+
+.yearbook-sample ol {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  text-align: center;
+  color: var(--yearbook-muted);
+  font: 700 italic clamp(1.25rem, 2.7vw, 2.1rem) / 1.15 var(--yearbook-numerals);
+}
+
+.yearbook-sample ol::before {
+  position: absolute;
+  inset: auto 0 .315rem;
+  height: 1px;
+  background: var(--yearbook-rule);
+  content: "";
+}
+
+.yearbook-sample li { position: relative; padding-bottom: .85rem; }
+.yearbook-sample li::after {
+  position: absolute;
+  bottom: .06rem;
+  left: 50%;
+  width: .56rem;
+  height: .56rem;
+  transform: translateX(-50%);
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: var(--yearbook-paper);
+  content: "";
+}
+
+.yearbook-sample li[data-latest] { color: var(--yearbook-accent); }
+.yearbook-sample li[data-latest]::after { background: var(--yearbook-accent); }
+
+.archive-main { padding: clamp(1rem, 3vw, 2.25rem); }
+
+.archive-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .65rem 1rem;
+  margin-bottom: 1.3rem;
+}
+
+.archive-page-heading h1 { font-size: clamp(1.75rem, 3.5vw, 2.8rem); }
+.archive-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .7rem; }
+.archive-mobile-links { display: none; }
+
+.archive-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: .75rem 1.6rem;
+}
+
+.archive-years > p { margin: 0 0 .55rem; color: var(--yearbook-muted); font-size: .86rem; }
+.archive-year-links { display: flex; gap: .2rem; overflow-x: auto; }
+.archive-year-links a {
+  display: block;
+  min-width: 5.4rem;
+  padding: .55rem .85rem;
+  border-radius: .4rem;
+  text-align: center;
+  font-size: .98rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--yearbook-muted);
+}
+.archive-year-links a:hover { color: var(--yearbook-accent); background: var(--yearbook-soft); }
+.archive-year-links a[aria-current="page"] { color: var(--yearbook-on-accent); background: var(--yearbook-accent); }
+.archive-content { min-width: 0; }
+
+.archive-month { position: relative; padding-inline-start: 1.4rem; }
+.archive-month + .archive-month { margin-top: 1.05rem; }
+.archive-month::before {
+  position: absolute;
+  inset: .9rem auto .15rem .25rem;
+  width: 1px;
+  background: var(--yearbook-accent);
+  opacity: .65;
+  content: "";
+}
+
+.archive-month-title {
+  position: relative;
+  color: var(--yearbook-accent);
+  font: 700 italic 1.55rem / 1.25 var(--yearbook-numerals);
+}
+
+.archive-month-title::before,
+.archive-record::before {
+  position: absolute;
+  top: .62rem;
+  left: -1.38rem;
+  width: .57rem;
+  height: .57rem;
+  border: 1px solid var(--yearbook-accent);
+  border-radius: 50%;
+  background: var(--yearbook-accent);
+  content: "";
+}
+
+.archive-record { position: relative; margin-top: .15rem; }
+.archive-record::before { top: 1.1rem; background: var(--yearbook-paper); }
+.archive-record + .archive-record { border-top: 1px solid var(--yearbook-rule); }
+
+.archive-record-link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "date copy type" "art art art";
+  align-items: start;
+  gap: .35rem .6rem;
+  min-height: 2.9rem;
+  padding: .7rem .15rem .65rem;
+  border-radius: .35rem;
+}
+
+.archive-record-link:hover h3 { color: var(--yearbook-accent); text-decoration: underline; text-underline-offset: .26em; }
+.archive-record-date { grid-area: date; font-size: .88rem; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.archive-record-copy { grid-area: copy; min-width: 0; }
+.archive-record-copy h3 { font-size: .98rem; font-weight: 700; text-wrap: pretty; overflow-wrap: anywhere; word-break: normal; }
+.archive-record-detail { display: block; margin-top: .14rem; color: var(--yearbook-muted); font-size: .78rem; font-weight: 400; }
+
+.archive-record-image {
+  grid-area: art;
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  overflow: hidden;
+  border-radius: .45rem;
+}
+.archive-record-image img { object-fit: cover; }
+.archive-record-type {
+  grid-area: type;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: .35rem;
+  min-height: 1.3rem;
+  color: var(--yearbook-muted);
+  font-size: .8rem;
+  white-space: nowrap;
+}
+.archive-record-arrow { display: none; }
+
+.archive-status { min-height: 5rem; padding: 1.2rem .25rem; color: var(--yearbook-muted); }
+.archive-status button { margin-top: .6rem; }
+
+.archive-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: .8rem;
+  margin-top: .9rem;
+  padding: .55rem .15rem 0;
+  border-top: 1px solid var(--yearbook-rule);
+  color: var(--yearbook-muted);
+  font-size: .86rem;
+}
+.archive-pagination nav { display: flex; align-items: center; gap: 1rem; }
+.archive-pagination a { display: inline-flex; min-height: 2.65rem; align-items: center; color: var(--yearbook-accent); font-weight: 650; }
+
+.archive-year-counts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 1.2rem;
+  padding: .4rem 0 .9rem;
+  border-bottom: 1px solid var(--yearbook-rule);
+}
+.archive-year-counts > a { padding-inline: .4rem; text-align: center; }
+.archive-year-counts > a + a { border-inline-start: 1px solid var(--yearbook-rule); }
+.archive-year-count {
+  font: 700 clamp(1.4rem, 3.2vw, 2.25rem) / 1.22 var(--yearbook-numerals);
+  color: var(--yearbook-accent);
+}
+.archive-year-count-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+  margin-top: .35rem;
+  color: var(--yearbook-muted);
+  font-size: .8rem;
+}
+
+.family-section-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin-top: .65rem;
+}
+.family-section-actions > div { display: flex; align-items: center; gap: .4rem; margin-inline-start: auto; }
+.family-subpage-title { padding: 1.2rem 0 .9rem; border-bottom: 1px solid var(--yearbook-rule); }
+.family-subpage-title h1 { font-size: clamp(1.7rem, 3vw, 2.45rem); }
+.family-subpage-title p { margin-top: .45rem; color: var(--yearbook-muted); font-size: .93rem; }
+.family-login { width: min(100%, 30rem); margin: 1.8rem auto; }
+.family-login h1 { font-size: clamp(1.9rem, 3.5vw, 2.6rem); }
+.family-login .family-button { width: 100%; min-height: 2.9rem; }
+.family-login .input { background: var(--yearbook-paper); }
+
+@media (min-width: 680px) {
+  .archive-layout:has(.archive-years) { grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr); }
+  .archive-years { border-inline-end: 1px solid var(--yearbook-rule); padding-inline-end: 1rem; }
+  .archive-year-links { display: grid; gap: .28rem; overflow: visible; }
+  .archive-year-links a {
+    padding: .4rem .85rem;
+    text-align: start;
+    font: 700 italic clamp(1.55rem, 3vw, 2.35rem) / 1.15 var(--yearbook-numerals);
+  }
+  .archive-record-link {
+    grid-template-columns: minmax(5rem, .8fr) minmax(6rem, 1fr) minmax(5rem, 1.45fr) minmax(3.6rem, .65fr);
+    grid-template-areas: "date copy art type";
+    align-items: center;
+    gap: .8rem;
+  }
+  .archive-record-type { justify-content: start; font-size: .865rem; }
+  .archive-record-date { font-size: .97rem; }
+  .archive-record-copy h3 { font-size: 1.08rem; }
+  .archive-record-arrow { display: block; margin-left: auto; }
+  .archive-record::before { top: calc(50% - .285rem); }
+}
+
+@media (min-width: 1024px) {
+  .family-main-nav { display: flex; margin-inline: auto; }
+  .family-masthead-actions { margin-inline-start: 0; }
+  .family-mobile-nav { display: none; }
+}
+
+@media (max-width: 679px) {
+  .yearbook-container { width: calc(100% - 1.25rem); padding-top: .65rem; }
+  .family-masthead { min-height: 3.45rem; padding-inline: .65rem; }
+  .family-wordmark { font-size: 1.21rem; }
+  .family-masthead-actions { gap: .15rem; }
+  .family-masthead-actions .family-button { padding-inline: .6rem; }
+  .yearbook-cover-main { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .yearbook-cover-copy { padding: 1.7rem 1.2rem .4rem; }
+  .yearbook-cover-title { font-size: clamp(2.25rem, 9vw, 3.1rem); }
+  .yearbook-cover-caption { margin-top: .55rem; }
+  .yearbook-cover-login { margin-top: .95rem; }
+  .yearbook-cover-art { min-height: clamp(9rem, 45vw, 14rem); margin: 0; }
+  .yearbook-cover-art img { object-position: 72% 55%; mask-image: linear-gradient(180deg, transparent, #000 19%, #000 90%, transparent); }
+  .yearbook-sample { min-height: 4.5rem; padding-inline: 1rem; }
+  .archive-page-heading { position: relative; margin-bottom: .95rem; }
+  .archive-page-heading:has(.archive-actions) h1 { padding-inline-end: 6.7rem; }
+  .archive-actions .family-button-primary { position: absolute; top: 0; right: 0; min-height: 2.35rem; padding-inline: .65rem; }
+  .archive-journal-link, .archive-review-link { display: none; }
+  .archive-mobile-links { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-top: .5rem; }
+  .archive-years > p { display: none; }
+  .archive-year-links { padding: .15rem; border: 1px solid var(--yearbook-rule); border-radius: 99px; }
+  .archive-year-links a { flex: 1 0 auto; min-width: 4.35rem; border-radius: 99px; }
+  .archive-record-image { aspect-ratio: 2.55 / 1; }
+}
+
+@media (max-width: 375px) {
+  .family-icon-button { min-width: 2.2rem; }
+  .archive-page-heading h1 { font-size: 1.55rem; }
+  .archive-record-date, .archive-record-type { font-size: .76rem; }
+  .archive-record-type svg { display: none; }
+}

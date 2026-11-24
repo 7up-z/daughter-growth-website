@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Check, Palette } from "lucide-react"
+import { Check } from "lucide-react"
 import { Theme, themes, useTheme } from "@/components/providers/theme-provider"
 import { appThemeStyles, themeOrder } from "@/lib/app-theme"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell } from "@/components/ui/theme-shell"
@@ -30,10 +30,8 @@ export default function ThemeSettingsPage() {
       <ThemedHeader title="主题设置" />
       <main>
         <ThemedPageHero
-          eyebrow="Theme Settings"
           title="主题设置"
           description="选择后会保存在本机；登录状态下也会同步到个人资料。"
-          icon={<Palette className="h-4 w-4" />}
         />
 
         <section className="mt-6 grid gap-4 md:grid-cols-2">

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./yearbook.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: "小天使的成长记录",
-  description: "记录女儿成长的每一个美好瞬间",
+  title: "小咩 · 成长年鉴",
+  description: "把成长的每一页，留给家人慢慢翻看。",
 };
 
 export default function RootLayout({

@@ -174,9 +174,7 @@ export default function PhotosPage() {
 
       <main>
           <ThemedPageHero
-            eyebrow="Photo Gallery"
             title="摄影相册"
-            icon={<Camera className="h-4 w-4" />}
           />
 
           {/* 分类筛选 */}

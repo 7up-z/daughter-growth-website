@@ -38,3 +38,16 @@ export function formatMemoryDate(record: Pick<MemoryRecord, "type" | "year" | "d
     timeZone: familyTimeZone, year: "numeric", month: "long", day: "numeric",
   })
 }
+
+const memoryDayFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: familyTimeZone,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+})
+
+export function memoryCalendarDate(record: MemoryRecord) {
+  if (record.type === "birthday") return null
+  const [year, month, day] = memoryDayFormatter.format(new Date(record.date)).split("-")
+  return { iso: `${year}-${month}-${day}`, month: Number(month), label: `${Number(month)}月${Number(day)}日` }
+}

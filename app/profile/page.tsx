@@ -164,9 +164,7 @@ export default function ProfilePage() {
 
       <main>
         <ThemedPageHero
-          eyebrow="Profile"
           title="个人中心"
-          icon={<User className="h-4 w-4" />}
         />
 
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">

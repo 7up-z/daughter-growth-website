@@ -75,10 +75,9 @@ app/
 - `lib/memory-modules.ts`：六模块配置。
 - `lib/app-theme.ts`：主题样式 token。
 - `components/providers/theme-provider.tsx`：主题状态、localStorage、用户资料同步。
-- `components/ui/theme-shell.tsx`：主题页面外壳和通用 Header/Hero。
-- `components/ui/memory-module-grid.tsx`：六模块卡片网格。
-- `components/ui/recent-activity.tsx`：近期记录，公开页使用脱敏示例，登录后读取真实汇总。
-- `components/ui/theme-onboarding.tsx`：首次访问主题选择。
+- `components/ui/theme-shell.tsx`：内容页外壳、页头和操作区。
+- `components/ui/family-masthead.tsx`：六模块导航、四套主题和家庭账户入口。
+- `components/ui/archive-records.tsx`：时间线与年度回顾共用的月份分组和记录。
 
 ## 关键入口 / 核心模块
 
@@ -89,7 +88,7 @@ app/
 | 生产启动 | `pnpm run start` |
 | 数据库迁移 | `pnpm prisma migrate deploy` |
 | 首页 | `/` |
-| 登录后首页 | `/dashboard` |
+| 登录后首页 | `/dashboard`，进入 `/timeline` |
 | 成长时间线 | `/timeline` |
 | 生日影像 | `/birthday` |
 | 旅行地图 | `/travel` |

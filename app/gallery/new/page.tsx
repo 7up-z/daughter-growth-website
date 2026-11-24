@@ -89,9 +89,7 @@ export default function NewPhotoPage() {
 
       <main>
         <ThemedPageHero
-          eyebrow="New Photo"
           title="上传照片"
-          icon={<Camera className="h-4 w-4" />}
         />
         <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>
           <form onSubmit={handleSubmit} className="space-y-6">
