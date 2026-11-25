@@ -3,6 +3,7 @@ import "./globals.css";
 import "./yearbook.css";
 import "./chronicle.css";
 import "./atlas.css";
+import "./editorial.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 

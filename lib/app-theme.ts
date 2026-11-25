@@ -14,13 +14,13 @@ export const themeOrder: Theme[] = ["paper", "cinematic", "playful", "future"]
 
 export const appThemeStyles: Record<Theme, AppThemeStyle> = {
   paper: {
-    eyebrow: "Family Album · 温馨绘本",
-    primaryButton: "bg-[#546245] text-white hover:bg-[#45533a]",
-    secondaryText: "text-[#685d4c]",
-    card: "border-[#ded6c7] bg-[#fdfaf3]",
-    cardIcon: "bg-[#546245] text-[#fff9eb]",
-    preview: "bg-[#f8ead6] border-[#dfc9a8]",
-    pickerCard: "bg-[#fffdf8] border-[#dfc9a8]",
+    eyebrow: "Family Album · 荧光叠印",
+    primaryButton: "bg-[#4826c7] text-white hover:bg-[#341a97]",
+    secondaryText: "text-[#595269]",
+    card: "border-[#d1c8da] bg-[#fcf9f1]",
+    cardIcon: "bg-[#4826c7] text-white",
+    preview: "bg-[#ede5f9] border-[#d1c8da]",
+    pickerCard: "bg-[#fcf9f1] border-[#d1c8da]",
   },
   cinematic: {
     eyebrow: "Time Capsule · 电影相册",

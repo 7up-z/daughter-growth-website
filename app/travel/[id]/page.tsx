@@ -1,11 +1,12 @@
 "use client"
 
+import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { EntryPlaceEditor } from "@/components/map/entry-place-editor"
-import type { EntryPlace } from "@/lib/entry-place"
-import { BookOpen, Calendar, User, MessageCircle, Send, Trash2 } from "lucide-react"
+import { placeName, type EntryPlace } from "@/lib/entry-place"
+import { User, MessageCircle, Send, Trash2 } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 interface TravelEntry {
@@ -136,6 +137,7 @@ export default function TravelDetailPage() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString("zh-CN", {
+      timeZone: "Asia/Shanghai",
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -153,15 +155,16 @@ export default function TravelDetailPage() {
   const isAuthor = session.user.id === entry.author.id
 
   return (
-    <ThemedShell maxWidth="max-w-4xl">
+    <ThemedShell>
       <ThemedHeader
         backHref="/travel"
+        backLabel="返回旅行日记"
         title="旅行日记"
         action={isAuthor && (
           <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="rounded-full bg-red-500 p-2 text-white transition hover:bg-red-600 disabled:opacity-50"
+                className="family-icon-button"
                 title="删除日记"
               >
                 <Trash2 className="w-5 h-5" />
@@ -170,75 +173,34 @@ export default function TravelDetailPage() {
       />
 
       <main className="mt-5">
-        <article className={`overflow-hidden rounded-[2rem] border ${current.card}`}>
-          {/* 封面图 */}
-          {entry.coverImage ? (
-            <div className="aspect-video">
-              <img
-                src={entry.coverImage}
-                alt={entry.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className={`flex aspect-video items-center justify-center ${current.preview}`}>
-              <BookOpen className="w-24 h-24 opacity-45" />
-            </div>
-          )}
-
-          {/* 内容 */}
-          <div className="p-8">
-            {/* 元信息 */}
-            <div className={`mb-6 flex flex-wrap items-center gap-4 text-sm font-bold ${current.secondaryText}`}>
-              <div className="flex items-center space-x-1">
-                <Calendar className="w-4 h-4" />
-                <span>{formatDate(entry.travelDate)}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <MessageCircle className="w-4 h-4" />
-                <span>{entry._count.comments} 条留言</span>
+        <article className="travel-article">
+          <header className="travel-article-heading">
+            <div>
+              <h1 className="yearbook-display">{entry.title}</h1>
+              <div className="editorial-meta">
+                <time dateTime={entry.travelDate}>{formatDate(entry.travelDate)}</time>
+                {(entry.place || entry.location) && <span className="editorial-highlight">{entry.place ? placeName(entry.place) : entry.location}</span>}
+                <span>{entry.author.nickname || entry.author.username}</span>
+                <a href="#travel-comments"><MessageCircle size={16} aria-hidden="true" /> {entry._count.comments} 条留言</a>
               </div>
             </div>
-
-            {/* 标题 */}
-            <h1 className="mb-6 text-3xl font-black">{entry.title}</h1>
-
-            <EntryPlaceEditor key={entry.id} type="travel" id={entry.id} place={entry.place}
-              legacyLabel={entry.location} canEdit={session?.user.role === "admin" || session?.user.id === entry.author.id}
-              onSaved={(place) => setEntry((previous) => previous ? { ...previous, place } : previous)} />
-
-            {/* 作者信息 */}
-            <div className="flex items-center space-x-3 mb-8 pb-8 border-b border-[var(--theme-border)]">
-              {entry.author.avatar ? (
-                <img
-                  src={entry.author.avatar}
-                  alt={entry.author.nickname || entry.author.username}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-              ) : (
-                <div className={`flex h-12 w-12 items-center justify-center rounded-full ${current.cardIcon}`}>
-                  <span className="text-lg font-black">
-                    {(entry.author.nickname || entry.author.username)[0]}
-                  </span>
-                </div>
-              )}
-              <div>
-                <p className="font-black">{entry.author.nickname || entry.author.username}</p>
-                <p className={`text-sm ${current.secondaryText}`}>日记作者</p>
-              </div>
-            </div>
-
-            {/* 正文 */}
-            <div className="mb-8 max-w-none">
-              <p className="whitespace-pre-wrap text-lg leading-8">
-                {entry.content}
-              </p>
-            </div>
+            <Image className="editorial-ornament" src="/images/risograph-shell.webp" alt="" width={158} height={158} />
+          </header>
+          {entry.coverImage && <img className="travel-article-image" src={entry.coverImage} alt="" />}
+          <div className="travel-article-spread">
+            <p className="editorial-prose">{entry.content}</p>
+            {(entry.place || entry.location || session?.user.role === "admin" || session?.user.id === entry.author.id) && (
+              <aside className="travel-place-note" aria-label="旅行地点">
+                <EntryPlaceEditor key={entry.id} type="travel" id={entry.id} place={entry.place}
+                  legacyLabel={entry.location} canEdit={session?.user.role === "admin" || session?.user.id === entry.author.id}
+                  onSaved={(place) => setEntry((previous) => previous ? { ...previous, place } : previous)} />
+              </aside>
+            )}
           </div>
         </article>
 
         {/* 评论区 */}
-        <div className={`mt-6 rounded-[2rem] border p-6 ${current.card}`}>
+        <div id="travel-comments" className="travel-comments">
           <h2 className="mb-6 flex items-center text-xl font-black">
             <MessageCircle className="mr-2 h-5 w-5" />
             留言 ({entry.comments.length})

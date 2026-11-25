@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import { MessageCircle, Send, User, Trash2 } from "lucide-react"
-import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
+import { Send, Trash2 } from "lucide-react"
+import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell } from "@/components/ui/theme-shell"
 
 interface Message {
   id: string
@@ -22,10 +22,10 @@ export default function MessagesPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const linkedMessage = useSearchParams().get("message")
-  const current = useCurrentThemeStyle()
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [sending, setSending] = useState(false)
   const [deleting, setDeleting] = useState<string | null>(null)
 
@@ -36,14 +36,13 @@ export default function MessagesPage() {
   }, [status, router])
 
   const fetchMessages = useCallback(async () => {
+    setLoadError(false)
     try {
       const response = await fetch("/api/messages")
-      if (response.ok) {
-        const data = await response.json()
-        setMessages(data)
-      }
-    } catch (error) {
-      console.error("获取留言失败:", error)
+      if (!response.ok) throw new Error("无法读取留言")
+      setMessages(await response.json())
+    } catch {
+      setLoadError(true)
     } finally {
       setLoading(false)
     }
@@ -97,7 +96,7 @@ export default function MessagesPage() {
       })
 
       if (response.ok) {
-        setMessages(messages.filter(m => m.id !== id))
+        setMessages((previous) => previous.filter((message) => message.id !== id))
       } else {
         const error = await response.json()
         alert(error.error || "删除失败")
@@ -113,6 +112,7 @@ export default function MessagesPage() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleString("zh-CN", {
+      timeZone: "Asia/Shanghai",
       month: "short",
       day: "numeric",
       hour: "2-digit",
@@ -135,123 +135,50 @@ export default function MessagesPage() {
     return null
   }
 
+  function renderLetter(message: Message, featured = false) {
+    return (
+      <article id={`message-${message.id}`} key={message.id}
+        className={`family-letter ${featured ? "family-letter-feature" : ""}`} data-linked={linkedMessage === message.id || undefined}>
+        <blockquote>{message.content}</blockquote>
+        <footer>
+          <span>{message.author.nickname || message.author.username}</span>
+          {message.author.id === session?.user.id && <span>（我）</span>}
+          <time dateTime={message.createdAt}>{formatDate(message.createdAt)}</time>
+          {canDelete(message) && (
+            <button type="button" className="family-icon-button" aria-label="删除留言" disabled={deleting === message.id}
+              onClick={() => void handleDeleteMessage(message.id)}>
+              <Trash2 size={16} aria-hidden="true" />
+            </button>
+          )}
+        </footer>
+      </article>
+    )
+  }
+
   return (
-    <ThemedShell maxWidth="max-w-4xl">
+    <ThemedShell>
       <ThemedHeader title="家庭留言" />
-
       <main>
-        <ThemedPageHero
-          title="家庭留言"
-          description="那些没来得及当面说的话，留在这里，等家人慢慢读。"
-        />
-
-        {/* 留言输入框 */}
-        <div className={`my-6 rounded-[1.5rem] border p-5 sm:p-6 ${current.card}`}>
-          <form onSubmit={handleSendMessage}>
-            <div className="flex items-start gap-4">
-              <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full ${current.cardIcon}`}>
-                {session.user.avatar ? (
-                  <img
-                    src={session.user.avatar}
-                    alt=""
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-5 h-5" />
-                )}
-              </div>
-              <div className="flex-1">
-                <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="写下您的留言..."
-                  className="input min-h-[100px] resize-none"
-                  maxLength={500}
-                />
-                <div className="flex items-center justify-between mt-3">
-                  <span className={`text-sm font-bold ${current.secondaryText}`}>
-                    {newMessage.length}/500
-                  </span>
-                  <button
-                    type="submit"
-                    disabled={!newMessage.trim() || sending}
-                    className={`inline-flex items-center gap-2 rounded-full px-5 py-2 font-black transition disabled:opacity-60 ${current.primaryButton}`}
-                  >
-                    <Send className="w-4 h-4" />
-                    {sending ? "发送中..." : "发送"}
-                  </button>
-                </div>
-              </div>
+        <ThemedPageHero title="家庭留言" description="那些没来得及当面说的话，留在这里，等家人慢慢读。" />
+        <div className="family-letter-spread">
+          <div>
+            {loadError && <p role="alert" className="editorial-empty">暂时无法读取留言。 <button type="button" className="family-text-link" onClick={() => void fetchMessages()}>重试</button></p>}
+            {!loadError && !messages.length && <p className="editorial-empty">还没有留言。写一封短笺，留给家人慢慢读。</p>}
+            {!loadError && messages[0] && renderLetter(messages[0], true)}
+          </div>
+          <form className="family-letter-form" onSubmit={handleSendMessage}>
+            <label className="yearbook-display" htmlFor="family-letter">给家人留句话</label>
+            <textarea id="family-letter" className="input" value={newMessage}
+              onChange={(event) => setNewMessage(event.target.value)} placeholder="想说的话，从这里写起。" maxLength={500} />
+            <div className="family-letter-submit">
+              <span>{newMessage.length}/500</span>
+              <button type="submit" className="family-button family-button-primary" disabled={!newMessage.trim() || sending}>
+                <Send size={17} aria-hidden="true" /> {sending ? "发送中…" : "发送留言"}
+              </button>
             </div>
           </form>
         </div>
-
-        {/* 留言列表 */}
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div id={`message-${message.id}`} key={message.id} className={`group rounded-[1.5rem] border p-5 transition ${current.card} ${linkedMessage === message.id ? "ring-2 ring-current/35" : ""}`}>
-              <div className="flex items-start gap-4">
-                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full ${current.cardIcon}`}>
-                  {message.author.avatar ? (
-                    <img
-                      src={message.author.avatar}
-                      alt=""
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-sm font-black">
-                      {(message.author.nickname || message.author.username)[0].toUpperCase()}
-                    </span>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-black">
-                        {message.author.nickname || message.author.username}
-                      </span>
-                      {message.author.id === session.user.id && (
-                        <span className="rounded-full bg-current/10 px-2 py-0.5 text-xs font-black">
-                          我
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-sm ${current.secondaryText}`}>
-                        {formatDate(message.createdAt)}
-                      </span>
-                      {canDelete(message) && (
-                        <button
-                          onClick={() => handleDeleteMessage(message.id)}
-                          disabled={deleting === message.id}
-                          className="p-1.5 text-[var(--theme-text-muted)] hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <p className={`whitespace-pre-wrap ${current.secondaryText}`}>
-                    {message.content}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* 空状态 */}
-        {messages.length === 0 && (
-          <div className={`rounded-[2rem] border py-16 text-center ${current.pickerCard}`}>
-            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
-              <MessageCircle className="w-8 h-8" />
-            </div>
-            <h3 className="mb-2 text-lg font-black">还没有留言</h3>
-            <p className={current.secondaryText}>
-              成为第一个留言的人吧
-            </p>
-          </div>
-        )}
+        {!loadError && messages.length > 1 && <div className="family-letter-index">{messages.slice(1).map((message) => renderLetter(message))}</div>}
       </main>
     </ThemedShell>
   )

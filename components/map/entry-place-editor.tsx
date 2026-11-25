@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-import { MapPin, Pencil } from "lucide-react"
+import Link from "next/link"
+import { ArrowRight, MapPin, Pencil } from "lucide-react"
 import { parseEntryPlace, placeName, type EntryPlace, type EntryType, type PlaceDraft } from "@/lib/entry-place"
 import { emptyPlace, PlaceFields } from "./place-fields"
 
@@ -54,6 +55,15 @@ export function EntryPlaceEditor({ id, type, place, legacyLabel, canEdit, onSave
           }}><Pencil size={15} aria-hidden="true" /> {place ? "编辑地点" : "补记地点"}</button>
         )}
       </div>
+      {place && !editing && (
+        <Link
+          href={`/map?entry=${encodeURIComponent(`${type}:${id}`)}`}
+          className="family-text-link"
+          prefetch={false}
+        >
+          在足迹地图查看 <ArrowRight size={15} aria-hidden="true" />
+        </Link>
+      )}
       {editing && (
         <form className="entry-place-form" onSubmit={submit}>
           <PlaceFields value={draft} onChange={setDraft} legacyLabel={legacyLabel ?? ""} />

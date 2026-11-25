@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -26,8 +27,12 @@ export default function TimelinePage() {
         <FamilyMasthead />
         <main className="chronicle-timeline">
           <div className="chronicle-heading">
-            <span className="chronicle-year" aria-hidden="true">{selectedYear ?? currentFamilyYear()}</span>
-            <h1 className="yearbook-display">成长时间线<span className="sr-only"> {selectedYear ?? currentFamilyYear()} 年</span></h1>
+            <div>
+              <span className="chronicle-year" aria-hidden="true">{selectedYear ?? currentFamilyYear()}</span>
+              <h1 className="yearbook-display">成长时间线<span className="sr-only"> {selectedYear ?? currentFamilyYear()} 年</span></h1>
+              <p className="chronicle-intro">日子一页页翻过，当时寻常，后来都成了故事。</p>
+            </div>
+            <Image className="chronicle-ornament" src="/images/risograph-ginkgo.webp" alt="" width={180} height={180} />
             {status === "authenticated" && (
               <div className="archive-actions" role="group" aria-label="新增成长记录">
                 <Link href="/travel/new" className="family-button family-button-primary">
@@ -42,8 +47,6 @@ export default function TimelinePage() {
               </div>
             )}
           </div>
-
-          <p className="chronicle-intro">日子一页页翻过，当时寻常，后来都成了故事。</p>
 
           <div className="archive-layout chronicle-layout">
             <YearSelector years={years} selected={selectedYear} path="/timeline" />

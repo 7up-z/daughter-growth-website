@@ -17,19 +17,22 @@ function visibleImage(record: MemoryRecord) {
   return record.imageUrl && /^(?:https?:\/\/|data:image\/|\/(?!\/))/i.test(record.imageUrl) ? record.imageUrl : null
 }
 
-function StoryPhoto({ src, feature }: { src: string; feature: boolean }) {
+function StoryPhoto({ src, feature, eager }: { src: string; feature: boolean; eager: boolean }) {
   const [failed, setFailed] = useState(false)
   if (failed) return null
   return (
     <span className="chronicle-story-photo">
       <Image src={src} alt="" fill unoptimized referrerPolicy="no-referrer"
+        loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : undefined}
         sizes={feature ? "(max-width: 700px) 92vw, 58vw" : "(max-width: 700px) 28vw, 180px"}
         onError={() => setFailed(true)} />
     </span>
   )
 }
 
-function Story({ record, feature, standalone }: { record: MemoryRecord; feature?: boolean; standalone?: boolean }) {
+function Story({ record, feature, standalone, eager = false }: {
+  record: MemoryRecord; feature?: boolean; standalone?: boolean; eager?: boolean
+}) {
   const date = memoryCalendarDate(record)
   const { label, icon: Icon } = recordTypes[record.type]
   const image = visibleImage(record)
@@ -39,7 +42,7 @@ function Story({ record, feature, standalone }: { record: MemoryRecord; feature?
 
   return (
     <Link href={record.href} className={`chronicle-story ${feature ? "chronicle-story-feature" : ""} ${standalone ? "chronicle-story-standalone" : ""} ${note ? "chronicle-story-note" : ""}`}>
-      {image && <StoryPhoto key={image} src={image} feature={!!feature} />}
+      {image && <StoryPhoto key={image} src={image} feature={!!feature} eager={eager} />}
       <div className="chronicle-story-copy">
         <div className="chronicle-story-meta">
           {date ? <time dateTime={date.iso}>{date.label}</time> : <span>{record.year}年</span>}
@@ -72,14 +75,14 @@ export function ArchiveRecords({ records }: { records: MemoryRecord[] }) {
 
   return (
     <div className="chronicle-chapters">
-      {Array.from(groups, ([label, group]) => {
+      {Array.from(groups, ([label, group], index) => {
         const feature = group.find(visibleImage) ?? group[0]
         const rest = group.filter((record) => record !== feature)
         return (
           <section className="chronicle-chapter" key={label}>
-            <h2 className="chronicle-chapter-name">{label}</h2>
+            <h2 className="chronicle-chapter-name"><span>{label}</span></h2>
             <div className={`chronicle-month-spread ${rest.length ? "chronicle-month-with-side" : ""}`}>
-              <Story record={feature} feature standalone={!rest.length} />
+              <Story record={feature} feature eager={index === 0} standalone={!rest.length} />
               {!!rest.length && (
                 <ul className="chronicle-side-stories">
                   {rest.map((record) => <li key={`${record.type}:${record.id}`}><Story record={record} /></li>)}

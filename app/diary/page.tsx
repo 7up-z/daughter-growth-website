@@ -1,7 +1,8 @@
+import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { Pencil } from "lucide-react"
-import { ThemedHeader, ThemedPageHero, ThemedShell } from "@/components/ui/theme-shell"
+import { ArrowRight, Pencil } from "lucide-react"
+import { ThemedHeader, ThemedShell } from "@/components/ui/theme-shell"
 import { getFamilySession } from "@/lib/auth"
 import { diaryDateInput, diaryIntro, visibleDiaries } from "@/lib/private-diary"
 import { prisma } from "@/lib/prisma"
@@ -17,26 +18,33 @@ export default async function DiaryPage() {
   })
 
   return (
-    <ThemedShell maxWidth="max-w-5xl">
+    <ThemedShell>
       <ThemedHeader title="私密日记" action={
         <Link href="/diary/new" className="family-button family-button-primary" prefetch={false}>
           <Pencil size={17} aria-hidden="true" /> 写私密日记
         </Link>
       } />
       <main>
-        <ThemedPageHero title="私密日记" description={diaryIntro} />
+        <header className="diary-editor-heading">
+          <div className="family-subpage-title">
+            <h1 className="yearbook-display">私密日记</h1>
+            <p>{diaryIntro}</p>
+          </div>
+          <Image className="editorial-ornament" src="/images/risograph-envelope.webp" alt="" width={166} height={120} />
+        </header>
         {diaries.length === 0 ? (
-          <p className="py-8 text-sm text-[var(--yearbook-muted)]">还没有你可以阅读的日记。</p>
+          <p className="editorial-empty">还没有你可以阅读的日记。</p>
         ) : (
-          <ul className="mt-5 divide-y divide-[var(--yearbook-rule)]">
+          <ul className="diary-index">
             {diaries.map((entry) => (
               <li key={entry.id}>
-                <Link href={`/diary/${entry.id}`} prefetch={false} className="block py-5 hover:text-[var(--yearbook-warm)]">
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--yearbook-muted)]">
+                <Link href={`/diary/${entry.id}`} prefetch={false} className="diary-index-row">
+                  <div className="diary-index-meta">
                     <time dateTime={diaryDateInput(entry.diaryDate)}>{diaryDateInput(entry.diaryDate)}</time>
                     <span>{entry.authorId === session.user.id ? "我写的" : entry.author.nickname || entry.author.username}</span>
                   </div>
-                  <h2 className="yearbook-display mt-2 break-words text-2xl">{entry.title}</h2>
+                  <h2 className="yearbook-display">{entry.title}</h2>
+                  <ArrowRight size={19} aria-hidden="true" />
                 </Link>
               </li>
             ))}

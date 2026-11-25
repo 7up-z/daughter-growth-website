@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { placeName, type EntryPlace } from "@/lib/entry-place"
 import Link from "next/link"
-import { Plus, MapPin, Calendar, Trash2, User, BookOpen } from "lucide-react"
-import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
+import { Plus, MapPin, Trash2, ArrowRight } from "lucide-react"
+import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell } from "@/components/ui/theme-shell"
 
 interface TravelEntry {
   id: string
@@ -30,9 +30,9 @@ interface TravelEntry {
 export default function TravelPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const current = useCurrentThemeStyle()
   const [entries, setEntries] = useState<TravelEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [deleting, setDeleting] = useState<string | null>(null)
 
   useEffect(() => {
@@ -42,25 +42,25 @@ export default function TravelPage() {
   }, [status, router])
 
   const fetchEntries = useCallback(async () => {
+    setLoadError(false)
     try {
       const response = await fetch("/api/travel")
-      if (response.ok) {
-        const data = await response.json()
-        setEntries(data)
-      }
-    } catch (error) {
-      console.error("获取日记失败:", error)
+      if (!response.ok) throw new Error("无法读取旅行日记")
+      setEntries(await response.json())
+    } catch {
+      setLoadError(true)
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
+    if (status !== "authenticated") return
     const timer = window.setTimeout(() => {
       void fetchEntries()
     }, 0)
     return () => window.clearTimeout(timer)
-  }, [fetchEntries])
+  }, [status, fetchEntries])
 
   const handleDelete = async (id: string) => {
     if (!confirm("确定要删除这篇日记吗？")) return
@@ -72,7 +72,7 @@ export default function TravelPage() {
       })
 
       if (response.ok) {
-        setEntries(entries.filter(e => e.id !== id))
+        setEntries((previous) => previous.filter((entry) => entry.id !== id))
       } else {
         const error = await response.json()
         alert(error.error || "删除失败")
@@ -93,125 +93,60 @@ export default function TravelPage() {
     return null
   }
 
-  const formatDateShort = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("zh-CN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    })
+  const lead = entries.find((entry) => entry.coverImage) ?? entries[0]
+  const rest = entries.filter((entry) => entry !== lead)
+  const formatDate = new Intl.DateTimeFormat("zh-CN", { dateStyle: "long", timeZone: "Asia/Shanghai" })
+
+  function renderStory(entry: TravelEntry, featured = false) {
+    const location = entry.place ? placeName(entry.place) : entry.location
+    const href = `/travel/${entry.id}`
+    return (
+      <article key={entry.id} className={`travel-story ${featured ? "travel-story-feature" : ""}`}>
+        {featured && entry.coverImage && (
+          <Link href={href} className="travel-story-image" aria-label={entry.title}>
+            <img src={entry.coverImage} alt="" />
+          </Link>
+        )}
+        <div className="travel-story-copy">
+          <div className="editorial-meta">
+            <time dateTime={entry.travelDate}>{formatDate.format(new Date(entry.travelDate))}</time>
+            {location && <span><MapPin size={15} aria-hidden="true" /> {location}</span>}
+          </div>
+          <h2 className="yearbook-display"><Link href={href}>{entry.title}</Link></h2>
+          {entry.content && <p className="travel-story-excerpt">{entry.content}</p>}
+          <div className="travel-story-byline">
+            <span>{entry.author.nickname || entry.author.username} · {entry._count.comments} 条留言</span>
+            {featured && <Link href={href} className="family-text-link">阅读日记 <ArrowRight size={17} aria-hidden="true" /></Link>}
+            {entry.author.id === session?.user.id && (
+              <button type="button" className="family-icon-button" aria-label={`删除日记 ${entry.title}`}
+                disabled={deleting === entry.id} onClick={() => void handleDelete(entry.id)}>
+                <Trash2 size={17} aria-hidden="true" />
+              </button>
+            )}
+          </div>
+        </div>
+      </article>
+    )
   }
 
   return (
-    <ThemedShell maxWidth="max-w-4xl">
-      <ThemedHeader
-        title="旅行日记"
-        action={
-          <Link href="/travel/new" className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition ${current.primaryButton}`}>
-            <Plus className="h-4 w-4" />
-            写旅行日记
-          </Link>
-        }
-      />
-
+    <ThemedShell>
+      <ThemedHeader title="旅行日记" action={
+        <Link href="/travel/new" className="family-button family-button-primary">
+          <Plus size={17} aria-hidden="true" /> 写旅行日记
+        </Link>
+      } />
       <main>
-        <ThemedPageHero
-          title="旅行日记"
-          description="风从陌生的街巷吹来，我们把沿途的晴雨和小事写在这里。"
-        />
-
-        {/* 日记列表 - 博客风格 */}
-        <div className="mt-6 space-y-4">
-          {entries.map((entry) => (
-            <article
-              key={entry.id}
-              className={`group rounded-[1.5rem] border p-5 transition ${current.card}`}
-            >
-              {/* 日期和操作 */}
-              <div className="flex items-center justify-between mb-2">
-                <div className={`flex flex-wrap items-center gap-4 text-sm font-bold ${current.secondaryText}`}>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {formatDateShort(entry.travelDate)}
-                  </span>
-                  {(entry.place || entry.location) && (
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {entry.place ? placeName(entry.place) : entry.location}
-                    </span>
-                  )}
-                </div>
-                {entry.author.id === session.user.id && (
-                  <button
-                    onClick={() => handleDelete(entry.id)}
-                    disabled={deleting === entry.id}
-                    className="rounded-full p-1.5 opacity-0 transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-
-              {/* 标题 */}
-              <Link href={`/travel/${entry.id}`}>
-                <h2 className="mb-2 text-xl font-black transition">
-                  {entry.title}
-                </h2>
-              </Link>
-
-              {/* 摘要 */}
-              <p className={`mb-4 line-clamp-2 text-sm leading-6 ${current.secondaryText}`}>
-                {entry.content}
-              </p>
-
-              {/* 底部信息 */}
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-[var(--theme-bg-tertiary)] flex items-center justify-center">
-                    {entry.author.avatar ? (
-                      <img
-                        src={entry.author.avatar}
-                        alt=""
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                    <User className="w-3 h-3" />
-                    )}
-                  </div>
-                  <span className={current.secondaryText}>
-                    {entry.author.nickname || entry.author.username}
-                  </span>
-                </div>
-                <Link
-                  href={`/travel/${entry.id}`}
-                  className={`flex items-center gap-1 font-bold transition ${current.secondaryText}`}
-                >
-                  {entry._count.comments} 条回复
-                  <span className="ml-1">→</span>
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* 空状态 */}
-        {entries.length === 0 && (
-          <div className={`mt-6 rounded-[2rem] border py-16 text-center ${current.pickerCard}`}>
-            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
-              <BookOpen className="w-8 h-8" />
-            </div>
-            <h3 className="mb-2 text-lg font-black">还没有旅行记录</h3>
-            <p className={`mb-6 ${current.secondaryText}`}>
-              开始记录你们的旅行故事吧
-            </p>
-            <Link
-              href="/travel/new"
-              className={`inline-flex rounded-full px-5 py-3 font-black transition ${current.primaryButton}`}
-            >
-              写第一篇日记
-            </Link>
+        <ThemedPageHero title="旅行日记" description="风从陌生的街巷吹来，我们把沿途的晴雨和小事写在这里。" />
+        {loadError && <p role="alert" className="editorial-empty">暂时无法读取旅行日记。 <button type="button" className="family-text-link" onClick={() => void fetchEntries()}>重试</button></p>}
+        {!loadError && !lead && (
+          <div className="editorial-empty">
+            <h2 className="yearbook-display">还没有旅行记录</h2>
+            <Link href="/travel/new" className="family-text-link">写第一篇日记 <ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
         )}
+        {!loadError && lead && renderStory(lead, true)}
+        {!loadError && !!rest.length && <div className="travel-index">{rest.map((entry) => renderStory(entry))}</div>}
       </main>
     </ThemedShell>
   )

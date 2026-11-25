@@ -25,8 +25,8 @@ export default async function DiaryDetailPage({ params }: { params: Promise<{ id
   const date = diaryDateInput(entry.diaryDate)
 
   return (
-    <ThemedShell maxWidth="max-w-4xl">
-      <ThemedHeader title="私密日记" backHref="/diary" action={isAuthor && (
+    <ThemedShell>
+      <ThemedHeader title="私密日记" backHref="/diary" backLabel="返回私密日记" action={isAuthor && (
         <Link href={`/diary/${encodeURIComponent(id)}/edit`} prefetch={false} className="family-button family-button-outline">
           <Pencil size={16} aria-hidden="true" /> 编辑日记
         </Link>
@@ -44,7 +44,7 @@ export default async function DiaryDetailPage({ params }: { params: Promise<{ id
             </span>
           )}
         </div>
-        <article className="mb-8 mt-7 whitespace-pre-wrap break-words text-[1.04rem] leading-loose">{entry.content}</article>
+        <article className="editorial-prose diary-reading">{entry.content}</article>
       </main>
     </ThemedShell>
   )

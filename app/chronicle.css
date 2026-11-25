@@ -20,44 +20,6 @@
 .chronicle-shell .family-main-nav a { font-size: clamp(.88rem, 1.14vw, 1.03rem); }
 .chronicle-shell .family-wordmark { font-size: 1.65rem; }
 
-.magazine-cover { padding-block: clamp(1.15rem, 3.1vw, 2.75rem) 1rem; }
-.magazine-edition {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  color: var(--yearbook-muted);
-  font-weight: 700;
-  font-size: .82rem;
-  letter-spacing: .085em;
-}
-.magazine-name {
-  margin: .15em 0 .2em;
-  color: var(--yearbook-ink);
-  font-size: clamp(2.65rem, 9.1vw, 8.5rem);
-  letter-spacing: -.055em;
-}
-.magazine-spread {
-  display: grid;
-  grid-template-columns: minmax(0, 1.95fr) minmax(0, 1fr);
-  gap: clamp(1.15rem, 4.4vw, 4.75rem);
-  align-items: center;
-  padding-block: clamp(.7rem, 1.2vw, 1.1rem);
-  border-block: 1px solid var(--yearbook-rule);
-}
-.magazine-photo { margin: 0; }
-.magazine-image { position: relative; overflow: hidden; aspect-ratio: 2.02; background: var(--yearbook-soft); }
-.magazine-image img { object-fit: cover; object-position: 60% 62%; }
-.magazine-photo figcaption { margin-top: .65rem; color: var(--yearbook-muted); font-size: .8rem; }
-.magazine-intro { padding-block: clamp(.3rem, 2vw, 1.6rem); }
-.magazine-story-title {
-  font: 700 clamp(1.65rem, 4.25vw, 4rem) / 1.22 var(--yearbook-serif);
-  color: var(--yearbook-accent);
-  letter-spacing: -.035em;
-}
-.magazine-story-caption { max-width: 20em; margin: 1rem 0 1.55rem; line-height: 1.75; }
-.magazine-login { min-height: 2.85rem; border-radius: .28rem; padding-inline: 1.05rem; }
-.magazine-privacy { display: flex; align-items: center; gap: .4rem; margin-top: .85rem; font-size: .82rem; color: var(--yearbook-muted); }
-
 .chronicle-timeline { padding-block: clamp(1.8rem, 4.5vw, 3.7rem) 1rem; }
 .chronicle-heading {
   display: flex;
@@ -161,13 +123,6 @@
 }
 @media (max-width: 680px) {
   .chronicle-shell .family-masthead { min-height: 3.55rem; }
-  .magazine-name { font-size: clamp(2.5rem, 12vw, 4.15rem); }
-  .magazine-spread { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-  .magazine-image { aspect-ratio: 1.48; }
-  .magazine-intro { padding: 0 0 .4rem; }
-  .magazine-story-title br { display: none; }
-  .magazine-story-caption { margin: .55rem 0 1.05rem; }
-  .magazine-privacy { margin-top: .58rem; }
   .chronicle-heading { gap: .65rem .85rem; }
   .chronicle-heading h1 { padding-inline-start: .8rem; }
   .chronicle-heading .archive-actions { flex-basis: 100%; justify-content: start; }

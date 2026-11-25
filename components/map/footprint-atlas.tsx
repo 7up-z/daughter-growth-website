@@ -27,7 +27,11 @@ function worldRegion(entry: MappedEntry) {
   return isChinaPlace(entry.place.country) ? "CN" : entry.place.country
 }
 
-export function FootprintAtlas() {
+function cityKey({ place }: MappedEntry) {
+  return `${place.province}\u0000${place.city.toLocaleLowerCase("zh-CN").replace(/市$/, "")}`
+}
+
+export function FootprintAtlas({ focus }: { focus?: string }) {
   const [entries, setEntries] = useState<MappedEntry[] | null>(null)
   const [failed, setFailed] = useState(false)
   const [attempt, setAttempt] = useState(0)
@@ -43,15 +47,23 @@ export function FootprintAtlas() {
       try {
         const response = await fetch("/api/memory/places", { signal: controller.signal, cache: "no-store" })
         if (!response.ok) throw new Error("足迹读取失败")
-        const data = await response.json()
-        if (!controller.signal.aborted) setEntries(data)
+        const data: MappedEntry[] = await response.json()
+        if (controller.signal.aborted) return
+        setEntries(data)
+        const target = focus ? data.find((entry) => `${entry.type}:${entry.id}` === focus) : undefined
+        if (target) {
+          const china = isChinaPlace(target.place.country)
+          setView(china ? "china" : "world")
+          setRegion(china ? target.place.province : worldRegion(target))
+          setCity(cityKey(target))
+        }
       } catch {
         if (!controller.signal.aborted) setFailed(true)
       }
     }
     void load()
     return () => controller.abort()
-  }, [attempt])
+  }, [attempt, focus])
 
   const filtered = (entries ?? []).filter((entry) =>
     (view === "world" || isChinaPlace(entry.place.country)) && (type === "all" || entry.type === type),
@@ -62,7 +74,7 @@ export function FootprintAtlas() {
   const selectedRegion = regions.find(({ id }) => id === region)
   const cities = groupEntries(
     selectedRegion?.entries ?? [],
-    ({ place }) => `${place.province}\u0000${place.city.toLocaleLowerCase("zh-CN").replace(/市$/, "")}`,
+    cityKey,
     (_, entry) => entry.place.city,
   )
   const cityNames = new Map<string, number>()
@@ -75,7 +87,7 @@ export function FootprintAtlas() {
   const groups = selectedRegion ? cities : regions
   const pins: AtlasPin[] = selectedCity
     ? selectedCity.entries.map((entry) => ({
-      ...entry.place, id: `${entry.type}:${entry.id}`, label: `查看${entry.type === "travel" ? "旅行" : "照片"}：${entry.title}`, href: placeEntryHref(entry),
+      ...entry.place, id: `${entry.type}:${entry.id}`, label: `查看${entry.type === "travel" ? "旅行" : "照片"}：${entry.title}`, href: placeEntryHref(entry), kind: entry.type, focused: focus === `${entry.type}:${entry.id}`,
     }))
     : groups.map((group) => ({
       ...group.entries[0].place, id: group.id, count: group.entries.length,
@@ -140,7 +152,7 @@ export function FootprintAtlas() {
               {selectedCity.entries.map((entry) => {
                 const Icon = entry.type === "travel" ? MapPin : Camera
                 return (
-                  <li key={`${entry.type}:${entry.id}`}>
+                  <li key={`${entry.type}:${entry.id}`} data-focused={focus === `${entry.type}:${entry.id}` || undefined}>
                     <Link href={placeEntryHref(entry)}>
                       <Icon size={18} aria-hidden="true" />
                       <div><strong>{entry.title}</strong><small>{dateFormat.format(new Date(entry.date))} · {placeName(entry.place)}</small></div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type MouseEvent } from "react"
 import Link from "next/link"
-import { MapPin } from "lucide-react"
+import { Camera, MapPin } from "lucide-react"
 import { useTheme } from "@/components/providers/theme-provider"
 
 export type Coordinates = { latitude: number; longitude: number }
@@ -18,6 +18,8 @@ export type AtlasPin = Coordinates & {
   shortLabel?: string
   count?: number
   href?: string
+  kind?: "travel" | "photo"
+  focused?: boolean
 }
 
 const mapWidth = 1000
@@ -239,9 +241,10 @@ export function GeoSurface({
         aria-hidden="true" className={onPick ? "atlas-selectable" : undefined} />
       {positioned.map(({ pin, x, y }) => {
         const style = { left: `${x / mapWidth * 100}%`, top: `${y / mapHeight * 100}%` }
-        const content = pin.count === undefined ? <MapPin size={17} aria-hidden="true" /> : <span>{pin.count}</span>
+        const PinIcon = pin.kind === "photo" ? Camera : MapPin
+        const content = pin.count === undefined ? <PinIcon size={16} aria-hidden="true" /> : <span>{pin.count}</span>
         const marker = <><span className="atlas-pin-dot">{content}</span>{pin.shortLabel && <span className="atlas-pin-label">{pin.shortLabel}</span>}</>
-        const shared = { className: "atlas-pin", style, title: pin.label, "aria-label": pin.label }
+        const shared = { className: "atlas-pin", style, title: pin.label, "aria-label": pin.label, "data-focused": pin.focused || undefined }
         if (pin.href) return <Link key={pin.id} href={pin.href} {...shared}>{marker}</Link>
         if (onPin) return <button key={pin.id} type="button" {...shared} onClick={() => onPin(pin)}>{marker}</button>
         return <span key={pin.id} className="atlas-pin atlas-pin-preview" style={style} aria-hidden="true">{marker}</span>

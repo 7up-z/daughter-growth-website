@@ -21,14 +21,14 @@ export function ThemedLoading({ label = "加载中…" }: { label?: string }) {
 
 export function ThemedShell({
   children,
-  maxWidth = "max-w-5xl",
+  maxWidth,
 }: {
   children: React.ReactNode
   maxWidth?: string
 }) {
   return (
     <div className="yearbook-shell">
-      <div className={`yearbook-container ${maxWidth}`}>
+      <div className={`yearbook-container ${maxWidth ?? ""}`}>
         {children}
       </div>
     </div>
@@ -38,9 +38,11 @@ export function ThemedShell({
 export function ThemedHeader({
   backHref,
   title = "成长记录",
+  backLabel = "返回",
   action,
 }: {
   backHref?: string
+  backLabel?: string
   title?: string
   action?: React.ReactNode
 }) {
@@ -51,7 +53,7 @@ export function ThemedHeader({
         <div className="family-section-actions" role="group" aria-label={`${title}操作`}>
           {backHref && (
             <Link href={backHref} className="family-text-link">
-              <ChevronLeft size={17} aria-hidden="true" /> 返回
+              <ChevronLeft size={17} aria-hidden="true" /> {backLabel}
             </Link>
           )}
           {action && <div>{action}</div>}

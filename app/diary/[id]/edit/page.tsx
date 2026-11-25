@@ -1,5 +1,6 @@
+import Image from "next/image"
 import { notFound, redirect } from "next/navigation"
-import { ThemedHeader, ThemedPageHero, ThemedShell } from "@/components/ui/theme-shell"
+import { ThemedHeader, ThemedShell } from "@/components/ui/theme-shell"
 import { getFamilySession } from "@/lib/auth"
 import { diaryDateInput, diaryMemberOptions, diaryReleaseInput } from "@/lib/private-diary"
 import { prisma } from "@/lib/prisma"
@@ -22,10 +23,13 @@ export default async function EditDiaryPage({ params }: { params: Promise<{ id: 
   const activeIds = new Set(members.map(({ id }) => id))
 
   return (
-    <ThemedShell maxWidth="max-w-4xl">
+    <ThemedShell>
       <ThemedHeader title="编辑日记" backHref={`/diary/${encodeURIComponent(id)}`} />
       <main>
-        <ThemedPageHero title="编辑日记" />
+        <header className="diary-editor-heading">
+          <h1 className="yearbook-display">编辑日记</h1>
+          <Image className="editorial-ornament" src="/images/risograph-envelope.webp" alt="" width={166} height={120} />
+        </header>
         <DiaryForm members={members} initial={{
           id: diary.id, title: diary.title, content: diary.content, diaryDate: diaryDateInput(diary.diaryDate),
           audience: diary.audience, openAt: diary.openAt ? diaryReleaseInput(diary.openAt) : "",

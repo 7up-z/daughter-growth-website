@@ -3,8 +3,10 @@
 import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import { Video, Calendar, Play, Plus, Trash2, X } from "lucide-react"
+import { Film, Play, Plus, Trash2, X } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
+
+import { MediaDialog } from "@/components/ui/media-dialog"
 
 interface BirthdayVideo {
   id: string
@@ -23,7 +25,10 @@ export default function BirthdayPage() {
   const current = useCurrentThemeStyle()
   const [videos, setVideos] = useState<BirthdayVideo[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [openVideoId, setOpenVideoId] = useState<string | null>(null)
+  const [chosenVideoId, setChosenVideoId] = useState<string | null>(null)
+  const featuredVideo = videos.find((video) => video.id === chosenVideoId) ?? videos[0]
   const selectedVideo = videos.find((video) => video.id === (linkedVideo ?? openVideoId))
   const isAdmin = session?.user.role === "admin"
 
@@ -47,14 +52,13 @@ export default function BirthdayPage() {
   }, [status, router])
 
   const fetchVideos = useCallback(async () => {
+    setLoadError(false)
     try {
       const response = await fetch("/api/birthday")
-      if (response.ok) {
-        const data = await response.json()
-        setVideos(data)
-      }
-    } catch (error) {
-      console.error("获取视频失败:", error)
+      if (!response.ok) throw new Error("无法读取生日影像")
+      setVideos(await response.json())
+    } catch {
+      setLoadError(true)
     } finally {
       setLoading(false)
     }
@@ -99,7 +103,7 @@ export default function BirthdayPage() {
       })
 
       if (response.ok) {
-        setVideos(videos.filter(v => v.id !== id))
+        setVideos((previous) => previous.filter((video) => video.id !== id))
         if (selectedVideo?.id === id) {
           closeVideo()
         }
@@ -128,9 +132,9 @@ export default function BirthdayPage() {
       <ThemedHeader
         title="生日影像"
         action={
-          <button onClick={() => setShowAddModal(true)} className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition ${current.primaryButton}`}>
+          <button onClick={() => setShowAddModal(true)} className="family-button family-button-primary">
             <Plus className="h-4 w-4" />
-            添加
+            添加生日影像
           </button>
         }
       />
@@ -142,74 +146,43 @@ export default function BirthdayPage() {
         />
 
         {linkedVideo && !selectedVideo && <p className="mt-5 text-sm" role="status">这段影像已删除或不可查看。</p>}
-        {/* 视频列表 */}
-        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {videos.map((video) => (
-            <article
-              key={video.id}
-              className={`group overflow-hidden rounded-[1.5rem] border transition ${current.card}`}
-            >
-              {/* 视频缩略图 */}
-              <div
-                className={`relative aspect-video cursor-pointer ${current.preview}`}
-                onClick={() => setOpenVideoId(video.id)}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className={`flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform group-hover:scale-110 ${current.cardIcon}`}>
-                    <Play className="ml-0.5 h-7 w-7" />
-                  </div>
-                </div>
-                <div className="absolute top-3 left-3">
-                  <span className={`rounded-full border px-3 py-1 text-xs font-black ${current.pickerCard}`}>
-                    {video.year}年
-                  </span>
-                </div>
-                {isAdmin && <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleDeleteVideo(video.id)
-                  }}
-                  disabled={deleting === video.id}
-                  className="absolute right-3 top-3 rounded-full bg-white/90 p-1.5 text-gray-500 opacity-0 transition-all hover:bg-red-500 hover:text-white group-hover:opacity-100"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>}
-              </div>
-
-              {/* 视频信息 */}
-              <div className="p-4">
-                <div className={`mb-2 flex items-center gap-2 text-xs font-bold ${current.secondaryText}`}>
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>{video.year}年生日</span>
-                </div>
-                <h3 className="mb-1 font-black">{video.title}</h3>
-                {video.description && (
-                  <p className={`line-clamp-2 text-sm ${current.secondaryText}`}>
-                    {video.description}
-                  </p>
-                )}
+        {loadError && <p role="alert" className="editorial-empty">暂时无法读取生日影像。 <button type="button" className="family-text-link" onClick={() => void fetchVideos()}>重试</button></p>}
+        {!loadError && featuredVideo && (
+          <>
+            <article className="birthday-feature">
+              <button type="button" className="birthday-poster" onClick={() => setOpenVideoId(featuredVideo.id)}
+                aria-label={`播放 ${featuredVideo.title}`}>
+                <img src={featuredVideo.thumbnail || "/images/module-birthday-video.png"} alt="" />
+                <span className="birthday-play"><Play size={27} fill="currentColor" aria-hidden="true" /> 播放</span>
+              </button>
+              <div className="birthday-feature-copy">
+                <p className="birthday-year">{featuredVideo.year} 年</p>
+                <h2 className="yearbook-display">{featuredVideo.title}</h2>
+                {featuredVideo.description && <p>{featuredVideo.description}</p>}
               </div>
             </article>
-          ))}
-        </div>
-
-        {/* 空状态 */}
-        {videos.length === 0 && (
-          <div className={`mt-6 rounded-[2rem] border py-16 text-center ${current.pickerCard}`}>
-            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${current.cardIcon}`}>
-              <Video className="w-8 h-8" />
-            </div>
-            <h3 className="mb-2 text-lg font-black">还没有生日影像</h3>
-            <p className={`mb-6 ${current.secondaryText}`}>
-              添加第一段生日影像吧
-            </p>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className={`inline-flex items-center gap-2 rounded-full px-5 py-3 font-black transition ${current.primaryButton}`}
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              添加视频
-            </button>
+            {videos.length > 1 && (
+              <section className="birthday-archive" aria-labelledby="birthday-archive-title">
+                <h2 id="birthday-archive-title" className="yearbook-display">历年影像</h2>
+                <ul className="birthday-strip">
+                  {videos.map((video) => (
+                    <li key={video.id}>
+                      <button type="button" aria-pressed={featuredVideo.id === video.id}
+                        onClick={() => setChosenVideoId(video.id)}>
+                        {video.thumbnail ? <img src={video.thumbnail} alt="" loading="lazy" /> : <span className="birthday-strip-placeholder"><Film size={24} aria-hidden="true" /></span>}
+                        <span className="birthday-strip-label"><strong>{video.year} 年</strong><span>{video.title}</span></span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </>
+        )}
+        {!loadError && !featuredVideo && (
+          <div className="editorial-empty">
+            <h2 className="yearbook-display">还没有生日影像</h2>
+            <button type="button" className="family-text-link" onClick={() => setShowAddModal(true)}>添加第一段影像</button>
           </div>
         )}
       </main>
@@ -295,55 +268,31 @@ export default function BirthdayPage() {
         </div>
       )}
 
-      {/* 视频播放弹窗 */}
       {selectedVideo && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
-          onClick={closeVideo}
-        >
-          <div
-            className={`w-full max-w-3xl overflow-hidden rounded-[1.5rem] border ${current.pickerCard}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* 关闭按钮 */}
-            <button
-              onClick={closeVideo}
-              aria-label="关闭播放"
-              className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/90 hover:bg-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            {isAdmin && <button
-              onClick={() => handleDeleteVideo(selectedVideo.id)}
-              disabled={deleting === selectedVideo.id}
-              className="absolute top-4 left-4 z-20 p-2 rounded-full bg-red-500 text-white hover:bg-red-600 disabled:opacity-50"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>}
-            <div className="aspect-video bg-black">
-              {selectedVideo.videoUrl ? (
-                <video src={selectedVideo.videoUrl} className="h-full w-full" controls playsInline preload="metadata" aria-label={selectedVideo.title} />
-              ) : selectedVideo.bvid && (
-                <iframe
-                  src={`https://player.bilibili.com/player.html?bvid=${encodeURIComponent(selectedVideo.bvid)}&page=1&high_quality=1&danmaku=0`}
-                  title={selectedVideo.title}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full"
-                  allowFullScreen
-                />
-              )}
-            </div>
-            <div className="p-4">
-              <h3 className="text-lg font-semibold">{selectedVideo.title}</h3>
-              {!selectedVideo.videoUrl && <p className="mt-1 text-xs">由哔哩哔哩播放，站外可见范围由视频发布设置决定。</p>}
-              {selectedVideo.description && (
-                <p className="text-sm text-[var(--theme-text-muted)] mt-1">
-                  {selectedVideo.description}
-                </p>
-              )}
-            </div>
+        <MediaDialog title={selectedVideo.title} onClose={closeVideo}>
+          <div className="birthday-player">
+            {selectedVideo.videoUrl ? (
+              <video src={selectedVideo.videoUrl} controls playsInline preload="metadata" aria-label={selectedVideo.title} />
+            ) : selectedVideo.bvid ? (
+              <iframe
+                src={`https://player.bilibili.com/player.html?bvid=${encodeURIComponent(selectedVideo.bvid)}&page=1&high_quality=1&danmaku=0`}
+                title={selectedVideo.title}
+                referrerPolicy="no-referrer"
+                allowFullScreen
+              />
+            ) : <p role="status">暂无可播放的影像。</p>}
           </div>
-        </div>
+          <div className="media-caption">
+            {selectedVideo.bvid && !selectedVideo.videoUrl && <p>由哔哩哔哩播放，站外可见范围由视频发布设置决定。</p>}
+            {selectedVideo.description && <p>{selectedVideo.description}</p>}
+            {isAdmin && (
+              <button type="button" className="family-text-link" disabled={deleting === selectedVideo.id}
+                onClick={() => void handleDeleteVideo(selectedVideo.id)}>
+                <Trash2 size={16} aria-hidden="true" /> 删除影像
+              </button>
+            )}
+          </div>
+        </MediaDialog>
       )}
     </ThemedShell>
   )

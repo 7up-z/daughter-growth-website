@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import Link from "next/link"
+import { LockKeyhole } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 type Audience = "OWNER" | "MEMBERS" | "FAMILY"
@@ -23,6 +24,11 @@ export function DiaryForm({ initial, members }: { initial: DiaryDraft; members: 
   const [error, setError] = useState("")
   const selected = members.filter(({ id }) => draft.readerIds.includes(id))
   const remaining = members.filter(({ id }) => !draft.readerIds.includes(id))
+
+  const ownerOnly = draft.audience === "OWNER"
+  const hasReaders = draft.audience === "FAMILY" || selected.length > 0
+  const readers = draft.audience === "FAMILY" ? "全体家人" : selected.map(({ name }) => name).join("、")
+  const releaseLabel = draft.openAt.replace("T", " ")
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -46,26 +52,27 @@ export function DiaryForm({ initial, members }: { initial: DiaryDraft; members: 
   }
 
   return (
-    <form className="mt-7 space-y-6" onSubmit={submit}>
-      {error && <p role="alert" className="place-submit-error">{error}</p>}
-      <label className="block">
-        <span className="mb-2 block text-sm font-semibold">标题</span>
-        <input className="input" required maxLength={100} value={draft.title}
-          onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
-      </label>
-      <label className="block max-w-64">
-        <span className="mb-2 block text-sm font-semibold">记录日期</span>
-        <input className="input" required type="date" value={draft.diaryDate}
-          onChange={(event) => setDraft({ ...draft, diaryDate: event.target.value })} />
-      </label>
-      <label className="block">
-        <span className="mb-2 block text-sm font-semibold">正文</span>
-        <textarea className="input min-h-56 resize-y leading-relaxed" required maxLength={10000} value={draft.content}
-          onChange={(event) => setDraft({ ...draft, content: event.target.value })} />
-      </label>
+    <form className="diary-composition" onSubmit={submit}>
+      <div className="diary-writing">
+        <label className="block">
+          <span className="mb-2 block text-sm font-semibold">标题</span>
+          <input className="input diary-title-input" required maxLength={100} value={draft.title}
+            onChange={(event) => setDraft({ ...draft, title: event.target.value })} />
+        </label>
+        <label className="block max-w-64">
+          <span className="mb-2 block text-sm font-semibold">记录日期</span>
+          <input className="input" required type="date" value={draft.diaryDate}
+            onChange={(event) => setDraft({ ...draft, diaryDate: event.target.value })} />
+        </label>
+        <label className="block">
+          <span className="mb-2 block text-sm font-semibold">正文</span>
+          <textarea className="input diary-text-input" required maxLength={10000} value={draft.content}
+            onChange={(event) => setDraft({ ...draft, content: event.target.value })} />
+        </label>
+      </div>
 
-      <fieldset className="space-y-4 rounded-lg border border-[var(--yearbook-rule)] p-4 sm:p-5">
-        <legend className="px-2 font-semibold">可见范围</legend>
+      <fieldset className="diary-permissions" aria-labelledby="diary-visibility-heading">
+        <h2 id="diary-visibility-heading" className="yearbook-display"><LockKeyhole size={24} aria-hidden="true" /> 可见范围</h2>
         <div className="max-w-sm">
           <label htmlFor="diary-audience" className="mb-2 block text-sm font-semibold">谁可以读</label>
           <select id="diary-audience" className="input" value={draft.audience}
@@ -94,7 +101,7 @@ export function DiaryForm({ initial, members }: { initial: DiaryDraft; members: 
                 {selected.map((member) => (
                   <li key={member.id}>
                     <button type="button" aria-label={`移除 ${member.name}`}
-                      className="rounded-md border border-[var(--yearbook-rule)] px-2.5 py-1.5 text-sm"
+                      className="diary-reader-chip"
                       onClick={() => setDraft({ ...draft, readerIds: draft.readerIds.filter((id) => id !== member.id) })}>
                       {member.name} <span aria-hidden="true">×</span>
                     </button>
@@ -115,14 +122,16 @@ export function DiaryForm({ initial, members }: { initial: DiaryDraft; members: 
           </label>
         )}
 
-        <p className="text-sm leading-relaxed text-[var(--yearbook-muted)]">
-          {draft.audience === "OWNER" ? "这篇日记只有你可以查看。"
-            : draft.audience === "FAMILY" ? "开放时间到达前，只有你可以查看。"
-            : "留空则所选成员可立即阅读，设定时间后需等到该时刻。"}
+        <p className="diary-permissions-summary" aria-live="polite">
+          {ownerOnly ? "这篇日记仅自己可读。" : !hasReaders ? "请选择可以阅读这篇日记的家人。"
+            : releaseLabel ? <>开放前仅自己可读。<br />北京时间 {releaseLabel} 起，{readers}可读。</>
+            : draft.audience === "FAMILY" ? "设置开放时间后，全体家人可从该时间起阅读。"
+            : `保存后，${readers}即可阅读。`}
         </p>
       </fieldset>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="diary-submit">
+        {error && <p role="alert" className="place-submit-error">{error}</p>}
         <button type="submit" disabled={saving} className="family-button family-button-primary">
           {saving ? "正在保存…" : "保存日记"}
         </button>

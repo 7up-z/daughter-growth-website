@@ -74,8 +74,9 @@ export function FamilyMasthead({ publicView = false }: { publicView?: boolean })
 
         {member ? (
           <Dropdown.Root modal={false}>
-            <Dropdown.Trigger className="family-icon-button" aria-label="家庭账户">
-              <UserRound size={21} aria-hidden="true" />
+            <Dropdown.Trigger className="family-icon-button family-account-button" aria-label="我的账户">
+              <UserRound size={19} aria-hidden="true" />
+              <span>我的账户</span>
             </Dropdown.Trigger>
             <Dropdown.Portal>
               <Dropdown.Content align="end" sideOffset={8} className="family-menu">

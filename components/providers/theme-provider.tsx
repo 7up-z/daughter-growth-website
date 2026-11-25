@@ -35,17 +35,17 @@ const themes: Record<Theme, {
   }
 }> = {
   paper: {
-    name: "温馨绘本",
+    name: "荧光叠印",
     description: "",
     colors: {
-      primary: "#546245",
-      secondary: "#EEE7D9",
-      background: "#F8F6EF",
-      surface: "#FFFDF8",
-      text: "#3A382B",
-      textMuted: "#6C6454",
-      accent: "#A34F34",
-      border: "#DED6C7",
+      primary: "#4826C7",
+      secondary: "#EDE5F9",
+      background: "#F5F1E8",
+      surface: "#FCF9F1",
+      text: "#161023",
+      textMuted: "#595269",
+      accent: "#4826C7",
+      border: "#D1C8DA",
     }
   },
   cinematic: {

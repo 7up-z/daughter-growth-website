@@ -1,0 +1,406 @@
+:root {
+  --editorial-sans: Inter, "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --editorial-mark: var(--yearbook-accent);
+  --editorial-on-mark: var(--yearbook-on-accent);
+}
+:root:not([data-theme]), :root[data-theme="paper"], .risograph-cover {
+  --yearbook-bg: #f5f1e8;
+  --yearbook-paper: #fcf9f1;
+  --yearbook-ink: #161023;
+  --yearbook-muted: #595269;
+  --yearbook-rule: #cfc5d5;
+  --yearbook-accent: #4826c7;
+  --yearbook-on-accent: #fff;
+  --yearbook-warm: #4826c7;
+  --yearbook-on-warm: #fff;
+  --yearbook-soft: #ece4f8;
+  --editorial-mark: #d8f547;
+  --editorial-on-mark: #161023;
+}
+
+.yearbook-shell {
+  font-family: var(--editorial-sans);
+}
+.yearbook-container, .chronicle-shell .yearbook-container {
+  width: min(100% - clamp(1.6rem, 6.4vw, 6rem), 1440px);
+  padding-top: 0;
+}
+.yearbook-display {
+  font-family: var(--editorial-sans);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -.055em;
+}
+.yearbook-shell .family-masthead {
+  min-height: 5rem;
+  padding: .45rem 0;
+  gap: clamp(.7rem, 2vw, 2.4rem);
+  border: 0;
+  border-bottom: 1px solid var(--yearbook-ink);
+  border-radius: 0;
+  background: transparent;
+}
+.yearbook-shell .family-wordmark {
+  font: 900 clamp(1.65rem, 2.65vw, 2.55rem) / 1 var(--editorial-sans);
+  letter-spacing: -.07em;
+}
+.family-wordmark svg { display: none; }
+.yearbook-shell .family-main-nav {
+  gap: clamp(.7rem, 2.3vw, 2.4rem);
+  margin-inline: auto;
+}
+.yearbook-shell .family-main-nav a {
+  font-size: clamp(.86rem, 1.1vw, 1rem);
+  font-weight: 760;
+}
+.family-main-nav a[aria-current="page"]::after { bottom: 0; height: 3px; }
+.family-masthead .family-masthead-actions { margin-inline-start: 0; }
+.family-account-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: .7rem;
+  border: 1px solid var(--yearbook-ink);
+  border-radius: 0;
+  font-weight: 800;
+  font-size: .85rem;
+  white-space: nowrap;
+}
+.family-account-button svg { display: none; }
+.family-menu { border-radius: 0; }
+.family-menu-item { border-radius: 0; }
+.family-button, .yearbook-shell .input { border-radius: 0; }
+.family-button { min-height: 2.75rem; font-weight: 760; }
+.family-button-outline { border-color: var(--yearbook-ink); }
+.family-text-link { color: var(--yearbook-accent); font-weight: 750; }
+.family-section-actions { margin-top: clamp(.8rem, 2.1vw, 1.7rem); }
+.family-subpage-title {
+  padding: clamp(1.25rem, 3vw, 2.4rem) 0 clamp(1rem, 2.6vw, 1.8rem);
+  border-bottom: 1px solid var(--yearbook-accent);
+}
+.family-subpage-title h1, .atlas-heading h1 { font-size: clamp(2.6rem, 6vw, 5.35rem); }
+.family-subpage-title p, .atlas-heading p { margin-top: .65rem; font-size: 1rem; }
+.yearbook-shell :is(a, button, input, select, textarea):focus-visible,
+.media-dialog :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--yearbook-accent);
+  outline-offset: 3px;
+}
+
+.risograph-cover .yearbook-container { padding-bottom: 0; }
+.risograph-cover .family-button-warm, .cover-login {
+  background: #161023;
+  color: #fff;
+}
+.risograph-cover .family-button-warm:hover, .cover-login:hover { background: #4826c7; }
+.cover-spread {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
+  min-height: clamp(31rem, 49vw, 48rem);
+  margin: 1.2rem auto 0;
+  max-width: 1700px;
+}
+.cover-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  padding: clamp(1.35rem, 3.35vw, 4rem);
+  background: #d8f547;
+  color: #161023;
+}
+.cover-edition { font-size: clamp(1rem, 2vw, 1.85rem); font-weight: 850; }
+.cover-copy h1 {
+  margin-block: .11em .19em;
+  font-size: clamp(3.1rem, 12.45vw, 11.75rem);
+  line-height: .96;
+  letter-spacing: -.07em;
+  -webkit-text-stroke: .018em;
+}
+.cover-tagline { font-size: clamp(1.15rem, 2.6vw, 2.55rem); font-weight: 850; }
+.cover-login { margin-top: clamp(.9rem, 2vw, 1.7rem); padding: .7rem 1.25rem; font-size: clamp(1rem, 1.65vw, 1.45rem); }
+.cover-privacy { display: flex; align-items: center; gap: .38rem; margin-top: .55rem; font-size: .78rem; }
+.cover-art { position: relative; min-width: 0; background: #4826c7; }
+.cover-art img { object-fit: cover; object-position: center 53%; }
+.cover-index {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.17fr;
+  max-width: 1700px;
+  margin-inline: auto;
+  border-bottom: 1px solid var(--yearbook-ink);
+}
+.cover-index-link {
+  display: flex;
+  min-height: clamp(6rem, 15vw, 13rem);
+  flex-direction: column;
+  gap: .7rem;
+  justify-content: center;
+  padding: clamp(.8rem, 3.25vw, 3.2rem);
+  font-size: clamp(1.2rem, 3.4vw, 3.3rem);
+  font-weight: 875;
+  line-height: 1.1;
+  letter-spacing: -.05em;
+}
+.cover-index-link:nth-child(2) { background: #4826c7; color: #fff; }
+.cover-index-link:last-child {
+  background: url("/images/risograph-ginkgo.webp") right -2rem bottom -3rem / auto min(125%, 260px) no-repeat;
+}
+.cover-index-link:hover span { text-decoration: underline; text-underline-offset: .17em; }
+.risograph-cover .cover-index-link:focus-visible { position: relative; z-index: 1; outline-offset: -5px; }
+.cover-index-link:nth-child(2):focus-visible { outline-color: #fff; }
+
+.chronicle-shell { --chronicle-highlight: var(--yearbook-accent); }
+.chronicle-timeline, .atlas-page { padding-top: clamp(1.15rem, 2.3vw, 2.1rem); }
+.chronicle-heading {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(4rem, 1fr) auto;
+  gap: clamp(.8rem, 2.2vw, 2.1rem);
+  margin-bottom: clamp(1.4rem, 2.6vw, 2.25rem);
+}
+.chronicle-year { font: 900 clamp(1.9rem, 4.3vw, 3.8rem) / 1 var(--editorial-sans); letter-spacing: -.055em; }
+.chronicle-heading h1 {
+  margin-top: .1em;
+  padding: 0;
+  border: 0;
+  font-size: clamp(2.25rem, 6.6vw, 6.1rem);
+  -webkit-text-stroke: .02em;
+}
+.chronicle-heading .archive-actions { gap: .55rem; flex-wrap: wrap; }
+.chronicle-heading .archive-actions::before { display: none; }
+.chronicle-heading .archive-actions .family-button { position: static; border-radius: 0; }
+.chronicle-heading .family-button-primary { background: var(--yearbook-accent); color: var(--yearbook-on-accent); }
+.chronicle-intro { margin: .5rem 0 0; font-weight: 600; }
+.chronicle-ornament { width: min(100%, 9.5rem); height: auto; justify-self: center; }
+.chronicle-layout .archive-year-links, .chronicle-layout .archive-year-links a { border-radius: 0; }
+.chronicle-layout .archive-year-links a { font-family: var(--editorial-sans); font-weight: 850; }
+.chronicle-layout .archive-year-links [aria-current="page"] { background: var(--editorial-mark); color: var(--editorial-on-mark); }
+.chronicle-chapter { border-inline-start: 0; padding-inline-start: 0; }
+.chronicle-chapter + .chronicle-chapter { border-top: 0; }
+.chronicle-chapter-name {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  padding: 0;
+  color: var(--yearbook-ink);
+  font: 900 clamp(1.18rem, 3.15vw, 2.55rem) / 1.2 var(--editorial-sans);
+  letter-spacing: -.035em;
+}
+.chronicle-chapter-name::before { content: none; }
+.chronicle-chapter-name::after { content: ""; flex: 1; height: 2px; background: var(--yearbook-accent); }
+.chronicle-chapter-name span { background: var(--editorial-mark); color: var(--editorial-on-mark); padding: .12em .45em .16em; }
+.chronicle-story-photo { outline: 1px solid var(--yearbook-accent); outline-offset: -1px; }
+.chronicle-side-stories li + li { border-color: var(--yearbook-accent); }
+.chronicle-note-text { font-family: var(--editorial-sans); font-weight: 750; }
+
+.editorial-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem 1.05rem;
+  color: var(--yearbook-muted);
+  font-size: .92rem;
+  line-height: 1.55;
+}
+.editorial-meta :is(span, a) { display: inline-flex; align-items: center; gap: .3rem; min-width: 0; overflow-wrap: anywhere; }
+.editorial-meta svg { flex: none; }
+.editorial-highlight { padding: .12rem .4rem; font-weight: 750; background: var(--editorial-mark); color: var(--editorial-on-mark); }
+.editorial-empty { padding-block: 2rem; border-bottom: 1px solid var(--yearbook-rule); color: var(--yearbook-muted); }
+.editorial-empty h2 { color: var(--yearbook-ink); margin-bottom: .45rem; font-size: 1.5rem; }
+.editorial-ornament { flex: none; width: clamp(4rem, 11vw, 10rem); height: auto; }
+.editorial-prose { max-width: 38em; white-space: pre-wrap; overflow-wrap: anywhere; font-size: clamp(1rem, 1.55vw, 1.23rem); line-height: 1.95; }
+
+.travel-story-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(1.3rem, 4vw, 4rem);
+  align-items: center;
+  padding-block: clamp(1.3rem, 3vw, 2.3rem);
+  border-bottom: 1px solid var(--yearbook-accent);
+}
+.travel-story-feature:not(:has(.travel-story-image)) { grid-template-columns: minmax(0, 1fr); }
+.travel-story-image { display: block; aspect-ratio: 1.8; background: var(--yearbook-soft); }
+.travel-story-image img, .birthday-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.travel-story-copy h2 { margin-block: .28em; font-size: clamp(1.5rem, 2.75vw, 2.55rem); }
+.travel-story-feature h2 { font-size: clamp(2.1rem, 4.75vw, 4.65rem); }
+.travel-story-copy h2 a:hover, .gallery-caption button:hover, .diary-index-row:hover h2 { color: var(--yearbook-accent); }
+.travel-story-excerpt { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.travel-story-byline { display: flex; align-items: center; gap: .5rem 1rem; flex-wrap: wrap; margin-top: .55rem; color: var(--yearbook-muted); font-size: .84rem; }
+.travel-story-byline .family-icon-button { margin-inline-start: auto; }
+.travel-index .travel-story { padding-block: 1.2rem; border-bottom: 1px solid var(--yearbook-rule); }
+.travel-article-heading, .diary-editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.travel-article-heading { margin-bottom: clamp(1rem, 2.4vw, 2rem); }
+.travel-article-heading h1 { margin-bottom: .22em; font-size: clamp(2.7rem, 6.85vw, 6.9rem); overflow-wrap: anywhere; }
+.travel-article-image { width: 100%; max-height: clamp(15rem, 29vw, 31rem); object-fit: cover; }
+.travel-article-spread {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr);
+  gap: clamp(1.35rem, 4vw, 4rem);
+  align-items: start;
+  margin-block: clamp(1.35rem, 3.2vw, 2.65rem);
+  padding-inline: clamp(0rem, 2vw, 1.4rem);
+}
+.travel-place-note { border-inline-start: 2px solid var(--yearbook-accent); padding-inline: 1.2rem 0; min-width: 0; }
+.travel-place-note .entry-place { margin: 0; }
+.travel-place-note .entry-place-caption { font-weight: 760; }
+.travel-comments { padding-block: 1.4rem; border-top: 1px solid var(--yearbook-accent); max-width: 60rem; }
+.travel-comments article { border-radius: 0; }
+
+.gallery-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .45rem 1rem; padding-block: .85rem; }
+.editorial-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
+.editorial-tabs button {
+  display: grid; place-items: center; min-height: 2.65rem; min-width: 2.65rem; padding: .32rem .75rem;
+  border: 1px solid transparent; font-size: .91rem; font-weight: 750; cursor: pointer;
+}
+.editorial-tabs button:hover { background: var(--yearbook-soft); }
+.editorial-tabs button[aria-pressed="true"] { background: var(--editorial-mark); color: var(--editorial-on-mark); }
+.gallery-grid { column-count: 3; column-gap: clamp(1rem, 2.2vw, 2rem); }
+.gallery-grid .gallery-print { break-inside: avoid; margin-bottom: clamp(1.35rem, 2.7vw, 2.4rem); padding-block-end: .65rem; border-bottom: 1px solid var(--yearbook-rule); }
+.gallery-print-image { display: block; width: 100%; cursor: zoom-in; background: var(--yearbook-soft); }
+.gallery-print-image img { display: block; width: 100%; height: auto; }
+.gallery-caption { padding-block: .6rem .25rem; min-width: 0; }
+.gallery-caption h2 { font-size: clamp(1.15rem, 2.5vw, 1.8rem); margin-bottom: .35rem; }
+.gallery-caption h2 button { text-align: start; cursor: pointer; overflow-wrap: anywhere; }
+.gallery-caption p { margin-top: .45rem; color: var(--yearbook-muted); }
+.gallery-list .gallery-print { display: grid; grid-template-columns: minmax(5rem, 10rem) minmax(0, 1fr); align-items: center; gap: 1rem; padding-block: .85rem; border-bottom: 1px solid var(--yearbook-rule); }
+.gallery-list .gallery-print img { max-height: 8rem; object-fit: contain; }
+.media-overlay { position: fixed; inset: 0; z-index: 80; background: #100b1ce6; }
+.media-dialog {
+  position: fixed; inset: 50% auto auto 50%; transform: translate(-50%, -50%); z-index: 81;
+  width: min(calc(100% - 1.5rem), 74rem); max-height: calc(100dvh - 1.5rem); overflow: auto;
+  border: 1px solid var(--yearbook-rule); color: var(--yearbook-ink); background: var(--yearbook-bg);
+  font-family: var(--editorial-sans);
+}
+.media-dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .55rem 1rem; }
+.media-dialog-heading h2 { font-size: clamp(1.15rem, 3vw, 2rem); overflow-wrap: anywhere; }
+.gallery-lightbox-image, .birthday-player { background: #120d1c; }
+.gallery-lightbox-image img { display: block; width: 100%; height: min(64dvh, 52rem); object-fit: contain; }
+.media-caption { padding: 1rem; }
+.media-caption :is(p, blockquote) { margin-top: .55rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.birthday-feature {
+  display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr); align-items: center;
+  background: #1a1128; color: #f5f1e8; margin-top: 1.35rem;
+}
+.birthday-poster { position: relative; aspect-ratio: 16 / 9; display: block; width: 100%; cursor: pointer; color: #161023; background: #120d1c; }
+.birthday-play {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: .55rem; padding: .65rem 1.05rem;
+  background: #d8f547; font-weight: 850; box-shadow: 3px 3px 0 #161023;
+}
+.birthday-poster:hover .birthday-play { background: #f2ff9b; }
+.birthday-feature-copy { min-width: 0; padding: clamp(1rem, 3.2vw, 2.9rem); }
+.birthday-year { color: #d8f547; font-weight: 850; }
+.birthday-feature-copy h2 { font-size: clamp(1.9rem, 4vw, 3.9rem); margin-block: .2em .3em; }
+.birthday-feature-copy p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.birthday-archive { margin-top: 1.5rem; }
+.birthday-archive h2 { font-size: 1.45rem; margin-bottom: .75rem; }
+.birthday-strip { display: flex; gap: .7rem; overflow-x: auto; padding: .4rem .25rem .7rem; border-block: 2px solid var(--yearbook-ink); }
+.birthday-strip li { flex: 0 0 clamp(8rem, 14vw, 12rem); min-width: 0; }
+.birthday-strip button { display: grid; width: 100%; text-align: start; border: 1px solid var(--yearbook-rule); cursor: pointer; }
+.birthday-strip button[aria-pressed="true"] { border-color: var(--yearbook-accent); background: var(--editorial-mark); color: var(--editorial-on-mark); }
+.birthday-strip img, .birthday-strip-placeholder { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.birthday-strip-placeholder { display: grid; place-items: center; background: var(--yearbook-soft); color: var(--yearbook-accent); }
+.birthday-strip-label { display: grid; padding: .4rem .55rem; font-size: .84rem; overflow-wrap: anywhere; }
+.birthday-player { aspect-ratio: 16 / 9; max-height: 70dvh; color: #fff; }
+.birthday-player :is(iframe, video) { display: block; width: 100%; height: 100%; border: 0; }
+.birthday-player p { padding: 1rem; }
+
+.atlas-heading { margin-bottom: 1.2rem; }
+.atlas-toolbar { border-top-color: var(--yearbook-accent); }
+.atlas-views button, .atlas-type-filter select { border-radius: 0; }
+.atlas-views button { font-weight: 750; }
+.atlas-views button[aria-pressed="true"] { color: var(--editorial-on-mark); background: var(--editorial-mark); }
+:root:not([data-theme]) .atlas-surface, :root[data-theme="paper"] .atlas-surface {
+  --atlas-water: #ebe4f5;
+  --atlas-grid: #ccc0e1;
+  --atlas-land: #faf6ed;
+  --atlas-border: #9d88bb;
+  --atlas-selected: #d8f547;
+}
+.atlas-surface { border-color: var(--yearbook-accent); }
+.atlas-index { border-top: 2px solid var(--yearbook-accent); }
+.atlas-pin[data-focused] .atlas-pin-dot, .atlas-list li[data-focused] { background: var(--editorial-mark); color: var(--editorial-on-mark); }
+.atlas-list li[data-focused] :is(svg, small) { color: inherit; }
+.atlas-list li[data-focused] a { padding-inline: .45rem; }
+
+.diary-editor-heading { border-bottom: 1px solid var(--yearbook-accent); padding: .65rem 0 1.25rem; }
+.diary-editor-heading h1 { font-size: clamp(2.1rem, 6.25vw, 5.55rem); }
+.diary-editor-heading .family-subpage-title { border: 0; padding-bottom: 0; }
+.diary-index { margin-top: .6rem; }
+.diary-index-row {
+  display: grid; grid-template-columns: minmax(8rem, .31fr) minmax(0, 1fr) auto;
+  gap: 1.25rem; align-items: center; padding: 1.12rem 0; border-bottom: 1px solid var(--yearbook-rule);
+}
+.diary-index-row h2 { font-size: clamp(1.25rem, 2.55vw, 2.15rem); min-width: 0; }
+.diary-index-row svg { color: var(--yearbook-accent); }
+.diary-index-meta { display: grid; color: var(--yearbook-muted); font-size: .88rem; overflow-wrap: anywhere; }
+.diary-reading { margin-block: 1.5rem; padding: clamp(.85rem, 3vw, 1.8rem) 0; }
+.diary-composition {
+  display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(17rem, 1fr);
+  gap: clamp(.85rem, 2.2vw, 1.9rem); align-items: start; margin-block: 1.35rem;
+}
+.diary-writing { display: grid; gap: 1.15rem; min-width: 0; }
+.diary-writing .input.diary-title-input { border-width: 0 0 2px; border-color: var(--yearbook-accent); padding-inline: .15rem; font-size: 1.35rem; font-weight: 800; background: transparent; }
+.diary-writing .diary-text-input { min-height: clamp(15rem, 23vw, 22rem); resize: vertical; line-height: 1.85; }
+.diary-permissions {
+  display: grid; gap: 1rem; min-width: 0; padding: clamp(.85rem, 2.1vw, 1.5rem);
+  border-inline-start: 2px solid var(--yearbook-accent); background: var(--yearbook-soft);
+}
+.diary-permissions h2 { display: flex; align-items: center; gap: .45rem; font-size: clamp(1.3rem, 2.65vw, 2.05rem); }
+.diary-permissions-summary { padding: .55rem .65rem; background: var(--editorial-mark); color: var(--editorial-on-mark); font-weight: 740; line-height: 1.55; overflow-wrap: anywhere; }
+.diary-reader-chip { padding: .27rem .65rem; border: 1px solid var(--yearbook-accent); cursor: pointer; overflow-wrap: anywhere; }
+.diary-submit { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; }
+.diary-submit [role="alert"] { flex-basis: 100%; }
+
+.family-letter-spread {
+  display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 1fr);
+  gap: clamp(1.1rem, 3.5vw, 3rem); align-items: start; margin: 1.35rem 0 1.5rem;
+}
+.family-letter { padding: .9rem 0; border-bottom: 1px solid var(--yearbook-rule); scroll-margin-top: 1rem; }
+.family-letter[data-linked] { border-color: var(--yearbook-accent); }
+.family-letter blockquote { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.72; }
+.family-letter-feature { border-inline-start: 3px solid var(--yearbook-accent); padding-inline-start: clamp(.9rem, 2vw, 1.5rem); }
+.family-letter-feature blockquote { font-size: clamp(1.25rem, 3vw, 2.45rem); font-weight: 800; line-height: 1.45; }
+.family-letter footer { display: flex; gap: .4rem .7rem; align-items: center; flex-wrap: wrap; margin-top: .8rem; color: var(--yearbook-muted); font-size: .88rem; }
+.family-letter footer button { margin-inline-start: auto; }
+.family-letter-form { padding: clamp(.85rem, 2vw, 1.45rem); background: var(--yearbook-soft); }
+.family-letter-form label { display: block; margin-bottom: .65rem; font-size: 1.3rem; }
+.family-letter-form textarea { min-height: 7em; resize: vertical; }
+.family-letter-submit { display: flex; align-items: center; justify-content: space-between; gap: .65rem; margin-top: .6rem; font-size: .85rem; }
+.family-letter-index { max-width: 54rem; }
+
+@media (max-width: 1110px) {
+  .chronicle-heading { grid-template-columns: minmax(0, max-content) minmax(4rem, 1fr); }
+  .chronicle-heading .archive-actions { grid-column: 1 / -1; justify-content: start; }
+}
+@media (max-width: 900px) {
+  .gallery-grid { column-count: 2; }
+  .cover-index-link:last-child { background-size: auto min(100%, 175px); }
+  .family-account-button { display: inline-grid; border: 0; }
+  .family-account-button span { display: none; }
+  .family-account-button svg { display: block; }
+}
+@media (max-width: 720px) {
+  .yearbook-shell .family-masthead { min-height: 3.65rem; }
+  .cover-spread, .travel-story-feature, .travel-article-spread, .birthday-feature,
+  .diary-composition, .family-letter-spread { grid-template-columns: minmax(0, 1fr); }
+  .cover-spread { margin-top: .65rem; }
+  .cover-copy { padding-block: 1.65rem; }
+  .cover-copy h1 { font-size: clamp(3.75rem, 15.15vw, 6rem); }
+  .cover-art { aspect-ratio: 1.32; }
+  .cover-art img { object-position: center 61%; }
+  .cover-index { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cover-index-link { min-height: 5.2rem; font-size: clamp(.85rem, 3.4vw, 1.4rem); padding: .65rem; }
+  .cover-index-link svg { width: 1.3rem; height: 1.3rem; }
+  .cover-index-link:last-child { background-image: none; }
+  .chronicle-heading h1 { padding: 0; font-size: clamp(2.1rem, 8.4vw, 3.5rem); }
+  .chronicle-ornament { width: min(100%, 5.9rem); }
+  .chronicle-intro { font-size: .89rem; }
+  .chronicle-heading .archive-actions { gap: .4rem; }
+  .chronicle-heading .family-button { padding-inline: .52rem; font-size: .8rem; }
+  .travel-place-note { border-inline-start: 0; border-top: 1px solid var(--yearbook-rule); padding: .7rem 0 0; }
+  .diary-index-row { grid-template-columns: minmax(0, 1fr) auto; gap: .35rem .8rem; }
+  .diary-index-meta { display: flex; flex-wrap: wrap; gap: .25rem .6rem; grid-column: 1 / -1; }
+  .diary-permissions { border-inline-start: 0; border-top: 2px solid var(--yearbook-accent); }
+  .diary-composition .input { min-width: 0; width: 100%; }
+  .travel-article-image { min-height: 12rem; }
+}
