@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./yearbook.css";
+import "./chronicle.css";
+import "./atlas.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: "小咩 · 成长年鉴",
+  title: "小咩 · 成长编年志",
   description: "把成长的每一页，留给家人慢慢翻看。",
 };
 

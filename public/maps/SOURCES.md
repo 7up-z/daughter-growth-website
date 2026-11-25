@@ -1,0 +1,5 @@
+# Footprint atlas data
+
+- World outlines: [Natural Earth, 1:110m admin-0 countries](https://www.naturalearthdata.com/about/terms-of-use/), public-domain geographic data. Coordinates are rounded and property names are reduced to region keys. The China layer below supplies the national and provincial outlines in both views.
+- China province outlines: [geoBoundaries CHN ADM1, snapshot 9469f09](https://www.geoboundaries.org/api/current/gbOpen/CHN/ADM1/), sourced from geoBoundaries and Wikimedia Commons, listed as Public Domain in the source metadata. Coordinates are rounded and province labels are localized. Attribution to geoBoundaries and its contributors.
+- City name and center suggestions: [GeoNames](https://www.geonames.org/export), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Selected populated places from the cities15000 export with localized names, alternate names and rounded coordinates. Saved entry locations are user-selected and are independent of this reference data.

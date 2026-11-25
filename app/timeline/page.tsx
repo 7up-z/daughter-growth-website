@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { CloudUpload, Pencil } from "lucide-react"
+import { currentFamilyYear } from "@/lib/memory-archive"
 import { ArchiveRecords } from "@/components/ui/archive-records"
 import { FamilyMasthead } from "@/components/ui/family-masthead"
 import { ArchiveError, useMemoryArchive, YearSelector } from "@/components/ui/memory-archive-controls"
@@ -20,25 +21,26 @@ export default function TimelinePage() {
   }, [status, router])
 
   return (
-    <div className="yearbook-shell">
+    <div className="yearbook-shell chronicle-shell">
       <div className="yearbook-container">
         <FamilyMasthead />
-        <main className="archive-main">
-          <div className="archive-page-heading">
-            <h1 className="yearbook-display">成长时间线</h1>
+        <main className="chronicle-timeline">
+          <div className="chronicle-heading">
+            <span className="chronicle-year" aria-hidden="true">{selectedYear ?? currentFamilyYear()}</span>
+            <h1 className="yearbook-display">成长时间线<span className="sr-only"> {selectedYear ?? currentFamilyYear()} 年</span></h1>
             {status === "authenticated" && (
               <div className="archive-actions">
                 <Link href="/gallery/new" className="family-button family-button-primary">
                   <CloudUpload size={19} aria-hidden="true" /> 上传照片
                 </Link>
-                <Link href="/travel/new" className="family-button family-button-outline archive-journal-link">
+                <Link href="/travel/new" className="family-button family-button-outline">
                   <Pencil size={17} aria-hidden="true" /> 写日记
                 </Link>
               </div>
             )}
           </div>
 
-          <div className="archive-layout">
+          <div className="archive-layout chronicle-layout">
             <YearSelector years={years} selected={selectedYear} path="/timeline" />
             <div className="archive-content" aria-busy={loading}>
               {loading && <p className="archive-status" role="status">正在加载时间线…</p>}
@@ -68,13 +70,6 @@ export default function TimelinePage() {
             </div>
           </div>
 
-          {status === "authenticated" && (
-            <div className="archive-mobile-links">
-              <Link href="/travel/new" className="family-text-link">
-                <Pencil size={16} aria-hidden="true" /> 写日记
-              </Link>
-            </div>
-          )}
         </main>
       </div>
     </div>

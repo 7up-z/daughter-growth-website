@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import { placeName, type EntryPlace } from "@/lib/entry-place"
 import Link from "next/link"
 import { Plus, MapPin, Calendar, Trash2, User, BookOpen } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
@@ -12,6 +13,7 @@ interface TravelEntry {
   title: string
   content: string
   location: string | null
+  place: EntryPlace | null
   travelDate: string
   coverImage: string | null
   author: {
@@ -132,10 +134,10 @@ export default function TravelPage() {
                     <Calendar className="w-3.5 h-3.5" />
                     {formatDateShort(entry.travelDate)}
                   </span>
-                  {entry.location && (
+                  {(entry.place || entry.location) && (
                     <span className="flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5" />
-                      {entry.location}
+                      {entry.place ? placeName(entry.place) : entry.location}
                     </span>
                   )}
                 </div>

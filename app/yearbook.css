@@ -231,7 +231,6 @@
   outline-offset: 3px;
 }
 
-.yearbook-cover,
 .archive-main {
   margin-top: .9rem;
   border: 1px solid var(--yearbook-rule);
@@ -239,113 +238,9 @@
   background: var(--yearbook-paper);
 }
 
-.yearbook-cover { overflow: hidden; }
-
-.yearbook-cover-main {
-  display: grid;
-  min-height: 26rem;
-  grid-template-columns: minmax(0, .80fr) minmax(0, 1.20fr);
-}
-
-.yearbook-cover-copy {
-  align-self: center;
-  position: relative;
-  z-index: 1;
-  padding: 2.5rem 0 2.5rem clamp(1.5rem, 7vw, 5rem);
-}
-
-.yearbook-cover-title {
-  font-size: clamp(2.7rem, 5.45vw, 4.7rem);
-}
-
-.yearbook-cover-title span { display: block; }
-.yearbook-cover-caption { margin-top: 1.1rem; color: var(--yearbook-muted); font-size: clamp(.9rem, 1.45vw, 1.1rem); }
-
-.yearbook-cover-login {
-  margin-top: 1.4rem;
-  min-height: 2.95rem;
-  padding-inline: 1.15rem;
-  gap: .65rem;
-  font-size: 1rem;
-}
-
-.yearbook-cover-privacy {
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-  margin-top: .65rem;
-  color: var(--yearbook-muted);
-  font-size: .85rem;
-}
-
-.yearbook-cover-art { position: relative; min-width: 0; margin-inline-start: -10%; }
-.yearbook-cover-art img {
-  object-fit: cover;
-  object-position: 65% 56%;
-  mask-image: linear-gradient(90deg, transparent 1%, #000 23%);
-}
-
-:root[data-theme="cinematic"] .yearbook-cover-art img { filter: brightness(.78) saturate(.9); }
-
-.yearbook-sample {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  column-gap: clamp(1.1rem, 4vw, 3rem);
-  min-height: 6.4rem;
-  padding: .6rem clamp(1.5rem, 6vw, 4.6rem) 1.35rem;
-}
-
-.yearbook-sample > p { font-size: .88rem; color: var(--yearbook-muted); white-space: nowrap; }
-
-.yearbook-sample ol {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  text-align: center;
-  color: var(--yearbook-muted);
-  font: 700 italic clamp(1.25rem, 2.7vw, 2.1rem) / 1.15 var(--yearbook-numerals);
-}
-
-.yearbook-sample ol::before {
-  position: absolute;
-  inset: auto 0 .315rem;
-  height: 1px;
-  background: var(--yearbook-rule);
-  content: "";
-}
-
-.yearbook-sample li { position: relative; padding-bottom: .85rem; }
-.yearbook-sample li::after {
-  position: absolute;
-  bottom: .06rem;
-  left: 50%;
-  width: .56rem;
-  height: .56rem;
-  transform: translateX(-50%);
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  background: var(--yearbook-paper);
-  content: "";
-}
-
-.yearbook-sample li[data-latest] { color: var(--yearbook-accent); }
-.yearbook-sample li[data-latest]::after { background: var(--yearbook-accent); }
-
 .archive-main { padding: clamp(1rem, 3vw, 2.25rem); }
 
-.archive-page-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: .65rem 1rem;
-  margin-bottom: 1.3rem;
-}
-
-.archive-page-heading h1 { font-size: clamp(1.75rem, 3.5vw, 2.8rem); }
 .archive-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .7rem; }
-.archive-mobile-links { display: none; }
 
 .archive-layout {
   display: grid;
@@ -370,80 +265,6 @@
 .archive-year-links a:hover { color: var(--yearbook-accent); background: var(--yearbook-soft); }
 .archive-year-links a[aria-current="page"] { color: var(--yearbook-on-accent); background: var(--yearbook-accent); }
 .archive-content { min-width: 0; }
-
-.archive-month { position: relative; padding-inline-start: 1.4rem; }
-.archive-month + .archive-month { margin-top: 1.05rem; }
-.archive-month::before {
-  position: absolute;
-  inset: .9rem auto .15rem .25rem;
-  width: 1px;
-  background: var(--yearbook-accent);
-  opacity: .65;
-  content: "";
-}
-
-.archive-month-title {
-  position: relative;
-  color: var(--yearbook-accent);
-  font: 700 italic 1.55rem / 1.25 var(--yearbook-numerals);
-}
-
-.archive-month-title::before,
-.archive-record::before {
-  position: absolute;
-  top: .62rem;
-  left: -1.38rem;
-  width: .57rem;
-  height: .57rem;
-  border: 1px solid var(--yearbook-accent);
-  border-radius: 50%;
-  background: var(--yearbook-accent);
-  content: "";
-}
-
-.archive-record { position: relative; margin-top: .15rem; }
-.archive-record::before { top: 1.1rem; background: var(--yearbook-paper); }
-.archive-record + .archive-record { border-top: 1px solid var(--yearbook-rule); }
-
-.archive-record-link {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-areas: "date copy type" "art art art";
-  align-items: start;
-  gap: .35rem .6rem;
-  min-height: 2.9rem;
-  padding: .7rem .15rem .65rem;
-  border-radius: .35rem;
-}
-
-.archive-record-link:hover h3 { color: var(--yearbook-accent); text-decoration: underline; text-underline-offset: .26em; }
-.archive-record-date { grid-area: date; font-size: .88rem; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.archive-record-copy { grid-area: copy; min-width: 0; }
-.archive-record-copy h3 { font-size: .98rem; font-weight: 700; text-wrap: pretty; overflow-wrap: anywhere; word-break: normal; }
-.archive-record-detail { display: block; margin-top: .14rem; color: var(--yearbook-muted); font-size: .78rem; font-weight: 400; }
-
-.archive-record-image {
-  grid-area: art;
-  display: block;
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 1;
-  overflow: hidden;
-  border-radius: .45rem;
-}
-.archive-record-image img { object-fit: cover; }
-.archive-record-type {
-  grid-area: type;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  gap: .35rem;
-  min-height: 1.3rem;
-  color: var(--yearbook-muted);
-  font-size: .8rem;
-  white-space: nowrap;
-}
-.archive-record-arrow { display: none; }
 
 .archive-status { min-height: 5rem; padding: 1.2rem .25rem; color: var(--yearbook-muted); }
 .archive-status button { margin-top: .6rem; }
@@ -489,17 +310,7 @@
     text-align: start;
     font: 700 italic clamp(1.55rem, 3vw, 2.35rem) / 1.15 var(--yearbook-numerals);
   }
-  .archive-record-link {
-    grid-template-columns: minmax(5rem, .8fr) minmax(6rem, 1fr) minmax(5rem, 1.45fr) minmax(3.6rem, .65fr);
-    grid-template-areas: "date copy art type";
-    align-items: center;
-    gap: .8rem;
-  }
-  .archive-record-type { justify-content: start; font-size: .865rem; }
-  .archive-record-date { font-size: .97rem; }
-  .archive-record-copy h3 { font-size: 1.08rem; }
-  .archive-record-arrow { display: block; margin-left: auto; }
-  .archive-record::before { top: calc(50% - .285rem); }
+
 }
 
 @media (min-width: 1024px) {
@@ -514,28 +325,12 @@
   .family-wordmark { font-size: 1.21rem; }
   .family-masthead-actions { gap: .15rem; }
   .family-masthead-actions .family-button { padding-inline: .6rem; }
-  .yearbook-cover-main { grid-template-columns: minmax(0, 1fr); min-height: 0; }
-  .yearbook-cover-copy { padding: 1.7rem 1.2rem .4rem; }
-  .yearbook-cover-title { font-size: clamp(2.25rem, 9vw, 3.1rem); }
-  .yearbook-cover-caption { margin-top: .55rem; }
-  .yearbook-cover-login { margin-top: .95rem; }
-  .yearbook-cover-art { min-height: clamp(9rem, 45vw, 14rem); margin: 0; }
-  .yearbook-cover-art img { object-position: 72% 55%; mask-image: linear-gradient(180deg, transparent, #000 19%, #000 90%, transparent); }
-  .yearbook-sample { min-height: 4.5rem; padding-inline: 1rem; }
-  .archive-page-heading { position: relative; margin-bottom: .95rem; }
-  .archive-page-heading:has(.archive-actions) h1 { padding-inline-end: 6.7rem; }
   .archive-actions .family-button-primary { position: absolute; top: 0; right: 0; min-height: 2.35rem; padding-inline: .65rem; }
-  .archive-journal-link { display: none; }
-  .archive-mobile-links { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-top: .5rem; }
   .archive-years > p { display: none; }
   .archive-year-links { padding: .15rem; border: 1px solid var(--yearbook-rule); border-radius: 99px; }
   .archive-year-links a { flex: 1 0 auto; min-width: 4.35rem; border-radius: 99px; }
-  .archive-record-image { aspect-ratio: 2.55 / 1; }
 }
 
 @media (max-width: 375px) {
   .family-icon-button { min-width: 2.2rem; }
-  .archive-page-heading h1 { font-size: 1.55rem; }
-  .archive-record-date, .archive-record-type { font-size: .76rem; }
-  .archive-record-type svg { display: none; }
 }

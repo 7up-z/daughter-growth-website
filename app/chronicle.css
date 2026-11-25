@@ -1,0 +1,180 @@
+.chronicle-shell {
+  --chronicle-highlight: #ab522e;
+}
+:root[data-theme="cinematic"] .chronicle-shell { --chronicle-highlight: #e6b889; }
+:root[data-theme="future"] .chronicle-shell { --chronicle-highlight: #65489b; }
+
+.chronicle-shell .yearbook-container {
+  width: min(100% - clamp(1.5rem, 5.4vw, 5rem), 1440px);
+  padding-top: .4rem;
+}
+.chronicle-shell .family-masthead {
+  min-height: 4.1rem;
+  padding-inline: .15rem;
+  border: 0;
+  border-bottom: 1px solid var(--yearbook-rule);
+  border-radius: 0;
+  background: transparent;
+}
+.chronicle-shell .family-main-nav { gap: clamp(.8rem, 2.7vw, 2.8rem); }
+.chronicle-shell .family-main-nav a { font-size: clamp(.88rem, 1.14vw, 1.03rem); }
+.chronicle-shell .family-wordmark { font-size: 1.65rem; }
+
+.magazine-cover { padding-block: clamp(1.15rem, 3.1vw, 2.75rem) 1rem; }
+.magazine-edition {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--yearbook-muted);
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .085em;
+}
+.magazine-name {
+  margin: .15em 0 .2em;
+  color: var(--yearbook-ink);
+  font-size: clamp(2.65rem, 9.1vw, 8.5rem);
+  letter-spacing: -.055em;
+}
+.magazine-spread {
+  display: grid;
+  grid-template-columns: minmax(0, 1.95fr) minmax(0, 1fr);
+  gap: clamp(1.15rem, 4.4vw, 4.75rem);
+  align-items: center;
+  padding-block: clamp(.7rem, 1.2vw, 1.1rem);
+  border-block: 1px solid var(--yearbook-rule);
+}
+.magazine-photo { margin: 0; }
+.magazine-image { position: relative; overflow: hidden; aspect-ratio: 2.02; background: var(--yearbook-soft); }
+.magazine-image img { object-fit: cover; object-position: 60% 62%; }
+.magazine-photo figcaption { margin-top: .65rem; color: var(--yearbook-muted); font-size: .8rem; }
+.magazine-intro { padding-block: clamp(.3rem, 2vw, 1.6rem); }
+.magazine-story-title {
+  font: 700 clamp(1.65rem, 4.25vw, 4rem) / 1.22 var(--yearbook-serif);
+  color: var(--yearbook-accent);
+  letter-spacing: -.035em;
+}
+.magazine-story-caption { max-width: 20em; margin: 1rem 0 1.55rem; line-height: 1.75; }
+.magazine-login { min-height: 2.85rem; border-radius: .28rem; padding-inline: 1.05rem; }
+.magazine-privacy { display: flex; align-items: center; gap: .4rem; margin-top: .85rem; font-size: .82rem; color: var(--yearbook-muted); }
+
+.chronicle-timeline { padding-block: clamp(1.8rem, 4.5vw, 3.7rem) 1rem; }
+.chronicle-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(.9rem, 2.6vw, 2rem);
+  margin-bottom: clamp(1.4rem, 3vw, 2.7rem);
+}
+.chronicle-year {
+  color: var(--yearbook-accent);
+  font: 700 clamp(3.3rem, 9.4vw, 7.5rem) / .9 var(--yearbook-numerals);
+  letter-spacing: -.065em;
+}
+.chronicle-heading h1 {
+  padding-inline-start: clamp(.8rem, 2.6vw, 2rem);
+  border-inline-start: 1px solid var(--yearbook-rule);
+  font-size: clamp(1.65rem, 4.3vw, 4.25rem);
+}
+.chronicle-heading .archive-actions {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
+  gap: .7rem;
+}
+.chronicle-heading .archive-actions::before { content: ""; flex: 1; margin-inline-end: .65rem; border-top: 1px solid var(--yearbook-rule); }
+.chronicle-heading .family-button { border-radius: .3rem; }
+.chronicle-heading .family-button-primary { background: var(--chronicle-highlight); color: var(--yearbook-on-warm); }
+.chronicle-layout:has(.archive-years) { grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); gap: clamp(1.2rem, 3.15vw, 2.6rem); }
+.chronicle-layout .archive-years { align-self: start; }
+.chronicle-layout .archive-year-links a { border-radius: .28rem; }
+.chronicle-chapters { min-width: 0; }
+.chronicle-chapter {
+  position: relative;
+  padding: 0 0 clamp(1.5rem, 3.3vw, 2.6rem) clamp(.8rem, 2vw, 1.6rem);
+  border-inline-start: 1px solid var(--yearbook-rule);
+}
+.chronicle-chapter + .chronicle-chapter { padding-top: 1.1rem; border-top: 1px solid var(--yearbook-rule); }
+.chronicle-chapter-name {
+  position: relative;
+  margin-bottom: .85rem;
+  color: var(--yearbook-accent);
+  font: italic 700 clamp(1.85rem, 4.5vw, 3.1rem) / 1.05 var(--yearbook-numerals);
+}
+.chronicle-chapter-name::before {
+  content: "";
+  position: absolute;
+  inset: .42em auto auto calc(-1 * clamp(.8rem, 2vw, 1.6rem) - .25rem);
+  width: .48rem;
+  height: .48rem;
+  border-radius: 50%;
+  background: var(--yearbook-accent);
+}
+.chronicle-month-spread { display: grid; align-items: start; gap: clamp(1rem, 3.1vw, 2.1rem); }
+.chronicle-month-with-side { grid-template-columns: minmax(0, 1.64fr) minmax(0, 1fr); }
+.chronicle-side-stories { margin: 0; padding: 0; list-style: none; }
+.chronicle-side-stories li + li { margin-top: 1.05rem; padding-top: 1.05rem; border-top: 1px solid var(--yearbook-rule); }
+.chronicle-story { display: block; min-width: 0; text-decoration: none; color: var(--yearbook-ink); }
+.chronicle-story:hover h3, .chronicle-story:hover blockquote { color: var(--yearbook-warm); }
+.chronicle-story-photo { position: relative; display: block; width: 100%; aspect-ratio: 3/2; overflow: hidden; }
+.chronicle-story-photo img { object-fit: cover; }
+.chronicle-story-feature .chronicle-story-photo { aspect-ratio: 2.34; }
+.chronicle-story-feature .chronicle-story-photo + .chronicle-story-copy { margin-top: .85rem; }
+.chronicle-story-standalone:has(.chronicle-story-photo) {
+  display: grid;
+  grid-template-columns: minmax(0, 1.64fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(1rem, 3.1vw, 2.1rem);
+}
+.chronicle-story-standalone .chronicle-story-photo + .chronicle-story-copy { margin-top: .08rem; }
+.chronicle-side-stories .chronicle-story:has(.chronicle-story-photo) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: .9rem;
+  align-items: center;
+}
+.chronicle-story-copy { min-width: 0; }
+.chronicle-story-copy h3 { margin-top: .23em; font-size: clamp(1.1rem, 2.1vw, 2.15rem); overflow-wrap: anywhere; }
+.chronicle-story-feature h3 { font-size: clamp(1.48rem, 2.9vw, 2.9rem); }
+.chronicle-story-meta { display: flex; align-items: center; flex-wrap: wrap; gap: .3rem .55rem; color: var(--yearbook-muted); font-size: .81rem; }
+.chronicle-story-meta time { color: var(--yearbook-ink); font-weight: 700; }
+.chronicle-story-type { display: inline-flex; align-items: center; gap: .21rem; }
+.chronicle-story-detail, .chronicle-story-excerpt { margin-top: .42rem; color: var(--yearbook-muted); font-size: .92rem; line-height: 1.66; overflow-wrap: anywhere; }
+.chronicle-story-excerpt { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.chronicle-note-text {
+  margin: .52rem 0 0;
+  padding-left: .8rem;
+  border-left: 2px solid var(--chronicle-highlight);
+  font: 600 clamp(1rem, 1.7vw, 1.42rem) / 1.65 var(--yearbook-serif);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.chronicle-timeline .archive-pagination { margin-top: 0; }
+
+@media (max-width: 880px) {
+  .chronicle-layout:has(.archive-years) { grid-template-columns: minmax(0, 1fr); }
+  .chronicle-layout .archive-years { border: 0; padding: 0; }
+  .chronicle-layout .archive-year-links { display: flex; flex-flow: row wrap; }
+  .chronicle-layout .archive-year-links a { flex: none; }
+}
+@media (max-width: 680px) {
+  .chronicle-shell .family-masthead { min-height: 3.55rem; }
+  .magazine-name { font-size: clamp(2.5rem, 12vw, 4.15rem); }
+  .magazine-spread { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .magazine-image { aspect-ratio: 1.48; }
+  .magazine-intro { padding: 0 0 .4rem; }
+  .magazine-story-title br { display: none; }
+  .magazine-story-caption { margin: .55rem 0 1.05rem; }
+  .magazine-privacy { margin-top: .58rem; }
+  .chronicle-heading { gap: .65rem .85rem; }
+  .chronicle-heading h1 { padding-inline-start: .8rem; }
+  .chronicle-heading .archive-actions { flex-basis: 100%; justify-content: start; }
+  .chronicle-heading .archive-actions::before { display: none; }
+  .chronicle-heading .archive-actions .family-button-primary { position: static; }
+  .chronicle-layout .archive-year-links { border: 0; padding: 0; }
+  .chronicle-month-with-side, .chronicle-story-standalone:has(.chronicle-story-photo) { grid-template-columns: minmax(0, 1fr); }
+  .chronicle-side-stories li:first-child { border-top: 1px solid var(--yearbook-rule); padding-top: .8rem; }
+  .chronicle-side-stories .chronicle-story:has(.chronicle-story-photo) { grid-template-columns: minmax(5rem, .8fr) minmax(0, 1.2fr); }
+  .chronicle-story-feature .chronicle-story-photo { aspect-ratio: 1.75; }
+}

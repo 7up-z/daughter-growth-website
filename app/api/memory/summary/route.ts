@@ -17,24 +17,25 @@ const events = Prisma.sql`
            COALESCE(p."photoDate", p."createdAt") AS date,
            p."photoDate" IS NULL AS "usesArchiveDate",
            '/gallery?photo=' || p."id" AS href, p."imageUrl",
-           COALESCE(NULLIF(u."nickname", ''), u."username") AS author
+           COALESCE(NULLIF(u."nickname", ''), u."username") AS author,
+           left(COALESCE(NULLIF(p."description", ''), p."thoughts"), 150) AS preview
       FROM "PhotoEntry" p JOIN "User" u ON u."id" = p."authorId"
      WHERE p."published"
     UNION ALL
-    SELECT t."id", 'travel', t."title", COALESCE(NULLIF(t."location", ''), '旅行记录'),
-           t."travelDate", false, '/travel/' || t."id", t."coverImage",
-           COALESCE(NULLIF(u."nickname", ''), u."username")
+    SELECT t."id", 'travel', t."title", COALESCE(NULLIF(t."place"->>'label', ''), NULLIF(t."place"->>'city', ''),
+           NULLIF(t."location", ''), '旅行记录'), t."travelDate", false, '/travel/' || t."id", t."coverImage",
+           COALESCE(NULLIF(u."nickname", ''), u."username"), left(t."content", 150)
       FROM "TravelEntry" t JOIN "User" u ON u."id" = t."authorId"
      WHERE t."published"
     UNION ALL
     SELECT b."id", 'birthday', b."title", '生日影像',
            make_timestamp(b."year", 1, 1, 0, 0, 0), false,
-           '/birthday?video=' || b."id", b."thumbnail", 'Family Memories'
+           '/birthday?video=' || b."id", b."thumbnail", 'Family Memories', left(b."description", 150)
       FROM "BirthdayVideo" b
     UNION ALL
     SELECT c."id", 'message', left(c."content", 36), '家庭留言',
            c."createdAt", false, '/messages?message=' || c."id", NULL,
-           COALESCE(NULLIF(u."nickname", ''), u."username")
+           COALESCE(NULLIF(u."nickname", ''), u."username"), left(c."content", 150)
       FROM "Comment" c JOIN "User" u ON u."id" = c."authorId"
      WHERE c."travelEntryId" IS NULL AND c."photoEntryId" IS NULL
   ), archive AS (

@@ -3,7 +3,9 @@
 import { useSession } from "next-auth/react"
 import { useParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-import { BookOpen, MapPin, Calendar, User, MessageCircle, Send, Trash2 } from "lucide-react"
+import { EntryPlaceEditor } from "@/components/map/entry-place-editor"
+import type { EntryPlace } from "@/lib/entry-place"
+import { BookOpen, Calendar, User, MessageCircle, Send, Trash2 } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 interface TravelEntry {
@@ -11,6 +13,7 @@ interface TravelEntry {
   title: string
   content: string
   location: string | null
+  place: EntryPlace | null
   travelDate: string
   coverImage: string | null
   images: string
@@ -191,12 +194,6 @@ export default function TravelDetailPage() {
                 <Calendar className="w-4 h-4" />
                 <span>{formatDate(entry.travelDate)}</span>
               </div>
-              {entry.location && (
-                <div className="flex items-center space-x-1">
-                  <MapPin className="w-4 h-4" />
-                  <span>{entry.location}</span>
-                </div>
-              )}
               <div className="flex items-center space-x-1">
                 <MessageCircle className="w-4 h-4" />
                 <span>{entry._count.comments} 条留言</span>
@@ -205,6 +202,10 @@ export default function TravelDetailPage() {
 
             {/* 标题 */}
             <h1 className="mb-6 text-3xl font-black">{entry.title}</h1>
+
+            <EntryPlaceEditor key={entry.id} type="travel" id={entry.id} place={entry.place}
+              legacyLabel={entry.location} canEdit={session?.user.role === "admin" || session?.user.id === entry.author.id}
+              onSaved={(place) => setEntry((previous) => previous ? { ...previous, place } : previous)} />
 
             {/* 作者信息 */}
             <div className="flex items-center space-x-3 mb-8 pb-8 border-b border-[var(--theme-border)]">

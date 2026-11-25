@@ -3,6 +3,8 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { PlaceFields } from "@/components/map/place-fields"
+import { parseEntryPlace, type PlaceDraft } from "@/lib/entry-place"
 import Link from "next/link"
 import { Camera, Save, Calendar, Tag } from "lucide-react"
 import { ImageUploader } from "@/components/ui/image-uploader"
@@ -21,6 +23,8 @@ export default function NewPhotoPage() {
   const router = useRouter()
   const current = useCurrentThemeStyle()
   const [loading, setLoading] = useState(false)
+  const [saveError, setSaveError] = useState("")
+  const [place, setPlace] = useState<PlaceDraft | null>(null)
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -39,24 +43,29 @@ export default function NewPhotoPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.title.trim() || !formData.imageUrl.trim()) return
+    if (loading || !formData.title.trim() || !formData.imageUrl.trim()) return
 
     setLoading(true)
+    setSaveError("")
     try {
       const response = await fetch("/api/photos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          place: parseEntryPlace(place),
           tags: formData.tags.split(",").map(t => t.trim()).filter(Boolean),
         }),
       })
 
-      if (response.ok) {
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "保存照片失败")
+      } else {
         router.push("/gallery")
       }
     } catch (error) {
-      console.error("上传照片失败:", error)
+      setSaveError(error instanceof Error ? error.message : "保存照片失败，请重试")
     } finally {
       setLoading(false)
     }
@@ -77,7 +86,8 @@ export default function NewPhotoPage() {
         title="上传照片"
         action={
           <button
-              onClick={handleSubmit}
+              type="submit"
+              form="new-memory-entry"
               disabled={loading || !formData.title.trim() || !formData.imageUrl.trim()}
               className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition disabled:opacity-60 ${current.primaryButton}`}
             >
@@ -92,7 +102,8 @@ export default function NewPhotoPage() {
           title="上传照片"
         />
         <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form id="new-memory-entry" onSubmit={handleSubmit} className="space-y-6">
+            {saveError && <p className="place-submit-error" role="alert">{saveError}</p>}
             {/* 图片上传 */}
             <ImageUploader
               value={formData.imageUrl}
@@ -148,6 +159,8 @@ export default function NewPhotoPage() {
                 className="input"
               />
             </div>
+
+            <PlaceFields value={place} onChange={setPlace} />
 
             {/* 标签 */}
             <div>

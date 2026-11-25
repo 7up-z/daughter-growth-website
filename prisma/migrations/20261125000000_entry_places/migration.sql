@@ -1,0 +1,4 @@
+BEGIN;
+ALTER TABLE "TravelEntry" ADD COLUMN "place" JSONB;
+ALTER TABLE "PhotoEntry" ADD COLUMN "place" JSONB;
+COMMIT;

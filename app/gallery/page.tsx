@@ -4,7 +4,9 @@ import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
-import { Camera, Calendar, Plus, Grid, List, Trash2, X } from "lucide-react"
+import { EntryPlaceEditor } from "@/components/map/entry-place-editor"
+import { placeName, type EntryPlace } from "@/lib/entry-place"
+import { Camera, Calendar, MapPin, Plus, Grid, List, Trash2, X } from "lucide-react"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
 interface PhotoEntry {
@@ -13,6 +15,7 @@ interface PhotoEntry {
   description: string | null
   imageUrl: string
   photoDate: string | null
+  place: EntryPlace | null
   category: string
   tags: string
   thoughts: string | null
@@ -251,6 +254,9 @@ export default function PhotosPage() {
                       <span>{formatDate(photo.photoDate)}</span>
                       <span>{photo._count.comments} 评论</span>
                     </div>
+                    {photo.place && <p className={`mt-1 flex items-start gap-1 break-words text-sm ${current.secondaryText}`}>
+                      <MapPin className="mt-0.5 shrink-0" size={14} aria-hidden="true" />{placeName(photo.place)}
+                    </p>}
                   </div>
                 </article>
               ))}
@@ -267,7 +273,7 @@ export default function PhotosPage() {
                 >
                   {/* 图片 */}
                   <div
-                    className="h-32 w-48 flex-shrink-0 cursor-pointer overflow-hidden rounded-2xl"
+                    className="h-24 w-24 sm:h-32 sm:w-48 flex-shrink-0 cursor-pointer overflow-hidden rounded-2xl"
                     onClick={() => setOpenPhotoId(photo.id)}
                   >
                     <img
@@ -278,7 +284,7 @@ export default function PhotosPage() {
                     />
                   </div>
                   {/* 信息 */}
-                  <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex min-w-0 flex-1 flex-col justify-between">
                     <div>
                       <span className={`mb-2 inline-block rounded-full border px-3 py-1 text-xs font-black ${current.pickerCard}`}>
                         {getCategoryName(photo.category)}
@@ -299,6 +305,9 @@ export default function PhotosPage() {
                       <span>{formatDate(photo.photoDate)}</span>
                       <span>{photo._count.comments} 评论</span>
                     </div>
+                    {photo.place && <p className={`mt-1 flex items-start gap-1 break-words text-sm ${current.secondaryText}`}>
+                      <MapPin className="mt-0.5 shrink-0" size={14} aria-hidden="true" />{placeName(photo.place)}
+                    </p>}
                   </div>
                 </article>
               ))}
@@ -366,6 +375,10 @@ export default function PhotosPage() {
                     </p>
                   </div>
                 )}
+                <EntryPlaceEditor key={selectedPhoto.id} type="photo" id={selectedPhoto.id}
+                  place={selectedPhoto.place} canEdit={canDelete(selectedPhoto)}
+                  onSaved={(place) => setPhotos((previous) => previous.map((photo) =>
+                    photo.id === selectedPhoto.id ? { ...photo, place } : photo))} />
                 <div className="flex items-center gap-4 text-sm text-[var(--theme-text-muted)] pt-4 border-t border-[var(--theme-border)]">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />

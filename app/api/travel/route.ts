@@ -2,6 +2,7 @@ import { parsePrivateImageUrl } from "@/lib/private-media"
 import { NextResponse } from "next/server"
 import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { parseEntryPlace } from "@/lib/entry-place"
 import { optionalString, parseDate, requiredLongText, requiredString } from "@/lib/validation"
 
 // 获取所有旅行日记
@@ -88,6 +89,7 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     const title = requiredString(body.title, "标题", 100)
+    const place = parseEntryPlace(body.place)
     const content = requiredLongText(body.content, "日记内容")
     const location = optionalString(body.location, 100)
     const travelDate = parseDate(body.travelDate, "旅行日期")
@@ -96,6 +98,7 @@ export async function POST(request: Request) {
     const entry = await prisma.travelEntry.create({
       data: {
         title,
+        place: place ?? undefined,
         content,
         location,
         travelDate,

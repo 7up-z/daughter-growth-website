@@ -65,6 +65,7 @@ model TravelEntry {
   title       String
   content     String
   location    String?
+  place       Json?
   travelDate  DateTime
   coverImage  String?
   images      String   @default("[]")
@@ -83,6 +84,7 @@ model PhotoEntry {
   description String?
   imageUrl    String
   photoDate   DateTime?
+  place       Json?
   category    String
   tags        String   @default("[]")
   thoughts    String?

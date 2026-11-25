@@ -1,56 +1,36 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, LockKeyhole, UserRound } from "lucide-react"
+import { ArrowRight, LockKeyhole } from "lucide-react"
 import { FamilyMasthead } from "@/components/ui/family-masthead"
 import { currentFamilyYear } from "@/lib/memory-archive"
 
 export default function HomePage() {
-  const currentYear = currentFamilyYear()
-  const sampleYears = [currentYear - 2, currentYear - 1, currentYear]
+  const year = currentFamilyYear()
 
   return (
-    <div className="yearbook-shell">
+    <div className="yearbook-shell chronicle-shell">
       <div className="yearbook-container">
         <FamilyMasthead publicView />
-        <main className="yearbook-cover">
-          <section className="yearbook-cover-main" aria-labelledby="cover-title">
-            <div className="yearbook-cover-copy">
-              <h1 id="cover-title" className="yearbook-display yearbook-cover-title">
-                <span>一年一年，</span>
-                <span>慢慢长大</span>
-              </h1>
-              <p className="yearbook-cover-caption">把成长的每一页，留给家人慢慢翻看。</p>
-              <Link href="/login" className="family-button family-button-warm yearbook-cover-login">
-                <UserRound size={19} aria-hidden="true" />
-                家人登录
-                <ArrowRight size={18} aria-hidden="true" />
+        <main className="magazine-cover">
+          <div className="magazine-edition"><span>小咩家庭纪念册</span><span>{year} 年卷</span></div>
+          <h1 className="yearbook-display magazine-name">成长编年志</h1>
+          <div className="magazine-spread">
+            <figure className="magazine-photo">
+              <div className="magazine-image">
+                <Image src="/images/chronicle-cover.webp" alt="秋日银杏树下，一家人沿小路散步的插图"
+                  fill preload sizes="(min-width: 1100px) 820px, (min-width: 700px) 66vw, 100vw" />
+              </div>
+              <figcaption>封面摄影插画 · 秋日银杏</figcaption>
+            </figure>
+            <section className="magazine-intro" aria-label="封面故事">
+              <p className="magazine-story-title">一年一年，<br />慢慢长大</p>
+              <p className="magazine-story-caption">把旅行、照片和那些平常的小事，留给家人慢慢翻看。</p>
+              <Link href="/login" className="family-button family-button-warm magazine-login">
+                家人登录 <ArrowRight size={19} aria-hidden="true" />
               </Link>
-              <p className="yearbook-cover-privacy">
-                <LockKeyhole size={16} aria-hidden="true" />
-                仅受邀家人可见
-              </p>
-            </div>
-            <div className="yearbook-cover-art">
-              <Image
-                src="/images/growth-yearbook-cover.webp"
-                alt=""
-                fill
-                preload
-                sizes="(min-width: 1280px) 760px, (min-width: 768px) 65vw, 100vw"
-              />
-            </div>
-          </section>
-
-          <section aria-label="年份示例" className="yearbook-sample">
-            <p>年份示例</p>
-            <ol>
-              {sampleYears.map((year) => (
-                <li key={year} data-latest={year === currentYear ? "true" : undefined}>
-                  <span>{year}</span>
-                </li>
-              ))}
-            </ol>
-          </section>
+              <p className="magazine-privacy"><LockKeyhole size={15} aria-hidden="true" /> 仅受邀家人可见</p>
+            </section>
+          </div>
         </main>
       </div>
     </div>

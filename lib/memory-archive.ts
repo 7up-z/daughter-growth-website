@@ -5,6 +5,7 @@ export type MemoryRecord = {
   type: MemoryType
   title: string
   detail: string
+  preview?: string | null
   date: string
   year: number
   usesArchiveDate: boolean

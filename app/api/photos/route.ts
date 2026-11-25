@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import type { Prisma } from "@prisma/client"
 import { getFamilySession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { parseEntryPlace } from "@/lib/entry-place"
 import {
   allowedPhotoCategories,
   optionalString,
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     const title = requiredString(body.title, "标题", 100)
+    const place = parseEntryPlace(body.place)
     const description = optionalString(body.description, 1_000)
     const imageUrl = parsePrivateImageUrl(body.imageUrl, "照片")
     const photoDate = parseDate(body.photoDate, "拍摄日期", false)
@@ -76,6 +78,7 @@ export async function POST(request: Request) {
     const photo = await prisma.photoEntry.create({
       data: {
         title,
+        place: place ?? undefined,
         description,
         imageUrl,
         photoDate,

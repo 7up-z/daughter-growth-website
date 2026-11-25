@@ -3,8 +3,10 @@
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { PlaceFields } from "@/components/map/place-fields"
+import { parseEntryPlace, type PlaceDraft } from "@/lib/entry-place"
 import Link from "next/link"
-import { Save, MapPin, Calendar } from "lucide-react"
+import { Save, Calendar } from "lucide-react"
 import { ImageUploader } from "@/components/ui/image-uploader"
 import { ThemedHeader, ThemedLoading, ThemedPageHero, ThemedShell, useCurrentThemeStyle } from "@/components/ui/theme-shell"
 
@@ -13,10 +15,11 @@ export default function NewTravelPage() {
   const router = useRouter()
   const current = useCurrentThemeStyle()
   const [loading, setLoading] = useState(false)
+  const [saveError, setSaveError] = useState("")
+  const [place, setPlace] = useState<PlaceDraft | null>(null)
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    location: "",
     travelDate: new Date().toISOString().split("T")[0],
     coverImage: "",
   })
@@ -29,22 +32,26 @@ export default function NewTravelPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.title.trim() || !formData.content.trim()) return
+    if (loading || !formData.title.trim() || !formData.content.trim()) return
 
     setLoading(true)
+    setSaveError("")
     try {
       const response = await fetch("/api/travel", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, place: parseEntryPlace(place) }),
       })
 
-      if (response.ok) {
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "保存旅行记录失败")
+      } else {
         const data = await response.json()
         router.push(`/travel/${data.id}`)
       }
     } catch (error) {
-      console.error("创建日记失败:", error)
+      setSaveError(error instanceof Error ? error.message : "保存旅行记录失败，请重试")
     } finally {
       setLoading(false)
     }
@@ -65,7 +72,8 @@ export default function NewTravelPage() {
         title="写旅行记录"
         action={
           <button
-              onClick={handleSubmit}
+              type="submit"
+              form="new-memory-entry"
               disabled={loading || !formData.title.trim() || !formData.content.trim()}
               className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition disabled:opacity-60 ${current.primaryButton}`}
             >
@@ -80,7 +88,8 @@ export default function NewTravelPage() {
           title="写旅行记录"
         />
         <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form id="new-memory-entry" onSubmit={handleSubmit} className="space-y-6">
+            {saveError && <p className="place-submit-error" role="alert">{saveError}</p>}
             {/* 标题 */}
             <div>
               <label className="block text-sm font-medium mb-2">标题</label>
@@ -94,37 +103,15 @@ export default function NewTravelPage() {
               />
             </div>
 
-            {/* 日期和地点 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2 flex items-center">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  旅行日期
-                </label>
-                <input
-                  type="date"
-                  value={formData.travelDate}
-                  onChange={(e) => setFormData({ ...formData, travelDate: e.target.value })}
-                  className="input"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2 flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  地点
-                </label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="input"
-                  placeholder="例如：三亚·亚龙湾"
-                />
-              </div>
-            </div>
+            <label className="block">
+              <span className="mb-2 flex items-center text-sm font-medium"><Calendar className="mr-1 h-4 w-4" /> 旅行日期</span>
+              <input type="date" value={formData.travelDate}
+                onChange={(e) => setFormData({ ...formData, travelDate: e.target.value })}
+                className="input" required />
+            </label>
 
-            {/* 封面图片上传 */}
+            <PlaceFields value={place} onChange={setPlace} />
+
             <ImageUploader
               value={formData.coverImage}
               onChange={(url) => setFormData({ ...formData, coverImage: url })}
