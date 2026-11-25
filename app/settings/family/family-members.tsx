@@ -87,7 +87,7 @@ export function FamilyMembers() {
       <main>
         <ThemedPageHero
           title="家庭成员"
-          description="审核已有账号，为新家人生成邀请码，或撤销访问。"
+          description="给家人留一个位置，等他们推门进来。"
         />
         <section className={`mt-6 space-y-4 rounded-[1.5rem] border p-5 ${current.card}`}>
           <h2 className="text-lg font-black">邀请家人</h2>

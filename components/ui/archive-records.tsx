@@ -64,7 +64,7 @@ export function ArchiveRecords({ records }: { records: MemoryRecord[] }) {
   const groups = new Map<string, MemoryRecord[]>()
   for (const record of records) {
     const date = memoryCalendarDate(record)
-    const key = date ? `${date.month}月` : "仅记载年份"
+    const key = date ? `${date.month}月` : "年度记录"
     const group = groups.get(key)
     if (group) group.push(record)
     else groups.set(key, [record])

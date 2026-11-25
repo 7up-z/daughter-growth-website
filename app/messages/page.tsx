@@ -142,7 +142,7 @@ export default function MessagesPage() {
       <main>
         <ThemedPageHero
           title="家庭留言"
-          description="保存家人写下的祝福、心里话和重要时刻里的回应。"
+          description="那些没来得及当面说的话，留在这里，等家人慢慢读。"
         />
 
         {/* 留言输入框 */}

@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { CloudUpload, Pencil } from "lucide-react"
+import { BookOpen, Camera, LockKeyhole } from "lucide-react"
 import { currentFamilyYear } from "@/lib/memory-archive"
 import { ArchiveRecords } from "@/components/ui/archive-records"
 import { FamilyMasthead } from "@/components/ui/family-masthead"
@@ -29,16 +29,21 @@ export default function TimelinePage() {
             <span className="chronicle-year" aria-hidden="true">{selectedYear ?? currentFamilyYear()}</span>
             <h1 className="yearbook-display">成长时间线<span className="sr-only"> {selectedYear ?? currentFamilyYear()} 年</span></h1>
             {status === "authenticated" && (
-              <div className="archive-actions">
-                <Link href="/gallery/new" className="family-button family-button-primary">
-                  <CloudUpload size={19} aria-hidden="true" /> 上传照片
+              <div className="archive-actions" role="group" aria-label="新增成长记录">
+                <Link href="/travel/new" className="family-button family-button-primary">
+                  <BookOpen size={17} aria-hidden="true" /> 写旅行日记
                 </Link>
-                <Link href="/travel/new" className="family-button family-button-outline">
-                  <Pencil size={17} aria-hidden="true" /> 写日记
+                <Link href="/gallery/new" className="family-button family-button-outline">
+                  <Camera size={17} aria-hidden="true" /> 上传摄影照片
+                </Link>
+                <Link href="/diary/new" className="family-button family-button-outline" prefetch={false}>
+                  <LockKeyhole size={17} aria-hidden="true" /> 写私密日记
                 </Link>
               </div>
             )}
           </div>
+
+          <p className="chronicle-intro">日子一页页翻过，当时寻常，后来都成了故事。</p>
 
           <div className="archive-layout chronicle-layout">
             <YearSelector years={years} selected={selectedYear} path="/timeline" />

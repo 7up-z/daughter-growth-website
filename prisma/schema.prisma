@@ -26,6 +26,8 @@ model User {
   travelEntries TravelEntry[]
   photoEntries  PhotoEntry[]
   invitations   FamilyInvitation[]
+  privateDiaries PrivateDiary[]
+  diaryReadGrants PrivateDiaryReader[]
 }
 
 enum FamilyAccess {
@@ -111,4 +113,37 @@ model Comment {
   
   photoEntryId  String?
   photoEntry    PhotoEntry?  @relation(fields: [photoEntryId], references: [id], onDelete: Cascade)
+}
+
+enum DiaryAudience {
+  OWNER
+  MEMBERS
+  FAMILY
+}
+
+model PrivateDiary {
+  id        String               @id @default(cuid())
+  title     String
+  content   String
+  diaryDate DateTime             @db.Date
+  audience  DiaryAudience        @default(OWNER)
+  openAt    DateTime?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  authorId  String
+  author    User                 @relation(fields: [authorId], references: [id])
+  readers   PrivateDiaryReader[]
+
+  @@index([authorId, diaryDate])
+  @@index([audience, openAt])
+}
+
+model PrivateDiaryReader {
+  diaryId String
+  userId  String
+  diary   PrivateDiary @relation(fields: [diaryId], references: [id], onDelete: Cascade)
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([diaryId, userId])
+  @@index([userId])
 }

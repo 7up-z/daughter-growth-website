@@ -178,6 +178,7 @@ export default function PhotosPage() {
       <main>
           <ThemedPageHero
             title="摄影相册"
+            description="光从窗边掠过，有些寻常的瞬间，就这样留在了照片里。"
           />
 
           {/* 分类筛选 */}

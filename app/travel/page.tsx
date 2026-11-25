@@ -105,19 +105,19 @@ export default function TravelPage() {
   return (
     <ThemedShell maxWidth="max-w-4xl">
       <ThemedHeader
-        title="旅行地图"
+        title="旅行日记"
         action={
           <Link href="/travel/new" className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-black transition ${current.primaryButton}`}>
             <Plus className="h-4 w-4" />
-            写日记
+            写旅行日记
           </Link>
         }
       />
 
       <main>
         <ThemedPageHero
-          title="旅行地图"
-          description="按地点整理家庭旅行足迹，先从每一篇路上的日记开始。"
+          title="旅行日记"
+          description="风从陌生的街巷吹来，我们把沿途的晴雨和小事写在这里。"
         />
 
         {/* 日记列表 - 博客风格 */}

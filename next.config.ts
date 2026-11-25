@@ -10,7 +10,11 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/api/:collection(birthday|comments|family|media|memory|messages|photos|travel|upload|user)/:path*",
+        source: "/api/:collection(birthday|comments|diary|family|media|memory|messages|photos|travel|upload|user)/:path*",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }],
+      },
+      {
+        source: "/diary/:path*",
         headers: [{ key: "Cache-Control", value: "private, no-store" }],
       },
     ];

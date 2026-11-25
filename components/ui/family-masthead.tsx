@@ -30,7 +30,7 @@ export function FamilyMasthead({ publicView = false }: { publicView?: boolean })
 
       <nav aria-label="家庭模块" className="family-main-nav">
         {moduleLinks.map((module) => (
-          <Link key={module.title} href={module.href} aria-current={module.active ? "page" : undefined}>
+          <Link key={module.title} href={module.href} prefetch={module.href === "/diary" ? false : undefined} aria-current={module.active ? "page" : undefined}>
             {module.title}
           </Link>
         ))}
@@ -65,7 +65,7 @@ export function FamilyMasthead({ publicView = false }: { publicView?: boolean })
             <Dropdown.Content align="end" sideOffset={8} className="family-menu">
               {moduleLinks.map((module) => (
                 <Dropdown.Item key={module.title} asChild className="family-menu-item">
-                  <Link href={module.href} aria-current={module.active ? "page" : undefined}>{module.title}</Link>
+                  <Link href={module.href} prefetch={module.href === "/diary" ? false : undefined} aria-current={module.active ? "page" : undefined}>{module.title}</Link>
                 </Dropdown.Item>
               ))}
             </Dropdown.Content>

@@ -64,7 +64,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: clamp(.9rem, 2.6vw, 2rem);
-  margin-bottom: clamp(1.4rem, 3vw, 2.7rem);
+  margin-bottom: .85rem;
 }
 .chronicle-year {
   color: var(--yearbook-accent);
@@ -78,13 +78,14 @@
 }
 .chronicle-heading .archive-actions {
   display: flex;
-  flex: 1;
+  flex: 1 1 25rem;
   justify-content: flex-end;
   align-items: center;
   gap: .7rem;
 }
 .chronicle-heading .archive-actions::before { content: ""; flex: 1; margin-inline-end: .65rem; border-top: 1px solid var(--yearbook-rule); }
-.chronicle-heading .family-button { border-radius: .3rem; }
+.chronicle-heading .family-button { border-radius: .3rem; white-space: nowrap; }
+.chronicle-intro { margin-bottom: clamp(1.35rem, 2.6vw, 2.25rem); color: var(--yearbook-muted); }
 .chronicle-heading .family-button-primary { background: var(--chronicle-highlight); color: var(--yearbook-on-warm); }
 .chronicle-layout:has(.archive-years) { grid-template-columns: minmax(0, 9rem) minmax(0, 1fr); gap: clamp(1.2rem, 3.15vw, 2.6rem); }
 .chronicle-layout .archive-years { align-self: start; }

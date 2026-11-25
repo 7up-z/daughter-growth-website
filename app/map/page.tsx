@@ -13,7 +13,7 @@ export default async function MapPage() {
         <main className="atlas-page">
           <header className="atlas-heading">
             <h1 className="yearbook-display">足迹地图</h1>
-            <p>从一座城市，找到那天的旅行与照片。</p>
+            <p>走过的地方，在地图上留下一个小点。点开它，还是那天的风和光。</p>
           </header>
           <FootprintAtlas />
         </main>

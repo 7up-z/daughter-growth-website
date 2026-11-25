@@ -31,7 +31,7 @@ export default function ThemeSettingsPage() {
       <main>
         <ThemedPageHero
           title="主题设置"
-          description="选择后会保存在本机；登录状态下也会同步到个人资料。"
+          description="同一本成长纪念册，换一种光线来翻阅。"
         />
 
         <section className="mt-6 grid gap-4 md:grid-cols-2">

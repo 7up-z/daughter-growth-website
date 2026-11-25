@@ -69,7 +69,7 @@ export default function NewTravelPage() {
     <ThemedShell maxWidth="max-w-4xl">
       <ThemedHeader
         backHref="/travel"
-        title="写旅行记录"
+        title="写旅行日记"
         action={
           <button
               type="submit"
@@ -85,7 +85,7 @@ export default function NewTravelPage() {
 
       <main>
         <ThemedPageHero
-          title="写旅行记录"
+          title="写旅行日记"
         />
         <div className={`mt-6 rounded-[2rem] border p-6 sm:p-8 ${current.card}`}>
           <form id="new-memory-entry" onSubmit={handleSubmit} className="space-y-6">
