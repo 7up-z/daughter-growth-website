@@ -4,5 +4,4 @@ export const memoryModules = [
   { title: "旅行地图", href: "/travel" },
   { title: "摄影相册", href: "/gallery" },
   { title: "家庭留言", href: "/messages" },
-  { title: "年度回顾", href: "/year-review" },
 ]

@@ -463,30 +463,6 @@
 .archive-pagination nav { display: flex; align-items: center; gap: 1rem; }
 .archive-pagination a { display: inline-flex; min-height: 2.65rem; align-items: center; color: var(--yearbook-accent); font-weight: 650; }
 
-.archive-year-counts {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-bottom: 1.2rem;
-  padding: .4rem 0 .9rem;
-  border-bottom: 1px solid var(--yearbook-rule);
-}
-.archive-year-counts > a { padding-inline: .4rem; text-align: center; }
-.archive-year-counts > a + a { border-inline-start: 1px solid var(--yearbook-rule); }
-.archive-year-count {
-  font: 700 clamp(1.4rem, 3.2vw, 2.25rem) / 1.22 var(--yearbook-numerals);
-  color: var(--yearbook-accent);
-}
-.archive-year-count-label {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: .3rem;
-  margin-top: .35rem;
-  color: var(--yearbook-muted);
-  font-size: .8rem;
-}
-
 .family-section-actions {
   display: flex;
   align-items: center;
@@ -549,7 +525,7 @@
   .archive-page-heading { position: relative; margin-bottom: .95rem; }
   .archive-page-heading:has(.archive-actions) h1 { padding-inline-end: 6.7rem; }
   .archive-actions .family-button-primary { position: absolute; top: 0; right: 0; min-height: 2.35rem; padding-inline: .65rem; }
-  .archive-journal-link, .archive-review-link { display: none; }
+  .archive-journal-link { display: none; }
   .archive-mobile-links { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin-top: .5rem; }
   .archive-years > p { display: none; }
   .archive-year-links { padding: .15rem; border: 1px solid var(--yearbook-rule); border-radius: 99px; }

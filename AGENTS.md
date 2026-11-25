@@ -1,6 +1,6 @@
 # 项目概述
 
-**daughter-growth-website** 是一个家庭私域成长记忆网站，用于记录成长时间线、生日影像、旅行地图、摄影相册、家庭留言和年度回顾。
+**daughter-growth-website** 是一个家庭私域成长记忆网站，用于记录成长时间线、生日影像、旅行地图、摄影相册和家庭留言。
 
 当前产品定位：
 
@@ -28,7 +28,7 @@
 
 - 温暖、私密、可回看。
 - 内容优先，避免营销式落地页。
-- 首页展示六个主模块：成长时间线、生日影像、旅行地图、摄影相册、家庭留言、年度回顾。
+- 首页展示五个主模块：成长时间线、生日影像、旅行地图、摄影相册、家庭留言。按年浏览集成在成长时间线中。
 - 未登录状态只展示首页、登录页和脱敏示例，不暴露真实照片、留言、视频正文。
 - 登录后展示真实家庭动态、快捷上传和完整内容入口。
 - 主题切换需要在四套主题下保持文字对比、卡片层级和移动端可读性。
@@ -66,18 +66,17 @@ app/
 ├── settings/theme/         # 主题设置
 ├── timeline/               # 成长时间线
 ├── travel/                 # 旅行地图
-├── year-review/            # 年度回顾
 └── page.tsx                # 公开首页
 ```
 
 核心共享文件：
 
-- `lib/memory-modules.ts`：六模块配置。
+- `lib/memory-modules.ts`：五个主模块的导航配置。
 - `lib/app-theme.ts`：主题样式 token。
 - `components/providers/theme-provider.tsx`：主题状态、localStorage、用户资料同步。
 - `components/ui/theme-shell.tsx`：内容页外壳、页头和操作区。
-- `components/ui/family-masthead.tsx`：六模块导航、四套主题和家庭账户入口。
-- `components/ui/archive-records.tsx`：时间线与年度回顾共用的月份分组和记录。
+- `components/ui/family-masthead.tsx`：主模块导航、四套主题和家庭账户入口。
+- `components/ui/archive-records.tsx`：成长时间线的月份分组和记录。
 
 ## 关键入口 / 核心模块
 
@@ -94,7 +93,6 @@ app/
 | 旅行地图 | `/travel` |
 | 摄影相册 | `/gallery` |
 | 家庭留言 | `/messages` |
-| 年度回顾 | `/year-review` |
 | 主题设置 | `/settings/theme` |
 
 ## 运行与预览
@@ -134,5 +132,5 @@ app/
 2. Next.js 启动参数使用 `-H` 和 `-p` 短参数。
 3. Prisma 使用 `@prisma/adapter-pg` 适配 Vercel Postgres。
 4. 默认主题应保持为 `paper`，数据库默认值和前端 fallback 需要一致。
-5. 改动六模块入口时，优先更新 `lib/memory-modules.ts`，不要在多个页面重复维护。
+5. 改动主模块入口时，优先更新 `lib/memory-modules.ts`，不要在多个页面重复维护。
 

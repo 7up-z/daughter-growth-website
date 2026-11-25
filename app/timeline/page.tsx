@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { ArrowRight, CloudUpload, Pencil } from "lucide-react"
+import { CloudUpload, Pencil } from "lucide-react"
 import { ArchiveRecords } from "@/components/ui/archive-records"
 import { FamilyMasthead } from "@/components/ui/family-masthead"
 import { ArchiveError, useMemoryArchive, YearSelector } from "@/components/ui/memory-archive-controls"
@@ -28,11 +28,6 @@ export default function TimelinePage() {
             <h1 className="yearbook-display">成长时间线</h1>
             {status === "authenticated" && (
               <div className="archive-actions">
-                {selectedYear && (
-                  <Link href={`/year-review?year=${selectedYear}`} className="family-text-link archive-review-link">
-                    年度回顾 <ArrowRight size={15} aria-hidden="true" />
-                  </Link>
-                )}
                 <Link href="/gallery/new" className="family-button family-button-primary">
                   <CloudUpload size={19} aria-hidden="true" /> 上传照片
                 </Link>
@@ -75,11 +70,6 @@ export default function TimelinePage() {
 
           {status === "authenticated" && (
             <div className="archive-mobile-links">
-              {selectedYear && (
-                <Link href={`/year-review?year=${selectedYear}`} className="family-text-link">
-                  年度回顾 <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-              )}
               <Link href="/travel/new" className="family-text-link">
                 <Pencil size={16} aria-hidden="true" /> 写日记
               </Link>
